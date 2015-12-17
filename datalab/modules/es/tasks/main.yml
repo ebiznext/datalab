@@ -1,0 +1,27 @@
+---
+
+# Configure timezone
+- name: Configuring timezone
+  shell: "echo {{ elasticsearch_timezone }} > /etc/timezone; dpkg-reconfigure --frontend noninteractive tzdata"
+  when: elasticsearch_timezone is defined
+
+- include: dependencies.yml
+  when: elasticsearch.dependencies|bool
+
+# Configure user and group
+- name: Create ES group
+  group: name={{ elasticsearch.group }} gid={{elasticsearch.gid}}
+  sudo: yes
+
+- name: Create ES user
+  user: name={{ elasticsearch.user }} group={{ elasticsearch.group }} createhome=no uid={{elasticsearch.uid}}
+  sudo: yes
+
+- name: Install from pre-built package
+  include: prebuild-install.yml
+  when: (not ansible_os_family == "Debian") or elasticsearch.prebuilt.install|bool
+
+- name: Classical installation
+  include: deb-install.yml
+  when: ansible_os_family == "Debian" and (not elasticsearch.prebuilt.install|bool)
+

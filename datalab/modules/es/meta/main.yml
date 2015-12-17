@@ -1,0 +1,18 @@
+---
+# Elasticsearch Ansible Meta
+dependencies:
+  - { role: jdk }
+  - { role: common, install_maven, when: "{{elasticsearch.plugins.searchguard.install}}|bool" }
+
+galaxy_info:
+  author: George Stathis, Ahmed Bessifi, Stephane Manciot
+  company: Traackr
+  license: MIT
+  min_ansible_version: 1.9
+  platforms:
+   - name: Ubuntu
+     versions:
+      - trusty
+      - precise
+  categories:
+   - database:nosql

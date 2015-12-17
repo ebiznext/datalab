@@ -1,0 +1,37 @@
+---
+
+  - apt: name=wget state=latest
+    sudo: yes
+    when: (ansible_os_family == "Debian")
+
+  - yum: name=wget state=latest
+    sudo: yes
+    when: (ansible_os_family == "RedHat")
+
+  - lineinfile: dest=/etc/wgetrc regexp='^.?https_proxy = ' state=absent
+    sudo: yes
+  - lineinfile: dest=/etc/wgetrc regexp='^.?http_proxy = ' state=absent
+    sudo: yes
+  - lineinfile: dest=/etc/wgetrc regexp='^.?ftp_proxy = ' state=absent
+    sudo: yes
+  - lineinfile: dest=/etc/wgetrc regexp='^.?use_proxy = ' state=absent
+    sudo: yes
+  - lineinfile: dest=/etc/wgetrc regexp='^.?proxy_user = ' state=absent
+    sudo: yes
+  - lineinfile: dest=/etc/wgetrc regexp='^.?proxy_password = ' state=absent
+    sudo: yes
+
+  - lineinfile: dest=/etc/wgetrc line='https_proxy = {{proxy_server}}' state=present
+    sudo: yes
+  - lineinfile: dest=/etc/wgetrc line='http_proxy = {{proxy_server}}' state=present
+    sudo: yes
+  - lineinfile: dest=/etc/wgetrc line='ftp_proxy = {{proxy_server}}' state=present
+    sudo: yes
+  - lineinfile: dest=/etc/wgetrc line='use_proxy = on' state=present
+    sudo: yes
+  - lineinfile: dest=/etc/wgetrc line='no_proxy = {{no_proxy}}' state=present
+    sudo: yes
+  - lineinfile: dest=/etc/wgetrc line='proxy_user = {{proxy_login}}' state=present
+    sudo: yes
+  - lineinfile: dest=/etc/wgetrc line='proxy_password = {{proxy_password}}' state=present
+    sudo: yes

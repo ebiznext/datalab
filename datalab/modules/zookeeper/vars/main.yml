@@ -1,0 +1,26 @@
+---
+
+zookeeper:
+  version: "{{ zookeeper_version }}"
+  package_name: "{{ zookeeper_package_name }}"
+  download_dir: "{{ zookeeper_download_dir }}"
+  home_dir: "{{ zookeeper_home_dir }}"
+
+  config:
+    # The number of milliseconds of each tick
+    tickTime: "{{zookeeper_config_ticktime}}"
+    # The number of ticks that the initial
+    # synchronization phase can take
+    initLimit: "{{zookeeper_config_initLimit}}"
+    # The number of ticks that can pass between
+    # sending a request and getting an acknowledgement
+    syncLimit: "{{zookeeper_config_syncLimit}}"
+    # the directory where the snapshot is stored.
+    # do not use /tmp for storage, /tmp here is just
+    # example sakes.
+    dataDir: "{{zookeeper_config_dataDir}}"
+    # the port at which the clients will connect
+    clientPort: "{{zookeeper_config_clientPort}}"
+
+  log:
+    dir: "{{ zookeeper_log_dir }}"

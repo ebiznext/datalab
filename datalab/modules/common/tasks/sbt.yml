@@ -1,0 +1,21 @@
+---
+
+- name: Add sbt apt reporitory
+  apt_repository: repo="{{ sbt.apt.repo_name }}"
+  when: ansible_os_family == 'Debian'
+
+- name: Add sbt apt key
+  apt_key: keyserver='keyserver.ubuntu.com' id="{{ sbt.apt.repo_key }}"
+  when: ansible_os_family == 'Debian'
+
+- name: Install sbt package
+  apt: name='sbt' state=present force=yes
+       update_cache=yes cache_valid_time=3600
+  when: ansible_os_family == 'Debian'
+
+# Manual installation
+# - name: Download sbt jar
+#   get_url: url={{ sbt.jar }} dest={{ sbt.install_dir }}
+
+# - name: Install sbt bin
+#   file: src="{{ sbt.install_dir }}/sbt-launch.jar" path='/usr/bin/sbt-launch' state=link mode=0755

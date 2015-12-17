@@ -1,0 +1,19 @@
+---
+
+dependencies:
+  - { role: jdk }
+
+galaxy_info:
+  author: Hector Castro, Ahmed Bessifi, Stephane Manciot
+  description: An Ansible role for installing Kibana.
+  company: Azavea Inc.
+  license: Apache
+  min_ansible_version: 1.9
+  platforms:
+  - name: Ubuntu
+    versions:
+      - trusty
+      - precise
+  categories:
+  - system
+  - monitoring

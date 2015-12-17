@@ -1,0 +1,52 @@
+---
+
+- name: Create maven user
+  user: name="{{ maven.user }}"
+        shell=/bin/false
+        state=present
+
+- name: Download Maven
+  get_url:
+    url={{ maven.mirror }}/{{ maven.tarball_name }}
+    dest=/tmp/{{ maven.tarball_name }}
+    mode=0644
+
+- name: Install Maven installation directory
+  file:
+    state=directory
+    mode=0755
+    dest={{ maven.install_dir }}
+
+- name: Install Maven
+  unarchive:
+    src=/tmp/{{ maven.tarball_name }}
+    dest={{ maven.install_dir }}
+    copy=no
+
+- name: Install Maven bin directory
+  file:
+    state=directory
+    mode=0755
+    dest={{ maven.bin_path }}
+
+- name: Install Maven binary
+  file:
+    state=link
+    force=true
+    src={{ maven.install_dir }}/apache-maven-{{ maven.version }}/bin/mvn
+    dest={{ maven.bin_path }}/mvn
+
+- name: Create default maven lib directory
+  file:
+    state=directory
+    dest="{{ maven.lib_dir }}"
+    owner="{{ maven.user }}"
+    group="{{ maven.user }}"
+    mode=0755
+
+- name: Deploy default maven settings.xml
+  template:
+    src=maven_settings.xml.j2
+    dest="{{ maven.lib_dir }}/settings.xml"
+    owner="{{ maven.user }}"
+    group="{{ maven.user }}"

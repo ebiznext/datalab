@@ -1,0 +1,9 @@
+---
+
+- name: Install Maven
+  include: maven.yml
+  when: install_maven is defined
+
+- name: Install SBT
+  include: sbt.yml
+  when: install_sbt is defined

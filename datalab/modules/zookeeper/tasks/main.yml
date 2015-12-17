@@ -1,0 +1,70 @@
+---
+
+# Install Debian dependencies
+- name: Install Debian dependencies
+  apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - tar
+    - curl
+    - wget
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+# Install Redhat dependencies
+- name: Install Redhat dependencies through proxy
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+    - tar
+    - curl
+    - wget
+  environment: __proxy_env #in order to use proxy url with credentials
+  sudo: yes
+  when: proxy_enabled|bool and (ansible_os_family == 'RedHat')
+
+- name: Install Redhat dependencies
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+    - tar
+    - curl
+    - wget
+  sudo: yes
+  when: (not proxy_enabled|bool) and (ansible_os_family == 'RedHat')
+
+- file: path="{{ zookeeper.home_dir }}" state=absent
+  sudo: yes
+
+- file: path="{{ zookeeper.download_dir }}" state=directory
+
+- name: get zookeeper
+  shell: "wget --proxy=off -q -O {{zookeeper.download_dir}}/{{zookeeper.package_name}}.tar.gz {{apache_mirror}}zookeeper/zookeeper-{{zookeeper.version}}/{{zookeeper.package_name}}.tar.gz"
+  when: not proxy_enabled|bool
+
+- name: get zookeeper through proxy
+  shell: "wget --proxy=on --proxy-user={{proxy_login}} --proxy-passwd={{proxy_password}} -q -O {{zookeeper.download_dir}}/{{zookeeper.package_name}}.tar.gz {{apache_mirror}}zookeeper/zookeeper-{{zookeeper.version}}/{{zookeeper.package_name}}.tar.gz"
+  environment: proxy_env
+  when: proxy_enabled|bool
+
+- name: Extract and install Zk
+  unarchive: src="{{ zookeeper.download_dir }}/{{zookeeper.package_name}}.tar.gz"
+             dest={{ zookeeper.download_dir }}
+             copy=no
+
+- name: rename install dir
+  shell: "mv {{ zookeeper.download_dir}}/{{zookeeper.package_name}} {{zookeeper.home_dir}}"
+  sudo: yes
+
+- name: Configure Zk
+  template: src=zoo.cfg
+            dest={{ zookeeper.home_dir }}/conf/
+  sudo: yes
+
+- name: Create zookeeper log dir if it does not exist
+  file: path={{ zookeeper.log.dir }}
+        state=directory
+  sudo: yes
+
+- name: Create zookeeper data dir if it does not exist
+  file: path={{ zookeeper.config.dataDir }}
+        state=directory
+  sudo: yes
+

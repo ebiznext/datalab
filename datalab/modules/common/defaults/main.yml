@@ -1,0 +1,8 @@
+---
+
+proxy_env: "{{__proxy_env}}"
+
+maven_version: "3.3.3"
+
+sbt_apt_repo: "deb https://dl.bintray.com/sbt/debian /"
+sbt_version: "0.13.9"

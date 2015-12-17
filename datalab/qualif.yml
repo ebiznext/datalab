@@ -1,0 +1,11 @@
+---
+
+  - name: Build and launch datalab
+    hosts: qualif
+    remote_user: $user
+    roles:
+      - {role: es}
+      - {role: kibana}
+      - {role: zookeeper}
+      - {role: kafka}
+      - {role: flume}

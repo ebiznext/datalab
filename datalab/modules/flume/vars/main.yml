@@ -1,0 +1,13 @@
+---
+
+flume:
+  version: "{{ flume_version }}"
+  package_name: "{{ flume_package_name }}"
+  download_dir: "{{ flume_download_dir }}"
+  home_dir: "{{ flume_home_dir }}"
+
+  config:
+    dir: "{{flume_config_dir}}"
+
+  log:
+    dir: "{{ flume_log_dir }}"

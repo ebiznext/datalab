@@ -1,0 +1,9 @@
+---
+
+  - template: src=yum.conf dest=/etc/yum.conf mode=644
+    sudo: yes
+    when: proxy_enabled|bool
+
+  - lineinfile: dest=/etc/yum.conf regexp='^proxy.*=' state=absent
+    sudo: yes
+    when: not proxy_enabled|bool

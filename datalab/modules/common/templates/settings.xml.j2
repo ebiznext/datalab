@@ -1,0 +1,16 @@
+<settings>
+{% if proxy_enabled|bool %}
+  <proxies>
+    <proxy>
+      <id>pandore</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>{{__proxy_host}}</host>
+      <port>{{__proxy_port}}</port>
+      <username>{{__proxy_login}}</username>
+      <password>{{__proxy_password}}</password>
+      <nonProxyHosts>{{__no_proxy|replace(",", "|")}}</nonProxyHosts>
+    </proxy>
+  </proxies>
+{% endif %}
+</settings>

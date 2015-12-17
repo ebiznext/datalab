@@ -1,0 +1,20 @@
+---
+
+## Maven
+maven:
+  version: "{{ maven_version }}"
+  mirror: "http://archive.apache.org/dist/maven/maven-{{ maven_version|regex_replace('\\..*', '') }}/{{ maven_version }}/binaries"
+  tarball_name: "apache-maven-{{ maven_version }}-bin.tar.gz"
+  bin_path: '/usr/bin'
+  install_dir: '/usr/share/maven'
+  lib_dir: '/var/lib/maven'
+  user: 'maven'
+
+## SBT
+sbt:
+  version: "{{ sbt_version }}"
+  apt:
+    repo_name: "{{ sbt_apt_repo }}"
+    repo_key: '642AC823'
+  jar: 'https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/{{ sbt_version }}/sbt-launch.jar'
+  install_dir: '/opt'

@@ -1,0 +1,28 @@
+---
+
+kibana:
+  version: "{{ kibana_version }}"
+  package_name: "{{ kibana_package_name }}"
+  download_url: "{{ kibana_download_package_url }}"
+  download_dir: "{{kibana_download_dir}}"
+  home_dir: "{{ kibana_home_dir }}"
+  user: "{{kibana_user}}"
+  group: "{{kibana_group}}"
+  uid: "{{kibana_uid}}"
+  gid: "{{kibana_gid}}"
+
+  config:
+    server_addr: "{{ kibana_config_server_addr }}"
+    server_port: "{{ kibana_config_server_port }}"
+    elasticsearch_addr: "{{ kibana_elasticsearch_addr }}"
+    elasticsearch_index: "{{kibana_elasticsearch_index}}"
+
+  log:
+    dirname: "{{ kibana_log_dir }}"
+    file: "{{ kibana_log_file }}"
+    rotate_count: 5
+    rotate_interval: daily
+
+  service:
+    enabled: "{{ kibana_service_enabled }}"
+    state: "{{ kibana_service_state }}"

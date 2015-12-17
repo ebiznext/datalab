@@ -1,0 +1,32 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure(2) do |config|
+
+  # config.vm.box_check_update = false
+
+  config.vm.define "qualif" do |qualif|
+    qualif.vm.box = "nrel/CentOS-6.5-x86_64"
+    qualif.vm.hostname = "vagrant-qualif-datalab.vm"
+    qualif.vm.network "private_network", ip:"192.168.33.10"#, virtualbox__intnet:true
+    # qualif.vm.synced_folder "./", "/vagrant", disabled:true
+    qualif.vm.provider "virtualbox" do |vb|
+      vb.name = "vagrant-qualif-datalab"
+      vb.cpus = 2
+      vb.memory = 8*1024
+    end
+    qualif.vm.provision :ansible do |ansible|
+      ansible.inventory_path = "vagrant-inventory.ini"
+      ansible.playbook = "qualif.yml"
+      ansible.extra_vars = { user:"vagrant"}
+      ansible.sudo = true
+      ansible.limit = 'all'
+      ansible.verbose = 'vv'
+    end
+  end
+
+end

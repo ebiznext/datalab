@@ -1,0 +1,29 @@
+---
+# Install Marvel (see http://www.elasticsearch.org/guide/en/marvel/current/)
+#
+# The following variables need to be defined in your playbook or inventory:
+# - elasticsearch.plugins.marvel.version
+#
+# The following variables provide configuration for the plugin.
+# More options may be available in the future:
+# - elasticsearch.plugins.marvel.agent_enabled
+# - elasticsearch.plugins.marvel.agent_exporter_es_hosts
+# - elasticsearch.plugins.marvel.agent_indices
+# - elasticsearch.plugins.marvel.agent_interval
+# - elasticsearch.plugins.marvel.agent_exporter_es_index_timeformat
+
+- name: Removing Marvel Plugin if it exists
+  shell: "bin/plugin --remove marvel"
+  args:
+    chdir: "{{ elasticsearch.home_dir }}"
+  ignore_errors: yes
+
+- name: Installing Marvel Plugin
+  shell: "bin/plugin -i elasticsearch/marvel/{{ elasticsearch.plugins.marvel.version }}"
+  args:
+    chdir: "{{ elasticsearch.home_dir }}"
+
+# Fix permissions
+- file: path="{{ elasticsearch.plugins.dirname }}" state=directory
+        owner={{ elasticsearch.user }} group={{ elasticsearch.group }}
+        recurse=yes

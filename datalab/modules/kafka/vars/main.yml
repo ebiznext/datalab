@@ -1,0 +1,20 @@
+---
+
+kafka:
+  version: "{{ kafka_version }}"
+  package_name: "{{ kafka_package_name }}"
+  download_dir: "{{ kafka_download_dir }}"
+  home_dir: "{{ kafka_home_dir }}"
+
+  config:
+    port: "{{kafka_config_port}}"
+    hostname: "{{kafka_config_hostname}}"
+    broker:
+      id: "{{kafka_config_broker_id}}"
+    advertised:
+      hostname: "{{kafka_config_advertised_hostname}}"
+      port: "{{kafka_config_advertised_port}}"
+    zookeepers: "{{kafka_config_zookeepers}}"
+
+  log:
+    dirs: "{{ kafka_log_dirs }}"

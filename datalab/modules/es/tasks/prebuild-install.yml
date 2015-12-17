@@ -1,0 +1,54 @@
+---
+
+- name: Check if ES exists already
+  stat: path="{{ elasticsearch.home_dir }}/bin/elasticsearch"
+  register: es_bin
+
+- file: path="{{ elasticsearch.download_dir }}" state=directory
+
+- name: download package
+  shell: wget --proxy=off -q -O {{ elasticsearch.download_dir }}/elasticsearch-{{ elasticsearch.version }}.tar.gz {{ elasticsearch.prebuilt.url }}
+  when: (not es_bin.stat.exists) and (not proxy_enabled|bool)
+
+- name: download package through proxy
+  shell: wget --proxy=on --proxy-user={{proxy_login}} --proxy-passwd={{proxy_password}} -q -O {{ elasticsearch.download_dir }}/elasticsearch-{{ elasticsearch.version }}.tar.gz {{ elasticsearch.prebuilt.url }}
+  environment: proxy_env
+  when: (not es_bin.stat.exists) and proxy_enabled|bool
+
+- name: untar package
+  unarchive: src="{{ elasticsearch.download_dir }}/elasticsearch-{{ elasticsearch.version }}.tar.gz"
+             dest="{{ elasticsearch.download_dir }}"
+             copy=no
+  when: not es_bin.stat.exists
+
+- name: rename ES dir
+  shell: "mv {{ elasticsearch.download_dir }}/elasticsearch-{{ elasticsearch.version }} {{ elasticsearch.home_dir }}"
+  sudo: yes
+  when: not es_bin.stat.exists
+
+- file: path="{{ elasticsearch.home_dir }}" state=directory owner="{{ elasticsearch.user }}" group="{{ elasticsearch.group }}" recurse=yes
+  sudo: yes
+
+- name: create needed directories
+  file: path={{ item }} state=directory owner={{ elasticsearch.user }} group={{ elasticsearch.group }} recurse=yes
+  with_items:
+    - "{{ elasticsearch.log_dir }}"
+    - "{{ elasticsearch.data_dir }}"
+    - "{{ elasticsearch.work_dir }}"
+    - "{{ elasticsearch.config.dirname }}"
+    - "{{ elasticsearch.plugins.dirname }}"
+  sudo: yes
+
+# Install Other Generic Plugins
+- include: plugins.yml
+  when: (elasticsearch.plugins.list is defined)
+
+# Install custom JARs
+- include: custom-jars.yml
+  when: (elasticsearch_custom_jars is defined)
+
+# Configure Elasticsearch Node
+- name: Configuring Elasticsearch Node
+  template: src=elasticsearch.yml.j2 dest={{ elasticsearch.config.dirname }}/elasticsearch.yml owner={{ elasticsearch.user }} group={{ elasticsearch.group }} mode=0644
+  sudo: yes
+  when: elasticsearch.config.dirname is defined

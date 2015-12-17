@@ -1,0 +1,23 @@
+---
+
+# Install Debian dependencies
+- name: Install Debian dependencies
+  apt: pkg={{ item }} state=present update_cache=yes cache_valid_time=3600
+  with_items: elasticsearch.depends.apt
+  sudo: yes
+  when: ansible_os_family == "Debian"
+
+# Install Redhat dependencies
+- name: Install Redhat dependencies through proxy
+  yum: name={{item}} state=present update_cache=yes
+  with_items: elasticsearch.depends.yum
+  environment: __proxy_env #in order to use proxy url with credentials
+  sudo: yes
+  when: proxy_enabled|bool and (ansible_os_family == 'RedHat')
+
+- name: Install Redhat dependencies
+  yum: name={{item}} state=present update_cache=yes
+  with_items: elasticsearch.depends.yum
+  sudo: yes
+  when: (not proxy_enabled|bool) and (ansible_os_family == 'RedHat')
+

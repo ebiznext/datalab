@@ -1,0 +1,19 @@
+---
+
+# Install jdk 7
+- name: get jdk7
+  shell: "wget --proxy=off --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' -q -O /tmp/jdk-7u79-linux-x64.tar.gz http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-linux-x64.tar.gz"
+  when: not proxy_enabled|bool
+
+- name: get jdk7 through proxy
+  shell: "wget --proxy=on --proxy-user={{proxy_login}} --proxy-passwd={{proxy_password}} --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' -q -O /tmp/jdk-7u79-linux-x64.tar.gz http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-linux-x64.tar.gz"
+  environment: proxy_env
+  when: proxy_enabled|bool
+
+- unarchive: src=/tmp/jdk-7u79-linux-x64.tar.gz dest=/tmp/ copy=no
+
+- file: path=/usr/lib/jvm state=directory
+  sudo: yes
+
+- shell: mv /tmp/jdk1.7.0_79 /usr/lib/jvm/java-7-oracle
+  sudo: yes

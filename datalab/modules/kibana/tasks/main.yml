@@ -1,0 +1,94 @@
+---
+
+# Install Debian dependencies
+- name: Install Debian dependencies
+  apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - unzip
+    - wget
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+# Install Redhat dependencies
+- name: Install Redhat dependencies through proxy
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+    - unzip
+    - wget
+  environment: __proxy_env #in order to use proxy url with credentials
+  sudo: yes
+  when: proxy_enabled|bool and (ansible_os_family == 'RedHat')
+
+- name: Install Redhat dependencies
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+    - unzip
+    - wget
+  sudo: yes
+  when: (not proxy_enabled|bool) and (ansible_os_family == 'RedHat')
+
+# Configure user and group
+- name: Create Kibana group
+  group: name={{ kibana.group }} gid={{kibana.gid}}
+  sudo: yes
+
+- name: Create Kibana user
+  user: name={{ kibana.user }} group={{ kibana.group }} createhome=no uid={{kibana.uid}} system=yes shell=/bin/bash
+  sudo: yes
+
+#- name: ensure base dir exists
+#  file: path="{{ kibana.home_dir }}" state=directory owner="{{ kibana.user }}" group="{{ kibana.group }}"
+
+- file: path="{{ kibana.home_dir }}" state=absent
+  sudo: yes
+
+- file: path="{{ kibana.download_dir }}" state=directory
+
+- name: Download Kibana through proxy
+  shell: wget --proxy=on --proxy-user={{proxy_login}} --proxy-passwd={{proxy_password}} -q -O {{ kibana.download_dir }}/kibana-{{ kibana.version }}.zip {{ kibana.download_url }}
+  environment: proxy_env
+  when: proxy_enabled|bool
+
+- name: Download Kibana
+  shell: wget --proxy=off -q -O {{ kibana.download_dir }}/kibana-{{ kibana.version }}.zip {{ kibana.download_url }}
+  when: not proxy_enabled|bool
+
+- name: Extract and install Kibana
+  unarchive: src="{{ kibana.download_dir }}/kibana-{{ kibana.version }}.zip"
+             dest={{ kibana.download_dir }}
+             copy=no
+
+- name: rename install dir
+  shell: "mv {{ kibana.download_dir}}/{{kibana.package_name}} {{kibana.home_dir}}"
+  sudo: yes
+
+- name: Configure Kibana
+  template: src=kibana.yml.j2
+            dest={{ kibana.home_dir }}/config/kibana.yml
+            owner="{{ kibana.user }}"
+            group="{{ kibana.group }}"
+  sudo: yes
+
+- name: Create kibana log dir if it does not exist
+  file: path={{ kibana.log.dirname }}
+        state=directory
+        owner="{{ kibana.user }}"
+        group="{{ kibana.group }}"
+  sudo: yes
+
+- name: Set log file permissions
+  file: path={{ kibana.log.file }} state=touch owner={{ kibana.user }} group={{ kibana.group }} mode=0644
+  sudo: yes
+
+- name: Configure Kibana log rotation
+  template: src=logrotate_kibana.j2 dest=/etc/logrotate.d/kibana
+  sudo: yes
+
+- name: Configure Kibana service definition
+  template: src=kibana.conf.j2 dest=/etc/init/kibana.conf
+  sudo: yes
+
+# Register kibana service on boot
+- name: Ensure Kibana is {{ kibana.service.state }} after boot
+  service: name=kibana enabled={{ kibana.service.enabled }} state={{ kibana.service.state }}
+  sudo: yes

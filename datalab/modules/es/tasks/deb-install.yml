@@ -1,0 +1,74 @@
+---
+
+# Check whether we have aleady installed the same version
+- stat: path="{{ elasticsearch.home_dir }}/lib/elasticsearch-{{ elasticsearch.version }}.jar"
+  register: es_archive
+
+# Download deb if needed
+- name: Download Elasticsearch deb
+  get_url: url={{ elasticsearch.download_url }}/elasticsearch-{{ elasticsearch.version }}.deb dest=/tmp/elasticsearch-{{ elasticsearch.version }}.deb mode=0440
+  when: es_archive.stat.exists == false
+
+# Uninstall previous version if applicable
+- name: Uninstalling previous version if applicable
+  shell: "dpkg --remove elasticsearch"
+  when: es_archive.stat.exists == false
+- file: path={{ elasticsearch.home_dir }} state=absent
+  when: es_archive.stat.exists == false
+
+# Install the deb
+- name: Install Elasticsearch deb
+  shell: "dpkg -i -E --force-confnew /tmp/elasticsearch-{{ elasticsearch.version }}.deb"
+  when: es_archive.stat.exists == false
+
+- file: path={{ elasticsearch.home_dir }} state=directory owner={{ elasticsearch.user }} group={{ elasticsearch.group }} recurse=yes
+
+# Configure directories
+- name: Configuring directories
+  file: path={{ item }} state=directory owner={{ elasticsearch.user }} group={{ elasticsearch.group }} recurse=yes
+  with_items:
+    - "{{ elasticsearch.log_dir }}"
+    - "{{ elasticsearch.data_dir }}"
+    - "{{ elasticsearch.work_dir }}"
+    - "{{ elasticsearch.config.dirname }}"
+    - "{{ elasticsearch.plugins.dirname }}"
+
+# Configure open file limits
+- name: Configuring open file limits
+  lineinfile: dest="{{ item.dest }}"
+              regexp="{{ item.regexp }}"
+              insertafter="{{ item.insertafter }}"
+              line="{{ item.line }}"
+  #notify: Restart Elasticsearch
+  with_items:
+    - { dest: '/etc/security/limits.conf', regexp: '^{{ elasticsearch.user }}     -    nofile    {{ elasticsearch.config.max_open_files }}', insertafter: 'EOF', line: '{{ elasticsearch.user }}     -    nofile    {{ elasticsearch.config.max_open_files }}'}
+    - { dest: '/etc/security/limits.conf', regexp: '^{{ elasticsearch.user }}     -    memlock   {{ elasticsearch.config.max_locked_memory }}', insertafter: 'EOF', line: '{{ elasticsearch.user }}     -    memlock   {{ elasticsearch.config.max_locked_memory }}' }
+    - { dest: '/etc/pam.d/su', regexp: '^session    required   pam_limits.so', insertafter: 'EOF', line: 'session    required   pam_limits.so' }
+    - { dest: '/etc/pam.d/common-session', regexp: '^session    required   pam_limits.so', insertafter: 'EOF', line: 'session    required   pam_limits.so' }
+    - { dest: '/etc/pam.d/common-session-noninteractive', regexp: '^session    required   pam_limits.so', insertafter: 'EOF', line: 'session    required   pam_limits.so' }
+    - { dest: '/etc/pam.d/sudo', regexp: '^session    required   pam_limits.so', insertafter: 'EOF', line: 'session    required   pam_limits.so' }
+
+- name: Update max-open-files in initscript
+  lineinfile: dest=/etc/init.d/elasticsearch regexp='^(DAEMON_OPTS=".*-Des.max-open-files=true")$' insertafter='^(DAEMON_OPTS=".*CONF_DIR")$' line='DAEMON_OPTS="$DAEMON_OPTS -Des.max-open-files=true"'
+  #notify: Restart Elasticsearch
+
+# Install Other Generic Plugins
+- include: plugins.yml
+  when: (elasticsearch.plugins.list is defined)
+
+# Install custom JARs
+- include: custom-jars.yml
+  when: (elasticsearch_custom_jars is defined)
+
+# Configure Elasticsearch Node
+- name: Configuring Elasticsearch Node
+  template: src=elasticsearch.yml.j2 dest={{ elasticsearch.config.dirname }}/elasticsearch.yml owner={{ elasticsearch.user }} group={{ elasticsearch.group }} mode=0644
+  when: elasticsearch.config.dirname is defined
+  #notify: Restart Elasticsearch
+
+- template: src=elasticsearch.default.j2 dest=/etc/default/elasticsearch owner={{ elasticsearch.user }} group={{ elasticsearch.group }} mode=0644
+  #notify: Restart Elasticsearch
+
+# Register Elasticsearch service
+- name: Handle Elasticsearch service
+  service: name=elasticsearch enabled={{ elasticsearch.service.startonboot }} state={{ elasticsearch.service.state }}

@@ -1,0 +1,67 @@
+---
+
+# Install Debian dependencies
+- name: Install Debian dependencies
+  apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - tar
+    - curl
+    - wget
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+# Install Redhat dependencies
+- name: Install Redhat dependencies through proxy
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+    - tar
+    - curl
+    - wget
+  environment: __proxy_env #in order to use proxy url with credentials
+  sudo: yes
+  when: proxy_enabled|bool and (ansible_os_family == 'RedHat')
+
+- name: Install Redhat dependencies
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+    - tar
+    - curl
+    - wget
+  sudo: yes
+  when: (not proxy_enabled|bool) and (ansible_os_family == 'RedHat')
+
+# Prepare
+- file: path="{{ kafka.home_dir }}" state=absent
+  sudo: yes
+
+- file: path="{{ kafka.download_dir }}" state=directory
+
+# Get kafka
+- name: get kafka
+  shell: "wget --proxy=off -q -O {{kafka.download_dir}}/{{kafka.package_name}}.tgz {{apache_mirror}}kafka/{{kafka.version}}/{{kafka.package_name}}.tgz"
+  when: not proxy_enabled|bool
+
+- name: get kafka through proxy
+  shell: "wget --proxy=on --proxy-user={{proxy_login}} --proxy-passwd={{proxy_password}} -q -O {{kafka.download_dir}}/{{kafka.package_name}}.tgz {{apache_mirror}}kafka/{{kafka.version}}/{{kafka.package_name}}.tgz"
+  environment: proxy_env
+  when: proxy_enabled|bool
+
+# Install kafka
+- name: Extract and install kafka
+  unarchive: src="{{ kafka.download_dir }}/{{kafka.package_name}}.tgz"
+             dest={{ kafka.download_dir }}
+             copy=no
+
+- name: rename install dir
+  shell: "mv {{ kafka.download_dir}}/{{kafka.package_name}} {{kafka.home_dir}}"
+  sudo: yes
+
+# Configure kafka
+- file: path="{{ kafka.log.dirs }}" state=directory
+  sudo: yes
+
+- name: Configure kafka
+  template: src=server.properties
+            dest={{ kafka.home_dir }}/config/
+  sudo: yes
+

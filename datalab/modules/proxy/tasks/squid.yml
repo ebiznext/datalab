@@ -1,0 +1,28 @@
+---
+
+  - apt: name={{item}} state=latest
+    sudo: yes
+    with_items:
+      - squid
+      - apache2-utils
+      - python-passlib
+
+  - file: path=/etc/squid3/users mode=644 state=touch
+    sudo: yes
+
+  - name: add {{proxy_login}} to authorized users
+    sudo: yes
+    htpasswd:
+      create: yes
+      path: /etc/squid3/users
+      name: "{{proxy_login}}"
+      password: "{{proxy_password}}"
+      state: present
+
+  - copy: src=squid.conf dest=/etc/squid3/ mode=644
+    register: squid_conf
+    sudo: yes
+
+  - service: name=squid3 state=restarted
+    sudo: yes
+    when: squid_conf|changed

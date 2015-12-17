@@ -1,0 +1,23 @@
+---
+
+proxy_enabled: "{{__proxy_enabled}}"
+proxy_server: "http://{{__proxy_host}}:{{__proxy_port}}"
+proxy_login: "{{__proxy_login}}"
+proxy_password: "{{__proxy_password}}"
+no_proxy: "{{__no_proxy}}"
+
+proxy_env:
+  http_proxy: "{{proxy_server}}"
+  https_proxy: "{{proxy_server}}"
+  no_proxy: "{{no_proxy}}"
+
+zookeeper_version: 3.4.7
+zookeeper_download_dir: "/tmp"
+zookeeper_home_dir: "/usr/local/zookeeper"
+zookeeper_package_name: "zookeeper-{{ zookeeper_version }}"
+zookeeper_config_ticktime: 2000
+zookeeper_config_initLimit: 10
+zookeeper_config_syncLimit: 5
+zookeeper_config_dataDir: /var/lib/zookeeper
+zookeeper_config_clientPort: 2181
+zookeeper_log_dir: /var/log/zookeeper

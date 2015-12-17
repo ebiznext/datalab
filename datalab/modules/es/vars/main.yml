@@ -1,0 +1,57 @@
+---
+
+elasticsearch:
+  version: "{{ elasticsearch_version }}"
+  user: "{{elasticsearch_user}}"
+  group: "{{elasticsearch_group}}"
+  gid: "{{elasticsearch_gid}}"
+  uid: "{{elasticsearch_uid}}"
+  download_url: https://download.elasticsearch.org/elasticsearch/elasticsearch
+  download_dir: "{{elasticsearch_download_directory}}"
+  home_dir: "{{elasticsearch_home_directory}}"
+  log_dir: "{{elasticsearch_log_directory}}"
+  data_dir: "{{elasticsearch_data_directory}}"
+  work_dir: "{{elasticsearch_work_directory}}"
+
+  dependencies: "{{elasticsearch_dependencies}}"
+
+  depends:
+    apt:
+      - unzip
+      - git
+      - wget
+    yum:
+      - unzip
+      - git
+      - wget
+
+  prebuilt:
+    install: "{{ elasticsearch_install_prebuilt }}"
+    url: "{{ elasticsearch_prebuit_package_url }}"
+
+  service:
+    startonboot: "{{ elasticsearch_service_startonboot }}"
+    state: "{{ elasticsearch_service_state }}"
+
+  config:
+    dirname: "{{elasticsearch_config_directory}}"
+    max_open_files: 65535
+    network_http_port: "{{ elasticsearch_config_http_server_port }}"
+    network_transport_tcp_port: "{{elasticsearch_config_tcp_transport_port}}"
+    network_bind_host: "{{ elasticsearch_config_network_bind_host }}"
+    cluster_name: "{{ elasticsearch_config_cluster_name }}"
+    heap_size: "{{ elasticsearch_config_heap_size }}"
+    node_max_local_storage_nodes: 1
+    memory_bootstrap_mlockall: "true"
+
+  plugins:
+    list: "{{ elasticsearch_plugins }}"
+    dirname: "{{elasticsearch_plugins_directory}}"
+    searchguard:
+      install: "{{ elasticsearch_install_searchguard }}"
+      url: "https://github.com/floragunncom/search-guard"
+      default_plugin: "com.floragunn/search-guard/0.5"
+      build_dir: "/usr/local/src"
+      keypath: "/home/elasticsearch"
+    marvel:
+      install: "{{ elasticsearch_install_marvel }}"

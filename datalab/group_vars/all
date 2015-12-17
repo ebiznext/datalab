@@ -1,0 +1,95 @@
+---
+
+#
+# proxy
+#
+__proxy_enabled: no
+__proxy_host: localhost
+__proxy_port: 3128
+__proxy_login: proxy
+__proxy_password: changeit
+__no_proxy: "localhost,127.0.0.1"
+__proxy_url: "http://{{__proxy_login}}:{{__proxy_password}}@{{__proxy_host}}:{{__proxy_port}}"
+
+__proxy_env:
+  http_proxy: "{{__proxy_url}}"
+  https_proxy: "{{__proxy_url}}"
+  no_proxy: "{{__no_proxy}}"
+
+#
+# java
+#
+__java_major_version: "8" # 6, 7 or 8
+
+#
+# Elasticsearch
+#
+elasticsearch_version: "1.5.2"
+elasticsearch_user: "elasticsearch"
+elasticsearch_group: "elasticsearch"
+elasticsearch_gid: 2001
+elasticsearch_uid: 2001
+elasticsearch_home_directory: "/usr/share/elasticsearch"
+elasticsearch_config_directory: "{{elasticsearch_home_directory}}/config"
+elasticsearch_log_directory: "/var/log/elasticsearch"
+elasticsearch_data_directory: "/var/lib/elasticsearch"
+elasticsearch_config_network_bind_host: "0.0.0.0"
+elasticsearch_config_http_server_host: es
+elasticsearch_config_http_server_port: 9200
+elasticsearch_config_tcp_transport_port: 9300
+elasticsearch_config_cluster_name: 'elasticsearch'
+
+#
+# Kibana
+#
+kibana_user: kibana
+kibana_group: kibana
+kibana_gid: 3000
+kibana_uid: 3000
+kibana_version: "4.1.2"
+kibana_config_server_addr: "0.0.0.0"
+kibana_config_server_port: 5601
+kibana_elasticsearch_addr: "http://{{elasticsearch_config_http_server_host}}:{{elasticsearch_config_http_server_port}}"
+kibana_elasticsearch_index: ".kibana"
+kibana_home_directory: "/usr/local/kibana"
+kibana_log_dir: "/var/log/kibana"
+kibana_log_file: "{{ kibana_log_dir }}/kibana.log"
+
+#
+# zookeeper
+#
+zookeeper_version: 3.4.7
+zookeeper_download_dir: "/tmp"
+zookeeper_home_dir: "/usr/local/zookeeper"
+zookeeper_package_name: "zookeeper-{{ zookeeper_version }}"
+zookeeper_config_ticktime: 2000
+zookeeper_config_initLimit: 10
+zookeeper_config_syncLimit: 5
+zookeeper_config_dataDir: /var/lib/zookeeper
+zookeeper_config_clientPort: 2181
+zookeeper_log_dir: /var/log/zookeeper
+
+#
+# kafka
+#
+kafka_version: 0.9.0.0
+scala_version: 2.11
+kafka_config_port: 9092
+kafka_config_broker_id: 0
+kafka_config_hostname: localhost
+kafka_config_advertised_hostname: "{{ kafka_config_hostname }}"
+kafka_config_advertised_port: "{{kafka_config_port}}"
+kafka_home_dir: /usr/local/kafka
+kafka_log_dirs: /var/lib/kafka
+kafka_config_zookeepers:
+  - "localhost:{{zookeeper_config_clientPort}}"
+
+#
+# Flume
+#
+flume_version: 1.6.0
+flume_download_dir: "/tmp"
+flume_home_dir: "/usr/local/flume"
+flume_package_name: "apache-flume-{{ flume_version }}-bin"
+flume_config_dir: "{{flume_home_dir}}/conf"
+flume_log_dir: /var/log/flume
