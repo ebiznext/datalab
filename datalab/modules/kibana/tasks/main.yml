@@ -84,6 +84,9 @@
   template: src=logrotate_kibana.j2 dest=/etc/logrotate.d/kibana
   sudo: yes
 
+- file: path=/etc/init state=directory
+  sudo: yes
+
 - name: Configure Kibana service definition
   template: src=kibana.conf.j2 dest=/etc/init/kibana.conf
   sudo: yes
