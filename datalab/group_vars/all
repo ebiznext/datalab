@@ -46,6 +46,9 @@ elasticsearch_config_http_server_host: es
 elasticsearch_config_http_server_port: 9200
 elasticsearch_config_tcp_transport_port: 9300
 elasticsearch_config_cluster_name: 'elasticsearch'
+elasticsearch_plugins:
+  - { name: 'head', url: 'mobz/elasticsearch-head', file: 'head.zip' }
+  - { name: 'analysis-icu', url: 'https://github.com/elastic/elasticsearch-analysis-icu/archive/v2.5.0.tar.gz', file: 'analysis-icu.zip' } # when using another version of es, you should update the url remove the file entry
 
 #
 # Kibana
