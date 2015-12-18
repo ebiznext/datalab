@@ -26,13 +26,21 @@
 
 - file: path="{{ kafka.download_dir }}" state=directory
 
+- stat: path={{kafka.file}} get_checksum=yes
+  register: kafka_file
+
+- shell: curl {{curl_proxy_args}} --stderr /dev/null {{kafka.sha1}}
+  register: kafka_sha1
+  when: kafka_file.stat.exists
+
 # Get kafka
 - name: get kafka
-  shell: "wget -q -O {{kafka.download_dir}}/{{kafka.package_name}}.tgz {{apache_mirror}}kafka/{{kafka.version}}/{{kafka.package_name}}.tgz"
+  shell: "wget -q -O {{kafka.file}} {{kafka.url}}"
+  when: not kafka_file.stat.exists #FIXME or (kafka_file.stat.checksum != (kafka_sha1.stdout|split(' '))[0])
 
 # Install kafka
 - name: Extract and install kafka
-  unarchive: src="{{ kafka.download_dir }}/{{kafka.package_name}}.tgz"
+  unarchive: src="{{ kafka.file }}"
              dest={{ kafka.download_dir }}
              copy=no
 

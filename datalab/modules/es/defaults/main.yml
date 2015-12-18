@@ -13,7 +13,9 @@ elasticsearch_data_directory: "/var/lib/elasticsearch"
 elasticsearch_work_directory: "/tmp/elasticsearch"
 elasticsearch_plugins_directory: "/usr/share/elasticsearch/plugins"
 elasticsearch_install_prebuilt: yes
-elasticsearch_prebuit_package_url: "https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-{{ elasticsearch_version }}.tar.gz"
+elasticsearch_package_name: "elasticsearch-{{ elasticsearch_version }}"
+elasticsearch_prebuilt_file: "{{elasticsearch_package_name}}.tar.gz"
+elasticsearch_prebuit_package_url: "https://download.elastic.co/elasticsearch/elasticsearch/{{elasticsearch_prebuilt_file}}"
 elasticsearch_service_state: "stopped"
 elasticsearch_service_startonboot: no
 elasticsearch_plugins:

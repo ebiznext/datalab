@@ -3,8 +3,10 @@
 kibana:
   version: "{{ kibana_version }}"
   package_name: "{{ kibana_package_name }}"
-  download_url: "{{ kibana_download_package_url }}"
   download_dir: "{{kibana_download_dir}}"
+  file: "{{kibana_download_dir}}/{{kibana_download_file}}"
+  url: "{{ kibana_download_package_url }}"
+  sha1: "{{ kibana_download_package_url }}.sha1.txt"
   home_dir: "{{ kibana_home_dir }}"
   user: "{{kibana_user}}"
   group: "{{kibana_group}}"

@@ -25,11 +25,19 @@
 
 - file: path="{{ zookeeper.download_dir }}" state=directory
 
+- stat: path={{zookeeper.file}} get_checksum=yes
+  register: zookeeper_file
+
+- shell: curl {{curl_proxy_args}} --stderr /dev/null {{zookeeper.sha1}}
+  register: zookeeper_sha1
+  when: zookeeper_file.stat.exists
+
 - name: get zookeeper
-  shell: "wget -q -O {{zookeeper.download_dir}}/{{zookeeper.package_name}}.tar.gz {{apache_mirror}}zookeeper/zookeeper-{{zookeeper.version}}/{{zookeeper.package_name}}.tar.gz"
+  shell: "wget -q -O {{zookeeper.file}} {{zookeeper.url}}"
+  when: not zookeeper_file.stat.exists or (zookeeper_file.stat.checksum != (zookeeper_sha1.stdout|split(' '))[0])
 
 - name: Extract and install Zk
-  unarchive: src="{{ zookeeper.download_dir }}/{{zookeeper.package_name}}.tar.gz"
+  unarchive: src="{{ zookeeper.file }}"
              dest={{ zookeeper.download_dir }}
              copy=no
 

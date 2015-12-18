@@ -15,3 +15,6 @@
   - name: add proxy Settings for wget
     include: wget.yml
     when: proxy_enabled|bool
+
+  - name: add proxy Settings for curl
+    include: curl.yml

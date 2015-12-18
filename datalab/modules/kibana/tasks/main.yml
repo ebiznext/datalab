@@ -35,11 +35,19 @@
 
 - file: path="{{ kibana.download_dir }}" state=directory
 
+- stat: path={{kibana.file}} get_checksum=yes
+  register: kibana_file
+
+- shell: curl {{curl_proxy_args}} --stderr /dev/null {{kibana.sha1}}
+  register: kibana_sha1
+  when: kibana_file.stat.exists
+
 - name: Download Kibana
-  shell: wget -q -O {{ kibana.download_dir }}/kibana-{{ kibana.version }}.zip {{ kibana.download_url }}
+  shell: wget -q -O {{ kibana.file }} {{ kibana.url }}
+  when: not kibana_file.stat.exists or (kibana_file.stat.checksum != (kibana_sha1.stdout|split(' '))[0])
 
 - name: Extract and install Kibana
-  unarchive: src="{{ kibana.download_dir }}/kibana-{{ kibana.version }}.zip"
+  unarchive: src="{{ kibana.file }}"
              dest={{ kibana.download_dir }}
              copy=no
 

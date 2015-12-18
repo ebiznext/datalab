@@ -1,11 +1,5 @@
 ---
 
-- set_fact: curl_proxy_args=""
-  when: not proxy_enabled|bool
-
-- set_fact: curl_proxy_args="-x {{proxy_server}} --proxy-user {{proxy_login}}:{{proxy_password}}"
-  when: proxy_enabled|bool
-
 - name: apache preferred mirror
   shell: curl {{curl_proxy_args}} --stderr /dev/null https://www.apache.org/dyn/closer.cgi?as_json=1
   register: apache_mirrors
