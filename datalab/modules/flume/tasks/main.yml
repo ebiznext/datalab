@@ -25,13 +25,21 @@
 
 - file: path="{{ flume.download_dir }}" state=directory
 
+- stat: path={{flume.file}} get_checksum=yes
+  register: flume_file
+
+- shell: curl {{curl_proxy_args}} --stderr /dev/null {{flume.sha1}}
+  register: flume_sha1
+  when: flume_file.stat.exists
+
 # Get flume
 - name: get flume
-  shell: "wget -q -O {{flume.download_dir}}/{{flume.package_name}}.tar.gz {{apache_mirror}}flume/{{flume.version}}/{{flume.package_name}}.tar.gz"
+  shell: "wget -q -O {{flume.file}} {{flume.url}}"
+  when: not flume_file.stat.exists or (flume_file.stat.checksum != (flume_sha1.stdout|split(' '))[0])
 
 # Install flume
 - name: Extract and install flume
-  unarchive: src="{{ flume.download_dir }}/{{flume.package_name}}.tar.gz"
+  unarchive: src="{{ flume.file }}"
              dest={{ flume.download_dir }}
              copy=no
 

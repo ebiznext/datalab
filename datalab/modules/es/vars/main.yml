@@ -6,6 +6,7 @@ elasticsearch:
   group: "{{elasticsearch_group}}"
   gid: "{{elasticsearch_gid}}"
   uid: "{{elasticsearch_uid}}"
+  package_name: "{{elasticsearch_package_name}}"
   download_url: https://download.elasticsearch.org/elasticsearch/elasticsearch
   download_dir: "{{elasticsearch_download_directory}}"
   home_dir: "{{elasticsearch_home_directory}}"
@@ -27,7 +28,9 @@ elasticsearch:
 
   prebuilt:
     install: "{{ elasticsearch_install_prebuilt }}"
+    file: "{{elasticsearch_download_directory}}/{{elasticsearch_prebuilt_file}}"
     url: "{{ elasticsearch_prebuit_package_url }}"
+    sha1: "{{ elasticsearch_prebuit_package_url }}.sha1.txt"
 
   service:
     startonboot: "{{ elasticsearch_service_startonboot }}"

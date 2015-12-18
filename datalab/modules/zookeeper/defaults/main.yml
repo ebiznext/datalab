@@ -4,6 +4,8 @@ zookeeper_version: 3.4.7
 zookeeper_download_dir: "/tmp"
 zookeeper_home_dir: "/usr/local/zookeeper"
 zookeeper_package_name: "zookeeper-{{ zookeeper_version }}"
+zookeeper_download_file: "{{zookeeper_package_name}}.tar.gz"
+zookeeper_download_package_url: "{{apache_mirror}}zookeeper/zookeeper-{{zookeeper_version}}/{{zookeeper_download_file}}"
 zookeeper_config_ticktime: 2000
 zookeeper_config_initLimit: 10
 zookeeper_config_syncLimit: 5

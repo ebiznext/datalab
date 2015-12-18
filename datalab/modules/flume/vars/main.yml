@@ -4,6 +4,9 @@ flume:
   version: "{{ flume_version }}"
   package_name: "{{ flume_package_name }}"
   download_dir: "{{ flume_download_dir }}"
+  file: "{{flume_download_dir}}/{{flume_download_file}}"
+  url: "{{ flume_download_package_url }}"
+  sha1: "{{ flume_download_package_url }}.sha1"
   home_dir: "{{ flume_home_dir }}"
 
   config:

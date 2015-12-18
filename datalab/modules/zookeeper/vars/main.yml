@@ -4,6 +4,9 @@ zookeeper:
   version: "{{ zookeeper_version }}"
   package_name: "{{ zookeeper_package_name }}"
   download_dir: "{{ zookeeper_download_dir }}"
+  file: "{{zookeeper_download_dir}}/{{zookeeper_download_file}}"
+  url: "{{zookeeper_download_package_url}}"
+  sha1: "{{zookeeper_download_package_url}}.sha1"
   home_dir: "{{ zookeeper_home_dir }}"
 
   config:
