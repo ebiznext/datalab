@@ -6,7 +6,7 @@ kafka:
   download_dir: "{{ kafka_download_dir }}"
   file: "{{kafka_download_dir}}/{{kafka_download_file}}"
   url: "{{kafka_download_package_url}}"
-  sha1: "{{kafka_download_package_url}}.sha1"
+#  sha1: "{{kafka_download_package_url}}.sha1"
   home_dir: "{{ kafka_home_dir }}"
 
   config:

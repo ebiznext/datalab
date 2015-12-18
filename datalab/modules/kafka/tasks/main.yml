@@ -26,17 +26,31 @@
 
 - file: path="{{ kafka.download_dir }}" state=directory
 
-- stat: path={{kafka.file}} get_checksum=yes
+- stat: path={{kafka.file}}
   register: kafka_file
 
-- shell: curl {{curl_proxy_args}} --stderr /dev/null {{kafka.sha1}}
-  register: kafka_sha1
+- name: get kafka asc
+  shell: wget -q -O {{kafka.file}}.asc {{kafka.url}}.asc
+  when: kafka_file.stat.exists
+
+- name: get kafka keys
+  shell: wget -q -O {{ kafka.download_dir }}/KEYS {{apache_mirror}}kafka/KEYS
+  register: kafka_keys
+  when: kafka_file.stat.exists
+
+- name: import kafka keys
+  shell: gpg --import {{ kafka.download_dir }}/KEYS
+  when: kafka_file.stat.exists and kafka_keys|success
+
+- name: verify kafka file
+  shell: gpg --verify {{kafka.file}}.asc {{kafka.file}}
+  register: kafka_file_check
   when: kafka_file.stat.exists
 
 # Get kafka
 - name: get kafka
   shell: "wget -q -O {{kafka.file}} {{kafka.url}}"
-  when: not kafka_file.stat.exists #FIXME or (kafka_file.stat.checksum != (kafka_sha1.stdout|split(' '))[0])
+  when: not kafka_file.stat.exists or (not kafka_file_check|success)
 
 # Install kafka
 - name: Extract and install kafka
