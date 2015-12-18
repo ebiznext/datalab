@@ -4,17 +4,25 @@
 # proxy
 #
 __proxy_enabled: no
+__proxy_mock: no
 __proxy_host: localhost
 __proxy_port: 3128
 __proxy_login: proxy
 __proxy_password: changeit
 __no_proxy: "localhost,127.0.0.1"
 __proxy_url: "http://{{__proxy_login}}:{{__proxy_password}}@{{__proxy_host}}:{{__proxy_port}}"
+__proxy_server: "http://{{__proxy_host}}:{{__proxy_port}}"
 
 __proxy_env:
   http_proxy: "{{__proxy_url}}"
   https_proxy: "{{__proxy_url}}"
   no_proxy: "{{__no_proxy}}"
+
+#
+# python
+#
+__pip_version_six: "1.4"
+__pip_version_docker_py: "1.1.0"
 
 #
 # java

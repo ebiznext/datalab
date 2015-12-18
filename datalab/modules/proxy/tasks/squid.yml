@@ -1,11 +1,40 @@
 ---
 
-  - apt: name={{item}} state=latest
+  # We must install pip before we can use the pip module below
+  - easy_install: name=pip #state=latest required ansible 2.x
+    sudo: yes
+
+  - name: Upgrade latest passlib
+    pip:
+      name: passlib
+      state: latest
+    sudo: yes
+
+  - lineinfile: dest=/etc/apt/apt.conf regexp='^.*Proxy' state=absent
+    sudo: yes
+    when: ansible_os_family == "Debian"
+
+  - apt: name={{item}} state=latest update_cache=yes cache_valid_time=3600
     sudo: yes
     with_items:
       - squid
       - apache2-utils
-      - python-passlib
+    when: ansible_os_family == "Debian"
+
+  - lineinfile: dest=/etc/yum.conf regexp='^proxy.*=' state=absent
+    sudo: yes
+    when: ansible_os_family == "RedHat"
+
+  - yum: name={{item}} state=latest update_cache=yes
+    sudo: yes
+    with_items:
+      - squid
+      - httpd-tools
+    when: ansible_os_family == "RedHat"
+
+  - file: path=/etc/squid3 src=/etc/squid state=link
+    sudo: yes
+    when: ansible_os_family == "RedHat"
 
   - file: path=/etc/squid3/users mode=644 state=touch
     sudo: yes
@@ -19,10 +48,28 @@
       password: "{{proxy_password}}"
       state: present
 
-  - copy: src=squid.conf dest=/etc/squid3/ mode=644
+  - set_fact: ncsa_auth=/usr/lib/squid3/basic_ncsa_auth
+    when: ansible_os_family == "Debian"
+
+  - set_fact: ncsa_auth=/usr/lib64/squid/ncsa_auth
+    when: ansible_os_family == "RedHat"
+
+  - set_fact: cache_dir=/var/spool/squid3
+    when: ansible_os_family == "Debian"
+
+  - set_fact: cache_dir=/var/spool/squid
+    when: ansible_os_family == "RedHat"
+
+  - template: src=squid.conf dest=/etc/squid3/ mode=644
     register: squid_conf
     sudo: yes
 
-  - service: name=squid3 state=restarted
+  - set_fact: squid_service=squid3
+    when: ansible_os_family == "Debian"
+
+  - set_fact: squid_service=squid
+    when: ansible_os_family == "RedHat"
+
+  - service: name={{squid_service}} state=restarted
     sudo: yes
     when: squid_conf|changed
