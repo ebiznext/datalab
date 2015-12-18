@@ -1,27 +1,18 @@
 ---
 
-- name: apache preferred mirror
-  shell: curl --stderr /dev/null https://www.apache.org/dyn/closer.cgi?as_json=1 > /tmp/mirrors.json
-  ignore_errors: yes
+- set_fact: curl_proxy_args=""
   when: not proxy_enabled|bool
 
-- name: apache preferred mirror through proxy
-  shell: curl -x {{proxy_server}} --proxy-user {{proxy_login}}:{{proxy_password}} --stderr /dev/null https://www.apache.org/dyn/closer.cgi?as_json=1 > /tmp/mirrors.json
-  ignore_errors: yes
+- set_fact: curl_proxy_args="-x {{proxy_server}} --proxy-user {{proxy_login}}:{{proxy_password}}"
   when: proxy_enabled|bool
 
-- stat:
-    path: /tmp/mirrors.json
+- name: apache preferred mirror
+  shell: curl {{curl_proxy_args}} --stderr /dev/null https://www.apache.org/dyn/closer.cgi?as_json=1
   register: apache_mirrors
+  ignore_errors: yes
 
-- fetch:
-    src: /tmp/mirrors.json
-    dest: /tmp/
-    flat: yes
-  when: apache_mirrors.stat.exists
-
-- set_fact: apache_mirror="{{(lookup('file', '/tmp/mirrors.json')|from_json).preferred}}"
-  when: apache_mirrors.stat.exists
+- set_fact: apache_mirror="{{(apache_mirrors.stdout|from_json).preferred}}"
+  when: apache_mirrors|success
 
 - set_fact: apache_mirror="{{default_apache_mirror}}"
-  when: not apache_mirrors.stat.exists
+  when: not apache_mirrors|success
