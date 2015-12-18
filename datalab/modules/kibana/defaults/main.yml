@@ -1,16 +1,5 @@
 ---
 
-proxy_enabled: "{{__proxy_enabled}}"
-proxy_url: "http://{{__proxy_host}}:{{__proxy_port}}"
-proxy_login: "{{__proxy_login}}"
-proxy_password: "{{__proxy_password}}"
-no_proxy: "{{__no_proxy}}"
-
-proxy_env:
-  http_proxy: "{{proxy_url}}"
-  https_proxy: "{{proxy_url}}"
-  no_proxy: "{{no_proxy}}"
-
 kibana_user: kibana
 kibana_group: kibana
 kibana_gid: 3001

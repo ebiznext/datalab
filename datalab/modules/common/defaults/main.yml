@@ -1,6 +1,11 @@
 ---
 
-proxy_env: "{{__proxy_env}}"
+proxy_enabled: "{{__proxy_enabled}}"
+proxy_host: "{{__proxy_host}}"
+proxy_port: "{{__proxy_port}}"
+proxy_login: "{{__proxy_login}}"
+proxy_password: "{{__proxy_password}}"
+no_proxy: "{{__no_proxy}}"
 
 maven_version: "3.3.3"
 

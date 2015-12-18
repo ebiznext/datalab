@@ -2,13 +2,7 @@
 
 # Install jdk 6
 - name: get jdk6
-  shell: "wget --proxy=off --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' -q -O /tmp/jdk-6u45-linux-x64.bin http://download.oracle.com/otn-pub/java/jdk/6u45-b06/jdk-6u45-linux-x64.bin"
-  when: not proxy_enabled|bool
-
-- name: get jdk6 through proxy
-  shell: "wget --proxy=on --proxy-user={{proxy_login}} --proxy-passwd={{proxy_password}} --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' -q -O /tmp/jdk-6u45-linux-x64.bin http://download.oracle.com/otn-pub/java/jdk/6u45-b06/jdk-6u45-linux-x64.bin"
-  environment: proxy_env
-  when: proxy_enabled|bool
+  shell: "wget --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' -q -O /tmp/jdk-6u45-linux-x64.bin http://download.oracle.com/otn-pub/java/jdk/6u45-b06/jdk-6u45-linux-x64.bin"
 
 - file: path=/tmp/jdk-6u45-linux-x64.bin mode=a+x state=file
 

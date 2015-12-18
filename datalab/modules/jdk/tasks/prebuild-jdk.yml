@@ -11,14 +11,8 @@
 
 - yum: name={{item}} state=present
   with_items: "{{packages}}"
-  environment: __proxy_env #in order to use proxy url with credentials
   sudo: yes
-  when: proxy_enabled|bool and packages and (ansible_os_family == 'RedHat')
-
-- yum: name={{item}} state=present
-  with_items: "{{packages}}"
-  sudo: yes
-  when: (not proxy_enabled|bool) and packages and (ansible_os_family == 'RedHat')
+  when: packages and (ansible_os_family == 'RedHat')
 
 # Install jdk 8
 - include: jdk8.yml

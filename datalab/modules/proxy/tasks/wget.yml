@@ -6,9 +6,6 @@
 
   - yum: name=wget state=latest update_cache=yes
     sudo: yes
-#    environment:
-#      http_proxy: "{{proxy_url}}"
-#      https_proxy: "{{proxy_url}}"
     when: (ansible_os_family == "RedHat")
 
   - lineinfile: dest=/etc/wgetrc regexp='^.?https_proxy = ' state=absent

@@ -7,13 +7,7 @@
 - file: path="{{ elasticsearch.download_dir }}" state=directory
 
 - name: download package
-  shell: wget --proxy=off -q -O {{ elasticsearch.download_dir }}/elasticsearch-{{ elasticsearch.version }}.tar.gz {{ elasticsearch.prebuilt.url }}
-  when: (not es_bin.stat.exists) and (not proxy_enabled|bool)
-
-- name: download package through proxy
-  shell: wget --proxy=on --proxy-user={{proxy_login}} --proxy-passwd={{proxy_password}} -q -O {{ elasticsearch.download_dir }}/elasticsearch-{{ elasticsearch.version }}.tar.gz {{ elasticsearch.prebuilt.url }}
-  environment: proxy_env
-  when: (not es_bin.stat.exists) and proxy_enabled|bool
+  shell: wget -q -O {{ elasticsearch.download_dir }}/elasticsearch-{{ elasticsearch.version }}.tar.gz {{ elasticsearch.prebuilt.url }}
 
 - name: untar package
   unarchive: src="{{ elasticsearch.download_dir }}/elasticsearch-{{ elasticsearch.version }}.tar.gz"

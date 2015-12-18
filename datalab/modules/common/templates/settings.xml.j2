@@ -5,11 +5,11 @@
       <id>pandore</id>
       <active>true</active>
       <protocol>http</protocol>
-      <host>{{__proxy_host}}</host>
-      <port>{{__proxy_port}}</port>
-      <username>{{__proxy_login}}</username>
-      <password>{{__proxy_password}}</password>
-      <nonProxyHosts>{{__no_proxy|replace(",", "|")}}</nonProxyHosts>
+      <host>{{proxy_host}}</host>
+      <port>{{proxy_port}}</port>
+      <username>{{proxy_login}}</username>
+      <password>{{proxy_password}}</password>
+      <nonProxyHosts>{{no_proxy|replace(",", "|")}}</nonProxyHosts>
     </proxy>
   </proxies>
 {% endif %}

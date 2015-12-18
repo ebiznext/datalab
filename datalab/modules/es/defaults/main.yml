@@ -1,16 +1,5 @@
 ---
 
-proxy_enabled: "{{__proxy_enabled}}"
-proxy_url: "http://{{__proxy_host}}:{{__proxy_port}}"
-proxy_login: "{{__proxy_login}}"
-proxy_password: "{{__proxy_password}}"
-no_proxy: "{{__no_proxy}}"
-
-proxy_env:
-  http_proxy: "{{proxy_url}}"
-  https_proxy: "{{proxy_url}}"
-  no_proxy: "{{no_proxy}}"
-
 elasticsearch_user: "elasticsearch"
 elasticsearch_group: "elasticsearch"
 elasticsearch_gid: 2001
@@ -29,7 +18,7 @@ elasticsearch_service_state: "stopped"
 elasticsearch_service_startonboot: no
 elasticsearch_plugins:
   - { name: 'head', url: 'mobz/elasticsearch-head', file: 'head.zip' }
-  - { name: 'analysis-icu', url: 'https://github.com/elastic/elasticsearch-analysis-icu/archive/v2.5.0.tar.gz', file: 'analysis-icu.zip' }
+  - { name: 'analysis-icu', url: 'https://github.com/elastic/elasticsearch-analysis-icu/archive/v2.5.0.tar.gz', file: 'analysis-icu-2.5.0.zip' }
 elasticsearch_install_searchguard: no
 elasticsearch_install_marvel: no
 elasticsearch_config_cluster_name: "elasticsearch"

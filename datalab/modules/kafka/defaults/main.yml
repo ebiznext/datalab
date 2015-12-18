@@ -1,16 +1,5 @@
 ---
 
-proxy_enabled: "{{__proxy_enabled}}"
-proxy_server: "http://{{__proxy_host}}:{{__proxy_port}}"
-proxy_login: "{{__proxy_login}}"
-proxy_password: "{{__proxy_password}}"
-no_proxy: "{{__no_proxy}}"
-
-proxy_env:
-  http_proxy: "{{proxy_server}}"
-  https_proxy: "{{proxy_server}}"
-  no_proxy: "{{no_proxy}}"
-
 kafka_version: 0.9.0.0
 scala_version: 2.11
 kafka_download_dir: "/tmp"
