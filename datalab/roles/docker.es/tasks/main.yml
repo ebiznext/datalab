@@ -1,0 +1,106 @@
+---
+
+  - name: check es docker base image
+    shell: docker pull {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-es:{{elasticsearch_version}}
+    sudo: yes
+    ignore_errors: yes
+    register: search_es_response
+
+  - file: path=/tmp/es state=directory
+    when: search_es_response|failed
+
+  - file: path=/tmp/es/group_vars state=directory
+    when: search_es_response|failed
+
+  - copy: src=group_vars/all dest=/tmp/es/group_vars/all
+    when: search_es_response|failed
+
+  - copy: src=group_vars/{{env_name}} dest=/tmp/es/group_vars/local
+    when: env_name is defined and search_es_response|failed
+
+  - file: path=/tmp/es/host_vars state=directory
+    when: search_es_response|failed
+
+  - copy: src=host_vars/{{inventory_hostname}} dest=/tmp/es/host_vars/localhost
+    when: search_es_response|failed
+
+  - copy: src=filter_plugins dest=/tmp/es/filter_plugins
+    when: search_es_response|failed
+
+  - copy: src=modules/{{item}} dest=/tmp/es/roles
+    with_items:
+      - proxy
+      - jdk
+      - common
+      - es
+    when: search_es_response|failed
+
+  - name: copy docker files
+    copy: src={{item}} dest=/tmp/es/
+    with_items:
+      - .dockerignore
+      - inventory.ini
+      - site.yml
+    when: search_es_response|failed
+
+  - template: src=Dockerfile dest=/tmp/es/Dockerfile
+    when: (search_es_response|failed)
+
+  - template: src=start.sh dest=/tmp/es/start.sh
+    when: (search_es_response|failed)
+
+  - name: copy vault file
+    copy: src=.vault_pass.txt dest=/tmp/es/
+    when: search_es_response|failed
+
+  - name: build es base image
+    shell: docker build -t {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-es:{{elasticsearch_version}} /tmp/es
+    sudo: yes
+    when: search_es_response|failed
+
+  - shell: docker push {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-es:{{elasticsearch_version}}
+    sudo: yes
+    when: search_es_response|failed
+
+  # Configure user and group
+  - name: Create ES group
+    group: name={{ elasticsearch_group }} gid={{elasticsearch_gid}}
+    sudo: yes
+
+  - name: Create ES user
+    user: name={{ elasticsearch_user }} group={{ elasticsearch_group }} createhome=no uid={{elasticsearch_uid}}
+    sudo: yes
+
+  # Configure data and logs
+  - file: path={{elasticsearch_data_directory}} group={{elasticsearch_group}} owner={{elasticsearch_user}} mode=0775 state=directory
+    sudo: yes
+  - file: path={{elasticsearch_log_directory}} group={{elasticsearch_group}} owner={{elasticsearch_user}} mode=0775 state=directory
+    sudo: yes
+
+  - name: ensure elasticsearch is running
+    docker:
+      image: "{{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-es:{{elasticsearch_version}}"
+      name: "es"
+      command: /start.sh
+      ports:
+        - "{{elasticsearch_config_http_server_port}}"
+        - "{{elasticsearch_config_tcp_transport_port}}"
+      volumes:
+        - "{{elasticsearch_data_directory}}:{{elasticsearch_data_directory}}:rw"
+        - "{{elasticsearch_log_directory}}:{{elasticsearch_log_directory}}:rw"
+      state: reloaded
+      restart_policy: always
+      privileged: yes
+    sudo: yes
+    register: start_es
+
+  - name: inspect es container
+    shell: docker inspect es
+    sudo: yes
+    register: inspect_es_response
+
+  - set_fact: es_ip="{{(inspect_es_response.stdout|from_json)[0].NetworkSettings.IPAddress}}" es_port="{{(inspect_es_response.stdout|from_json)[0].NetworkSettings.Ports['9200/tcp'][0].HostPort}}"
+    when: inspect_es_response|changed
+
+  - file: path=/tmp/es state=absent
+    when: (search_es_response|failed)

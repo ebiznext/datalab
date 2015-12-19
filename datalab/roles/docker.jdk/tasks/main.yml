@@ -16,7 +16,7 @@
     when: search_jdk_response|failed
 
   - copy: src=group_vars/{{env_name}} dest=/tmp/jdk/group_vars/local
-    when: search_jdk_response|failed
+    when: env_name is defined and search_jdk_response|failed
 
   - file: path=/tmp/jdk/host_vars state=directory
     when: search_jdk_response|failed
