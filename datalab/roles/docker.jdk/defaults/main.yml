@@ -1,0 +1,3 @@
+---
+
+jdk_version: "{{__java_major_version}}"
