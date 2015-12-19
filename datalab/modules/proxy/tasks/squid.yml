@@ -1,5 +1,39 @@
 ---
 
+# Install prerequisites
+  - lineinfile: dest=/etc/apt/apt.conf regexp='^.*Proxy' state=absent
+    sudo: yes
+    when: ansible_os_family == "Debian"
+
+  - name: Install easy_install, python-dev package with apt
+    apt:
+      pkg: "{{ item }}"
+      state: latest
+      update_cache: yes
+      cache_valid_time: 3600
+    sudo: yes
+    with_items:
+      - python-dev
+      - python-setuptools #easy_install
+    when: ansible_os_family == "Debian"
+
+  - lineinfile: dest=/etc/yum.conf regexp='^proxy.*=' state=absent
+    sudo: yes
+    when: ansible_os_family == "RedHat"
+
+  - name: make sure docker-python RPM is not installed
+    yum:
+      name: docker-python
+      state: absent
+    when: ansible_os_family == "RedHat"
+
+  - name: Install easy_install package
+    yum: name={{item}} state=latest update_cache=yes
+    sudo: yes
+    with_items:
+      - python-setuptools
+    when: ansible_os_family == "RedHat"
+
   # We must install pip before we can use the pip module below
   - easy_install: name=pip #state=latest required ansible 2.x
     sudo: yes
@@ -10,28 +44,22 @@
       state: latest
     sudo: yes
 
-  - lineinfile: dest=/etc/apt/apt.conf regexp='^.*Proxy' state=absent
-    sudo: yes
-    when: ansible_os_family == "Debian"
-
-  - apt: name={{item}} state=latest update_cache=yes cache_valid_time=3600
+# Install squid
+  - apt: name={{item}} state=latest
     sudo: yes
     with_items:
       - squid
       - apache2-utils
     when: ansible_os_family == "Debian"
 
-  - lineinfile: dest=/etc/yum.conf regexp='^proxy.*=' state=absent
-    sudo: yes
-    when: ansible_os_family == "RedHat"
-
-  - yum: name={{item}} state=latest update_cache=yes
+  - yum: name={{item}} state=latest
     sudo: yes
     with_items:
       - squid
       - httpd-tools
     when: ansible_os_family == "RedHat"
 
+# Configure squid
   - file: path=/etc/squid3 src=/etc/squid state=link
     sudo: yes
     when: ansible_os_family == "RedHat"
@@ -64,6 +92,7 @@
     register: squid_conf
     sudo: yes
 
+# (Re)Start squid
   - set_fact: squid_service=squid3
     when: ansible_os_family == "Debian"
 

@@ -13,11 +13,6 @@ __no_proxy: "localhost,127.0.0.1"
 __proxy_url: "http://{{__proxy_login}}:{{__proxy_password}}@{{__proxy_host}}:{{__proxy_port}}"
 __proxy_server: "http://{{__proxy_host}}:{{__proxy_port}}"
 
-__proxy_env:
-  http_proxy: "{{__proxy_url}}"
-  https_proxy: "{{__proxy_url}}"
-  no_proxy: "{{__no_proxy}}"
-
 #
 # python
 #
