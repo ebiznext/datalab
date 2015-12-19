@@ -1,0 +1,3 @@
+[submodule "datalab/roles/docker-registry"]
+	path = datalab/roles/docker-registry
+	url = https://github.com/fupelaqu/ansible-docker-registry.git
