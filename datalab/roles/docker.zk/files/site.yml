@@ -1,0 +1,10 @@
+---
+
+#########################
+# Docker zk install     #
+#########################
+
+  - name: Install zookeeper
+    hosts: local
+    roles:
+      - zookeeper
