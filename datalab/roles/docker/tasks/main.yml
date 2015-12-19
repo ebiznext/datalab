@@ -1,0 +1,20 @@
+---
+
+  - include: redhat.yml
+    when: ansible_os_family == "RedHat" and (not ansible_distribution == 'CentOS' or ansible_distribution_version|version_compare(6.5, '<'))
+
+  - include: ubuntu.yml
+    when: ansible_distribution == 'Ubuntu'
+
+  - include: centos.yml
+    when: ansible_distribution == 'CentOS' and ansible_distribution_version|version_compare(6.5, '>=')
+
+  - copy: src=minify_docker_image.sh dest=/usr/local/bin/minify_docker_image owner=root group=root mode=0755
+    sudo: yes
+
+#  - name: Start the Docker daemon
+#    service: name=docker state=started
+
+#  - name: Enable Docker service on boot
+#    service: name=docker enabled=yes
+

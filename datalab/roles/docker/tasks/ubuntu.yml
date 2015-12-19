@@ -1,0 +1,79 @@
+---
+
+  - name: Fail if not a new release of Ubuntu
+    fail:
+      msg: "{{ ansible_distribution_version }} is not an acceptable version of Ubuntu for this role"
+    when: ansible_distribution_version|version_compare(14.04, '<')
+
+  - name: check if docker has already been installed
+#    shell: dpkg-query -W -f='${Status}' lxc-docker 2>/dev/null | grep -c "ok installed"
+    shell: command -v "docker" > /dev/null 2>&1 && [ -e /var/run/docker.sock ]
+    ignore_errors: true
+    register: docker_installed
+
+  - name: remove older repositories
+    apt_repository: repo='{{item}}' state=absent
+    with_items:
+      - deb https://apt.dockerproject.org/repo ubuntu-trusty main
+      - deb https://get.docker.io/ubuntu docker main
+    sudo: yes
+    when: not docker_installed or (docker_installed|failed)
+
+  - name: add docker repository
+    apt_repository: repo='deb https://get.docker.com/ubuntu docker main' state=present
+    sudo: yes
+    when: not docker_installed or (docker_installed|failed)
+
+  - name: install docker
+    shell: wget -qO- https://get.docker.com/ | sh #https://github.com/docker/docker/issues/4036
+    sudo: yes
+    when: not docker_installed or (docker_installed|failed) or upgrade_docker|bool
+
+  - name: Install easy_install, python-dev package with apt
+    apt:
+      pkg: "{{ item }}"
+      state: latest
+      update_cache: yes
+      cache_valid_time: 3600
+    sudo: yes
+    with_items:
+      - python-dev
+      - python-setuptools #easy_install
+
+  # We must install pip before we can use the pip module below
+  - easy_install: name=pip #state=latest required ansible 2.x
+    sudo: yes
+
+  - include: pip.yml
+
+  - name: Check if /etc/updatedb.conf exists
+    stat:
+      path: /etc/updatedb.conf
+    register: updatedb_conf_exists
+
+  - name: Ensure updatedb does not index /var/lib/docker
+    lineinfile:
+      dest: /etc/updatedb.conf
+      state: present
+      backrefs: yes
+      regexp: '^PRUNEPATHS="(/var/lib/docker )?(.*)"$'
+      line: 'PRUNEPATHS="/var/lib/docker \2"'
+    sudo: yes
+    when: updatedb_conf_exists.stat.exists
+
+  - name: Check if /etc/default/ufw exists
+    stat:
+      path: /etc/default/ufw
+    register: ufw_default_exists
+
+  - name: Change ufw default forward policy from drop to accept
+    lineinfile:
+      dest: /etc/default/ufw
+      regexp: "^DEFAULT_FORWARD_POLICY="
+      line: "DEFAULT_FORWARD_POLICY=\"ACCEPT\""
+    sudo: yes
+    when: ufw_default_exists.stat.exists
+
+  - name: Start Docker
+    sudo: yes
+    service: name=docker state=started
