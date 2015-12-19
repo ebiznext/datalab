@@ -1,0 +1,53 @@
+---
+
+  - include: registry_facts.yml
+    when: (not docker_registry_host is defined) or (not docker_registry_ip is defined)
+
+  - lineinfile: dest=/etc/hosts regexp='^{{ docker_registry_ip | regex_replace('^(.*)\.(.*)\.(.*)\.(.*)', '\\1\.\\2\.\\3\.\\4') }}' line='{{docker_registry_ip}} {{docker_registry_host}}' owner=root group=root mode=0644
+    sudo: yes
+
+  - file: path=~/.ssh state=directory
+
+  - file: path=~/.ssh/known_hosts state=touch mode=600
+
+  - shell: ssh-keygen -R {{docker_registry_host}} && ssh-keygen -R {{docker_registry_ip}} && ssh-keyscan -H {{docker_registry_host}} >> ~/.ssh/known_hosts && ssh-keyscan -H {{docker_registry_ip}} >> ~/.ssh/known_hosts
+
+  - file: path=/etc/docker/certs.d/{{docker_registry_host}} state=directory
+    sudo: yes
+
+  - stat: path=/etc/docker/certs.d/{{docker_registry_host}}/ca.crt
+    sudo: yes
+    register: docker_registry_ca_stat
+
+  - shell: openssl s_client -connect {{docker_registry_host}}:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /etc/docker/certs.d/{{docker_registry_host}}/ca.crt
+    sudo: yes
+    register: docker_registry_ca
+#    when: not docker_registry_ca_stat.stat.exists
+
+#  - file: path=/usr/local/share/ca-certificates/docker-ct state=directory
+
+  - shell: openssl s_client -connect {{docker_registry_host}}:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /usr/local/share/ca-certificates/{{docker_registry_host}}.crt
+    sudo: yes
+    when: ansible_os_family == "Debian"
+
+  - shell: update-ca-certificates
+    sudo: yes
+    when: ansible_os_family == "Debian"
+
+  - shell: openssl s_client -connect {{docker_registry_host}}:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /etc/pki/ca-trust/source/anchors/{{docker_registry_host}}.crt
+    sudo: yes
+    when: ansible_os_family == "RedHat"
+
+  - shell: update-ca-trust
+    sudo: yes
+    when: ansible_os_family == "RedHat"
+
+  - service: name=docker state=restarted
+    sudo: yes
+    when: not docker_registry_ca_stat.stat.exists
+
+  - name: test login to private docker registry
+    shell: docker login --username={{item.name}} --password={{item.password}} --email={{item.email}} {{docker_registry_host}}/ && docker logout
+    sudo: yes
+    with_items: docker_registry_users
+    register: test_docker_registry_login

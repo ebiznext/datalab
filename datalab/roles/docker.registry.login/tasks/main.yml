@@ -1,0 +1,6 @@
+---
+
+  - name: login to private docker registry
+    shell: docker login --username={{docker_registry.username}} --password={{docker_registry.password}} --email={{docker_registry.email}} {{docker_registry.host}}/
+    sudo: yes
+    register: docker_registry_login
