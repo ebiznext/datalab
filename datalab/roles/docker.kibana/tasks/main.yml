@@ -1,0 +1,104 @@
+---
+
+  - name: check kibana docker base image
+    shell: docker pull {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-kibana:{{kibana_version}}
+    sudo: yes
+    ignore_errors: yes
+    register: search_kibana_response
+
+  - file: path=/tmp/kibana state=directory
+    when: search_kibana_response|failed
+
+  - file: path=/tmp/kibana/group_vars state=directory
+    when: search_kibana_response|failed
+
+  - copy: src=group_vars/all dest=/tmp/kibana/group_vars/all
+    when: search_kibana_response|failed
+
+  - copy: src=group_vars/{{env_name}} dest=/tmp/kibana/group_vars/local
+    when: env_name is defined and search_kibana_response|failed
+
+  - file: path=/tmp/kibana/host_vars state=directory
+    when: search_kibana_response|failed
+
+  - copy: src=host_vars/{{inventory_hostname}} dest=/tmp/kibana/host_vars/localhost
+    when: search_kibana_response|failed
+
+  - copy: src=filter_plugins dest=/tmp/kibana/filter_plugins
+    when: search_kibana_response|failed
+
+  - copy: src=modules/{{item}} dest=/tmp/kibana/roles
+    with_items:
+      - proxy
+      - jdk
+      - common
+      - kibana
+    when: search_kibana_response|failed
+
+  - name: copy docker files
+    copy: src={{item}} dest=/tmp/kibana/
+    with_items:
+      - .dockerignore
+      - inventory.ini
+      - site.yml
+    when: search_kibana_response|failed
+
+  - template: src=Dockerfile dest=/tmp/kibana/Dockerfile
+    when: (search_kibana_response|failed)
+
+  - template: src=start.sh dest=/tmp/kibana/start.sh
+    when: (search_kibana_response|failed)
+
+  - name: copy vault file
+    copy: src=.vault_pass.txt dest=/tmp/kibana/
+    when: search_kibana_response|failed
+
+  - name: build kibana base image
+    shell: docker build -t {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-kibana:{{kibana_version}} /tmp/kibana
+    sudo: yes
+    when: search_kibana_response|failed
+
+  - shell: docker push {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-kibana:{{kibana_version}}
+    sudo: yes
+    when: search_kibana_response|failed
+
+  # Configure user and group
+  - name: Create kibana group
+    group: name={{ kibana_group }} gid={{kibana_gid}}
+    sudo: yes
+
+  - name: Create kibana user
+    user: name={{ kibana_user }} group={{ kibana_group }} createhome=no uid={{kibana_uid}}
+    sudo: yes
+
+  # Configure logs
+  - file: path={{kibana_log_dir}} group={{kibana_group}} owner={{kibana_user}} mode=0777 state=directory #FIXME
+    sudo: yes
+
+  - name: ensure kibana is running
+    docker:
+      image: "{{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-kibana:{{kibana_version}}"
+      name: "kibana"
+      command: /start.sh
+      ports:
+        - "{{kibana_config_server_port}}"
+      volumes:
+        - "{{kibana_log_dir}}:{{kibana_log_dir}}:rw"
+      links:
+        - "es:{{elasticsearch_config_http_server_host}}"
+      state: reloaded
+      restart_policy: always
+      privileged: yes
+    sudo: yes
+    register: start_kibana
+
+  - name: inspect kibana container
+    shell: docker inspect kibana
+    sudo: yes
+    register: inspect_kibana_response
+
+  - set_fact: kibana_ip="{{(inspect_kibana_response.stdout|from_json)[0].NetworkSettings.IPAddress}}" kibana_port="{{(inspect_kibana_response.stdout|from_json)[0].NetworkSettings.Ports['5601/tcp'][0].HostPort}}"
+    when: inspect_kibana_response|changed
+
+  - file: path=/tmp/kibana state=absent
+    when: (search_kibana_response|failed or ('master' in group_names))
