@@ -85,7 +85,10 @@
       volumes:
         - "{{kibana_log_dir}}:{{kibana_log_dir}}:rw"
       links:
-        - "es:{{elasticsearch_config_http_server_host}}"
+        - "es:es"
+      env:
+        KIBANA_ES_HOST_NAME: es
+        KIBANA_ES_PORT: "{{elasticsearch_config_http_server_port}}"
       state: reloaded
       restart_policy: always
       privileged: yes

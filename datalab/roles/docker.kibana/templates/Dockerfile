@@ -23,4 +23,6 @@ ADD start.sh /
 RUN chown {{kibana_user}}:{{kibana_group}} /start.sh
 RUN chmod u+x /start.sh
 
+WORKDIR {{kibana_home_directory}}
+
 CMD /start.sh
