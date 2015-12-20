@@ -1,7 +1,7 @@
 ---
 
   - include: proxy_facts.yml
-    when: not proxy_host is defined
+    when: proxy_enabled|bool and not proxy_host is defined
 
   - name: add squid
     include: squid.yml

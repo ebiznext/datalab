@@ -31,6 +31,11 @@
     sudo: yes
     when: (rpm_check.stdout.find('is not installed') != -1) and (docker_centos6|changed or docker_centos7|changed)
 
+  - name: make sure docker-python RPM is not installed
+    yum:
+      name: docker-python
+      state: absent
+
   - name: Install easy_install package
     yum: name={{item}} state=latest
     sudo: yes

@@ -12,7 +12,7 @@ COPY .vault_pass.txt /tmp/
 WORKDIR /tmp
 
 # Run Ansible to configure the Docker image
-RUN /opt/ansible/ansible/bin/ansible-playbook site.yml --vault-password-file .vault_pass.txt -c local -i inventory.ini -e "java_major_version={{java_major_version}} docker=yes proxy_enabled={{__proxy_enabled}} proxy_url={{__proxy_url}}" && \
+RUN /opt/ansible/ansible/bin/ansible-playbook site.yml --vault-password-file .vault_pass.txt -c local -i inventory.ini -e "java_major_version={{java_major_version}}" && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

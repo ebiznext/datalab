@@ -4,38 +4,19 @@
     yum: name={{item}} state=latest
     with_items:
       - docker
-      - docker-python
 
-#  - name: Install easy_install package
-#    yum: name={{item}} state=latest
-#    with_items:
-#      - python-setuptools
+  - name: make sure docker-python RPM is not installed
+    yum:
+      name: docker-python
+      state: absent
 
-#  # We must install pip before we can use the pip module below
-#  - easy_install: name=pip #state=latest required ansible 2.x
-#
-#  # Install latest version when no specific release is set.
-#  - name: Upgrade latest pip, setuptools, and docker-py with pip
-#    pip:
-#      name: "{{ item.name }}"
-#      state: latest
-#    with_items:
-#      - { name: pip, version: "{{ pip_version_pip }}" }
-#      - { name: setuptools, version: "{{ pip_version_setuptools }}" }
-#      - { name: docker-py, version: "{{ pip_version_docker_py }}" }
-#    when: item.version=="latest"
+  - name: Install easy_install package
+    yum: name={{item}} state=latest
+    sudo: yes
+    with_items:
+      - python-setuptools
 
-#  # Install specific version when set in the variables
-#  - name: Install specific pip, setuptools, and docker-py with pip
-#    pip:
-#      name: "{{ item.name }}"
-#      state: present
-#      version: "{{ item.version }}"
-#    with_items:
-#      - { name: pip, version: "{{ pip_version_pip }}" }
-#      - { name: setuptools, version: "{{ pip_version_setuptools }}" }
-#      - { name: docker-py, version: "{{ pip_version_docker_py }}" }
-#    when: item.version!="latest"
+  - include: pip.yml
 
   - name: Enable Docker service on boot
     service: name=docker enabled=yes
