@@ -1,0 +1,25 @@
+---
+
+- name: Install dependencies
+  apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - apt-transport-https
+#FIXME    - linux-image-extra-{{ansible_kernel}}
+  sudo: yes
+
+- name: Install apt key
+  apt_key: keyserver=hkp://p80.pool.sks-keyservers.net:80 validate_certs=no id=58118E89F3A912897C070ADBF76221572C52609D state=present
+  sudo: yes
+
+- file: path=/etc/apt/sources.list.d state=directory
+  sudo: yes
+
+- name: Configure docker repository
+  template: src=ubuntu/docker.list dest=/etc/apt/sources.list.d/
+  sudo: yes
+
+- name: Install docker.io
+  apt: pkg=docker.io state=present force=yes update_cache=yes cache_valid_time=3600
+  with_items:
+    - docker.io
+  sudo: yes

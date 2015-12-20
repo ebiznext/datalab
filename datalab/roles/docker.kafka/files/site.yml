@@ -1,0 +1,11 @@
+---
+
+#########################
+# Docker kafka install  #
+#########################
+
+  - name: Install kafka
+    hosts: local
+    roles:
+      - docker.io
+      - kafka
