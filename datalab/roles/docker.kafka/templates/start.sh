@@ -17,6 +17,6 @@ fi
 
 export KAFKA_LOG_FILE={{kafka_log_dirs}}/kafka-$KAFKA_BROKER_ID.log
 
-sed "s/advertised\.host\.name={{kafka_config_advertised_hostname}}/advertised\.host\.name=$KAFKA_ADVERTISED_HOST_NAME/g;s/advertised\.port={{kafka_config_advertised_port}}/advertised\.port=$KAFKA_ADVERTISED_PORT/g;s/broker\.id={{kafka_config_broker_id}}/broker\.id=$KAFKA_BROKER_ID/g;s/zookeeper\.connect={{kafka_config_zookeepers|join(',')}}/zookeeper\.connect=$KAFKA_ZOOKEEPERS/g" < config/server.properties > config/server-docker.properties
+sed "s/advertised\.host\.name={{kafka_config_advertised_hostname|replace('.', '\\\\.')}}/advertised\.host\.name=$KAFKA_ADVERTISED_HOST_NAME/g;s/advertised\.port={{kafka_config_advertised_port}}/advertised\.port=$KAFKA_ADVERTISED_PORT/g;s/broker\.id={{kafka_config_broker_id}}/broker\.id=$KAFKA_BROKER_ID/g;s/zookeeper\.connect={{kafka_config_zookeepers|join(',')|replace('.', '\\\\.')}}/zookeeper\.connect=$KAFKA_ZOOKEEPERS/g" < config/server.properties > config/server-docker.properties
 
 {{kafka_home_dir}}/bin/kafka-server-start.sh config/server-docker.properties >> $KAFKA_LOG_FILE 2>&1
