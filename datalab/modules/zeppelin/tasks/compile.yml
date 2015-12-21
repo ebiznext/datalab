@@ -1,0 +1,7 @@
+---
+
+- name: Build Zeppelin
+  shell: "mvn clean package {{ zeppelin.build.opts }}"
+  args:
+    chdir: "{{ zeppelin.base_dir }}"
+

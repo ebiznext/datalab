@@ -1,0 +1,49 @@
+---
+
+zeppelin:
+  version: "{{ zeppelin_version }}"
+  git_url: 'https://github.com/apache/incubator-zeppelin'
+  git_branch: 'master'
+  download_dir: "{{ zeppelin_download_directory }}"
+  install_dir: "{{ zeppelin_download_directory }}/incubator-zeppelin"
+  base_dir: "{{ zeppelin_home_directory }}"
+  user: '{{zeppelin_user}}'
+  group: '{{zeppelin_group}}'
+
+  prebuilt:
+#    pull: "{{ zeppelin_download_prebuilt_package }}"
+#    link: "{{ zeppelin_prebuilt_package_url }}"
+
+  build:
+    do: "{{ zeppelin_do_build }}"
+    checkout: "{{ zeppelin_build_checkout }}"
+    opts: "{{ zeppelin_build_opts }}"
+    tarball:
+      package_name: "{{ zeppelin_tarball_package_name }}"
+      file: "{{zeppelin_download_directory}}/{{zeppelin_tarball_file}}"
+      url: "{{zeppelin_tarball_url}}"
+    git:
+      url: "{{zeppelin_git_url}}"
+      branch: "{{zeppelin_git_branch}}"
+
+  service:
+    server_port: "{{ zeppelin_service_server_port }}"
+    server_addr: "{{ zeppelin_service_server_addr }}"
+    action: "{{ zeppelin_service_action }}"
+
+  dependencies: "{{zeppelin_dependencies}}"
+
+  depends:
+    apt:
+      - git
+      - curl
+      - libfontconfig1-dev
+    yum:
+      - git
+      - curl
+      - fontconfig-devel
+    npm:
+      - grunt-cli
+
+  mesos:
+    master: "{{zeppelin_mesos_master}}"

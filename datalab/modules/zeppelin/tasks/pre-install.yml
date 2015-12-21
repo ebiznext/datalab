@@ -1,0 +1,18 @@
+---
+
+- name: ensure base dir exists
+  file: path="{{ zeppelin.install_dir }}" state=directory owner="{{ ansible_ssh_user }}" group="{{ ansible_ssh_user }}"
+
+- name: ensure zeppelin group exist
+  group: name={{zeppelin.group}}
+
+- name: ensure zeppelin user exist
+  user: name={{zeppelin.user}} group={{zeppelin.group}}
+
+- name: install from pre-built packaged
+  include: install_from_prebuilt.yml
+  when: not zeppelin.build.do|bool
+
+- name: install from source
+  include: install_from_source.yml
+  when: zeppelin.build.do|bool

@@ -1,0 +1,45 @@
+---
+
+- name: Install Debian dependencies
+  apt: pkg={{ item }} state=present update_cache=yes cache_valid_time=3600
+  with_items: zeppelin.depends.apt
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+- name: Install RedHat dependencies
+  yum: pkg={{ item }} state=present update_cache=yes
+  with_items: zeppelin.depends.yum
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: Check nodejs PPA repo for Debian
+  stat: path="/etc/apt/sources.list.d/nodesource.list"
+  register: nodejs_ppa
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+- name: Add nodejs PPA repo for Debian
+  shell: curl {{curl_proxy_args}} -sL https://deb.nodesource.com/setup | sudo bash -
+  sudo: yes
+  when: ansible_os_family == 'Debian' and nodejs_ppa.stat.exists == false
+
+- name: Add nodejs dependencies for RedHat
+  shell: curl {{curl_proxy_args}} --silent --location https://rpm.nodesource.com/setup | bash -
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: Install nodejs for Debian
+  apt: pkg=nodejs state=present
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+- name: Install nodejs for RedHat
+  yum: pkg=nodejs state=present
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: Install nodejs packages
+  shell: "npm install -g {{ item }}"
+  with_items: zeppelin.depends.npm
+  sudo: yes
+  when: ansible_os_family == 'Debian'
