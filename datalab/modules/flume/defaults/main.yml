@@ -3,8 +3,8 @@
 apache_mirror: "{{__apache_mirror}}"
 
 flume_version: 1.6.0
-flume_download_dir: "/tmp"
-flume_home_dir: "/usr/local/flume"
+flume_download_dir: /tmp
+flume_home_dir: /usr/local/flume
 flume_package_name: "apache-flume-{{ flume_version }}-bin"
 flume_download_file: "{{flume_package_name}}.tar.gz"
 flume_download_package_url: "{{apache_mirror}}flume/{{flume_version}}/{{flume_download_file}}"

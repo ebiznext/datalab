@@ -4,8 +4,8 @@ apache_mirror: "{{__apache_mirror}}"
 
 kafka_version: 0.9.0.0
 scala_version: 2.11
-kafka_download_dir: "/tmp"
-kafka_home_dir: "/usr/local/kafka"
+kafka_download_dir: /tmp
+kafka_home_dir: /usr/local/kafka
 kafka_package_name: "kafka_{{scala_version}}-{{ kafka_version }}"
 kafka_download_file: "{{kafka_package_name}}.tgz"
 kafka_download_package_url: "{{apache_mirror}}kafka/{{kafka_version}}/{{kafka_download_file}}"
