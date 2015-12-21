@@ -16,13 +16,13 @@ __proxy_server: "http://{{__proxy_host}}:{{__proxy_port}}"
 #
 # mirror
 #
-__apache_mirror: "http://www.us.apache.org/dist/"
+__apache_mirror: http://www.us.apache.org/dist/
 
 #
 # python
 #
-__pip_version_six: "1.4"
-__pip_version_docker_py: "1.1.0"
+__pip_version_six: 1.4
+__pip_version_docker_py: 1.1.0
 
 #
 # java
@@ -32,20 +32,20 @@ __java_major_version: "8" # 6, 7 or 8
 #
 # Elasticsearch
 #
-elasticsearch_version: "1.5.2"
-elasticsearch_user: "elasticsearch"
-elasticsearch_group: "elasticsearch"
+elasticsearch_version: 1.5.2
+elasticsearch_user: elasticsearch
+elasticsearch_group: elasticsearch
 elasticsearch_gid: 2001
 elasticsearch_uid: 2001
-elasticsearch_home_directory: "/usr/share/elasticsearch"
+elasticsearch_home_directory: /usr/share/elasticsearch
 elasticsearch_config_directory: "{{elasticsearch_home_directory}}/config"
-elasticsearch_log_directory: "/var/log/elasticsearch"
-elasticsearch_data_directory: "/var/lib/elasticsearch"
+elasticsearch_log_directory: /var/log/elasticsearch
+elasticsearch_data_directory: /var/lib/elasticsearch
 elasticsearch_config_network_bind_host: "0.0.0.0"
 elasticsearch_config_http_server_host: localhost
 elasticsearch_config_http_server_port: 9200
 elasticsearch_config_tcp_transport_port: 9300
-elasticsearch_config_cluster_name: 'elasticsearch'
+elasticsearch_config_cluster_name: elasticsearch
 elasticsearch_plugins:
   - { name: 'head', url: 'mobz/elasticsearch-head', file: 'head.zip' }
   - { name: 'analysis-icu', url: 'https://github.com/elastic/elasticsearch-analysis-icu/archive/v2.5.0.tar.gz', file: 'analysis-icu-2.5.0.zip' } # when using another version of es, you should update the url and remove the file entry
@@ -57,21 +57,21 @@ kibana_user: kibana
 kibana_group: kibana
 kibana_gid: 3000
 kibana_uid: 3000
-kibana_version: "4.1.2"
+kibana_version: 4.1.2
 kibana_config_server_addr: "0.0.0.0"
 kibana_config_server_port: 5601
 kibana_elasticsearch_addr: "http://{{elasticsearch_config_http_server_host}}:{{elasticsearch_config_http_server_port}}"
 kibana_elasticsearch_index: ".kibana"
-kibana_home_directory: "/usr/local/kibana"
-kibana_log_dir: "/var/log/kibana"
+kibana_home_directory: /usr/local/kibana
+kibana_log_dir: /var/log/kibana
 kibana_log_file: "{{ kibana_log_dir }}/kibana.log"
 
 #
 # zookeeper
 #
 zookeeper_version: 3.4.7
-zookeeper_download_dir: "/tmp"
-zookeeper_home_dir: "/usr/local/zookeeper"
+zookeeper_download_dir: /tmp
+zookeeper_home_dir: /usr/local/zookeeper
 zookeeper_package_name: "zookeeper-{{ zookeeper_version }}"
 zookeeper_config_ticktime: 2000
 zookeeper_config_initLimit: 10
@@ -99,8 +99,28 @@ kafka_config_zookeepers:
 # Flume
 #
 flume_version: 1.6.0
-flume_download_dir: "/tmp"
-flume_home_dir: "/usr/local/flume"
+flume_download_dir: /tmp
+flume_home_dir: /usr/local/flume
 flume_package_name: "apache-flume-{{ flume_version }}-bin"
 flume_config_dir: "{{flume_home_dir}}/conf"
 flume_log_dir: /var/log/flume
+
+#
+# hadoop
+#
+__hadoop_version: 2.6.0
+
+#
+# spark
+#
+spark_user: spark
+spark_group: spark
+spark_version: 1.4.1
+spark_home_directory: /usr/local/spark
+spark_download_directory: /tmp
+spark_do_build: no
+spark_build_checkout: tarball
+spark_build_sbt_launch_version: 0.13.7
+spark_build_options: ""
+spark_git_branch: "v{{ spark.version }}"
+spark_mesos_native_java_library: /usr/local/lib/libmesos.so
