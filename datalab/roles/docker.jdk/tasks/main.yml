@@ -1,0 +1,55 @@
+---
+
+  - name: check jdk docker base image
+    shell: docker pull {{docker_registry_host}}/ubuntu14.04-jdk:{{jdk_version}} #7,8...
+    sudo: yes
+    ignore_errors: yes
+    register: search_jdk_response
+
+  - file: path=/tmp/jdk state=directory
+    when: search_jdk_response|failed
+
+  - file: path=/tmp/jdk/group_vars state=directory
+    when: search_jdk_response|failed
+
+  - copy: src=group_vars/all dest=/tmp/jdk/group_vars/all
+    when: search_jdk_response|failed
+
+  - copy: src=group_vars/{{env_name}} dest=/tmp/jdk/group_vars/local
+    when: env_name is defined and search_jdk_response|failed
+
+  - file: path=/tmp/jdk/host_vars state=directory
+    when: search_jdk_response|failed
+
+  - copy: src=host_vars/{{inventory_hostname}} dest=/tmp/jdk/host_vars/localhost
+    when: search_jdk_response|failed
+
+  - copy: src=modules/{{item}} dest=/tmp/jdk/roles
+    with_items:
+      - proxy
+      - jdk
+    when: search_jdk_response|failed
+
+  - name: copy docker files
+    copy: src={{item}} dest=/tmp/jdk/
+    with_items:
+      - .dockerignore
+      - inventory.ini
+      - site.yml
+    when: search_jdk_response|failed
+
+  - template: src=Dockerfile dest=/tmp/jdk/Dockerfile
+    when: (search_jdk_response|failed)
+
+  - name: copy vault file
+    copy: src=.vault_pass.txt dest=/tmp/jdk/
+    when: search_jdk_response|failed
+
+  - name: build jdk base image
+    shell: docker build -t {{docker_registry_host}}/ubuntu14.04-jdk:{{jdk_version}} /tmp/jdk
+    sudo: yes
+    when: search_jdk_response|failed
+
+  - shell: docker push {{docker_registry_host}}/ubuntu14.04-jdk:{{jdk_version}}
+    sudo: yes
+    when: search_jdk_response|failed

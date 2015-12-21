@@ -40,10 +40,6 @@
       - python-dev
       - python-setuptools #easy_install
 
-  # We must install pip before we can use the pip module below
-  - easy_install: name=pip #state=latest required ansible 2.x
-    sudo: yes
-
   - include: pip.yml
 
   - name: Check if /etc/updatedb.conf exists

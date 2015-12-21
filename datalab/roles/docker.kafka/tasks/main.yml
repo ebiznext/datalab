@@ -1,0 +1,98 @@
+---
+
+  - name: check kafka docker base image
+    shell: docker pull {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-kafka:{{kafka_version}}
+    sudo: yes
+    ignore_errors: yes
+    register: search_kafka_response
+
+  - file: path=/tmp/kafka state=directory
+    when: search_kafka_response|failed
+
+  - file: path=/tmp/kafka/group_vars state=directory
+    when: search_kafka_response|failed
+
+  - copy: src=group_vars/all dest=/tmp/kafka/group_vars/all
+    when: search_kafka_response|failed
+
+  - copy: src=group_vars/{{env_name}} dest=/tmp/kafka/group_vars/local
+    when: env_name is defined and search_kafka_response|failed
+
+  - file: path=/tmp/kafka/host_vars state=directory
+    when: search_kafka_response|failed
+
+  - copy: src=host_vars/{{inventory_hostname}} dest=/tmp/kafka/host_vars/localhost
+    when: search_kafka_response|failed
+
+  - copy: src=filter_plugins dest=/tmp/kafka/filter_plugins
+    when: search_kafka_response|failed
+
+  - copy: src=roles/{{item}} dest=/tmp/kafka/roles
+    with_items:
+      - docker.io
+    when: search_kafka_response|failed
+
+  - copy: src=modules/{{item}} dest=/tmp/kafka/roles
+    with_items:
+      - proxy
+      - jdk
+      - mirror
+      - kafka
+    when: search_kafka_response|failed
+
+  - name: copy docker files
+    copy: src={{item}} dest=/tmp/kafka/
+    with_items:
+      - .dockerignore
+      - inventory.ini
+      - site.yml
+    when: search_kafka_response|failed
+
+  - template: src=Dockerfile dest=/tmp/kafka/Dockerfile
+    when: (search_kafka_response|failed)
+
+  - template: src=start.sh dest=/tmp/kafka/start.sh
+    when: (search_kafka_response|failed)
+
+  - name: copy vault file
+    copy: src=.vault_pass.txt dest=/tmp/kafka/
+    when: search_kafka_response|failed
+
+  - name: build kafka base image
+    shell: docker build -t {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-kafka:{{kafka_version}} /tmp/kafka
+    sudo: yes
+    when: search_kafka_response|failed
+
+  - shell: docker push {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-kafka:{{kafka_version}}
+    sudo: yes
+    when: search_kafka_response|failed
+
+  # Configure logs
+  - file: path={{kafka_log_dirs}} mode=0755 state=directory
+    sudo: yes
+
+  - name: ensure kafka is running
+    docker:
+      image: "{{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-kafka:{{kafka_version}}"
+      name: "kafka_{{(item|int) - 1}}"
+      command: /start.sh
+      ports:
+        - "{{kafka_config_port}}"
+      links:
+        - zk:zk1
+      volumes:
+        - "{{kafka_log_dirs}}:{{kafka_log_dirs}}:rw"
+        - "/var/run/docker.sock:/var/run/docker.sock"
+      env:
+        KAFKA_ADVERTISED_HOST_NAME: "{{ hostvars[inventory_hostname]['ansible_eth1']['ipv4']['address'] }}"
+        KAFKA_BROKER_ID: "{{(item|int) - 1}}"
+        KAFKA_ZOOKEEPERS: "zk1:{{zookeeper_config_clientPort}}"
+      state: reloaded
+      restart_policy: "no"
+      privileged: yes
+    with_sequence: count={{kafka_cluster_size}}
+    sudo: yes
+    register: start_kafka
+
+  - file: path=/tmp/kafka state=absent
+    when: (search_kafka_response|failed or ('master' in group_names))

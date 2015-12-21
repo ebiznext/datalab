@@ -1,0 +1,96 @@
+---
+
+  - name: check zk docker base image
+    shell: docker pull {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-zk:{{zookeeper_version}}
+    sudo: yes
+    ignore_errors: yes
+    register: search_zk_response
+
+  - file: path=/tmp/zk state=directory
+    when: search_zk_response|failed
+
+  - file: path=/tmp/zk/group_vars state=directory
+    when: search_zk_response|failed
+
+  - copy: src=group_vars/all dest=/tmp/zk/group_vars/all
+    when: search_zk_response|failed
+
+  - copy: src=group_vars/{{env_name}} dest=/tmp/zk/group_vars/local
+    when: env_name is defined and search_zk_response|failed
+
+  - file: path=/tmp/zk/host_vars state=directory
+    when: search_zk_response|failed
+
+  - copy: src=host_vars/{{inventory_hostname}} dest=/tmp/zk/host_vars/localhost
+    when: search_zk_response|failed
+
+  - copy: src=filter_plugins dest=/tmp/zk/filter_plugins
+    when: search_zk_response|failed
+
+  - copy: src=modules/{{item}} dest=/tmp/zk/roles
+    with_items:
+      - proxy
+      - jdk
+      - mirror
+      - zookeeper
+    when: search_zk_response|failed
+
+  - name: copy docker files
+    copy: src={{item}} dest=/tmp/zk/
+    with_items:
+      - .dockerignore
+      - inventory.ini
+      - site.yml
+    when: search_zk_response|failed
+
+  - template: src=Dockerfile dest=/tmp/zk/Dockerfile
+    when: (search_zk_response|failed)
+
+  - template: src=start.sh dest=/tmp/zk/start.sh
+    when: (search_zk_response|failed)
+
+  - name: copy vault file
+    copy: src=.vault_pass.txt dest=/tmp/zk/
+    when: search_zk_response|failed
+
+  - name: build zk base image
+    shell: docker build -t {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-zk:{{zookeeper_version}} /tmp/zk
+    sudo: yes
+    when: search_zk_response|failed
+
+  - shell: docker push {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-zk:{{zookeeper_version}}
+    sudo: yes
+    when: search_zk_response|failed
+
+  # Configure data and logs
+  - file: path={{zookeeper_config_dataDir}} mode=0755 state=directory
+    sudo: yes
+  - file: path={{zookeeper_log_dir}} mode=0755 state=directory
+    sudo: yes
+
+  - name: ensure zookeeper is running
+    docker:
+      image: "{{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-zk:{{zookeeper_version}}"
+      name: "zk"
+      command: /start.sh
+      ports:
+        - "{{zookeeper_config_clientPort}}"
+      volumes:
+        - "{{zookeeper_config_dataDir}}:{{zookeeper_config_dataDir}}:rw"
+        - "{{zookeeper_log_dir}}:{{zookeeper_log_dir}}:rw"
+      state: reloaded
+      restart_policy: always
+      privileged: yes
+    sudo: yes
+    register: start_zk
+
+  - name: inspect zk container
+    shell: docker inspect zk
+    sudo: yes
+    register: inspect_zk_response
+
+  - set_fact: zk_ip="{{(inspect_zk_response.stdout|from_json)[0].NetworkSettings.IPAddress}}" zk_port="{{(inspect_zk_response.stdout|from_json)[0].NetworkSettings.Ports['2181/tcp'][0].HostPort}}"
+    when: inspect_zk_response|changed
+
+  - file: path=/tmp/zk state=absent
+    when: (search_zk_response|failed or ('master' in group_names))

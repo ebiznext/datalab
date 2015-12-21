@@ -1,0 +1,10 @@
+---
+
+#########################
+# Docker kibana install #
+#########################
+
+  - name: Install kibana
+    hosts: local
+    roles:
+      - kibana

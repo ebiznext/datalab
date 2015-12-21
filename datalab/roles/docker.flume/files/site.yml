@@ -1,0 +1,11 @@
+---
+
+#########################
+# Docker flume install  #
+#########################
+
+  - name: Install flume
+    hosts: local
+    roles:
+#      - docker.io
+      - flume

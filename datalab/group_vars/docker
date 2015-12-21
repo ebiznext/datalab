@@ -5,4 +5,6 @@ docker_registry_users:
     password: changeit
     email: stephane.manciot@ebiznext.com
 
-__interface: "{{ hostvars[inventory_hostname]['ansible_eth0']['ipv4']['address'] }}"
+__interface: "{{ hostvars[inventory_hostname]['ansible_eth1']['ipv4']['address'] }}"
+
+kafka_cluster_size: 1

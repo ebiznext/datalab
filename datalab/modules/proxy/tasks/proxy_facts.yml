@@ -1,0 +1,11 @@
+---
+
+- name: gather facts from proxy server
+  setup:
+  delegate_to: "{{groups.proxy | first}}"
+  register: registry_facts
+
+- set_fact:
+    proxy_host: "{{registry_facts.ansible_facts.ansible_eth1.ipv4.address}}"
+    __proxy_url: "http://{{proxy_login}}:{{proxy_password}}@{{registry_facts.ansible_facts.ansible_eth1.ipv4.address}}:{{proxy_port}}"
+    __proxy_server: "http://{{registry_facts.ansible_facts.ansible_eth1.ipv4.address}}:{{proxy_port}}"

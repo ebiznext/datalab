@@ -1,0 +1,10 @@
+---
+
+#########################
+# Docker es install     #
+#########################
+
+  - name: Install es
+    hosts: local
+    roles:
+      - es

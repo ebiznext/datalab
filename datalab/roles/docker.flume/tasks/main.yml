@@ -1,0 +1,102 @@
+---
+
+  - name: check flume docker base image
+    shell: docker pull {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-flume:{{flume_version}}
+    sudo: yes
+    ignore_errors: yes
+    register: search_flume_response
+
+  - file: path=/tmp/flume state=directory
+    when: search_flume_response|failed
+
+  - file: path=/tmp/flume/group_vars state=directory
+    when: search_flume_response|failed
+
+  - copy: src=group_vars/all dest=/tmp/flume/group_vars/all
+    when: search_flume_response|failed
+
+  - copy: src=group_vars/{{env_name}} dest=/tmp/flume/group_vars/local
+    when: env_name is defined and search_flume_response|failed
+
+  - file: path=/tmp/flume/host_vars state=directory
+    when: search_flume_response|failed
+
+  - copy: src=host_vars/{{inventory_hostname}} dest=/tmp/flume/host_vars/localhost
+    when: search_flume_response|failed
+
+  - copy: src=filter_plugins dest=/tmp/flume/filter_plugins
+    when: search_flume_response|failed
+
+#  - copy: src=roles/{{item}} dest=/tmp/flume/roles
+#    with_items:
+#      - docker.io
+#    when: search_flume_response|failed
+
+  - copy: src=modules/{{item}} dest=/tmp/flume/roles
+    with_items:
+      - proxy
+      - jdk
+      - mirror
+      - flume
+    when: search_flume_response|failed
+
+  - name: copy docker files
+    copy: src={{item}} dest=/tmp/flume/
+    with_items:
+      - .dockerignore
+      - inventory.ini
+      - site.yml
+    when: search_flume_response|failed
+
+  - template: src=Dockerfile dest=/tmp/flume/Dockerfile
+    when: (search_flume_response|failed)
+
+  - template: src=start.sh dest=/tmp/flume/start.sh
+    when: (search_flume_response|failed)
+
+  - name: copy vault file
+    copy: src=.vault_pass.txt dest=/tmp/flume/
+    when: search_flume_response|failed
+
+  - name: build flume base image
+    shell: docker build -t {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-flume:{{flume_version}} /tmp/flume
+    sudo: yes
+    when: search_flume_response|failed
+
+  - shell: docker push {{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-flume:{{flume_version}}
+    sudo: yes
+    when: search_flume_response|failed
+
+  # Configure flume
+  - file: path={{flume_log_dir}} mode=0755 state=directory
+    sudo: yes
+
+  - file: path={{flume_config_dir}} mode=0755 state=directory
+    sudo: yes
+
+  - name: copy log4j file
+    copy: src=log4j.properties dest={{flume_config_dir}}/
+
+  - name: copy flume configuration file
+    template: src=flume-conf.properties dest={{flume_config_dir}}/
+
+  - name: ensure flume is running
+    docker:
+      image: "{{docker_registry_host}}/ubuntu14.04-jdk{{java_major_version}}-flume:{{flume_version}}"
+      name: "flume"
+      command: /start.sh
+      links:
+        - zk:zk1
+        - es:es
+      volumes:
+        - "{{flume_log_dir}}:{{flume_log_dir}}:rw"
+        - "{{flume_config_dir}}:{{flume_config_dir}}:ro"
+#        - "/var/run/docker.sock:/var/run/docker.sock"
+      state: reloaded
+      restart_policy: always
+      privileged: yes
+    sudo: yes
+    register: start_flume
+
+  - file: path=/tmp/flume state=absent
+    when: (search_flume_response|failed or ('master' in group_names))

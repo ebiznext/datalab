@@ -13,11 +13,6 @@ __no_proxy: "localhost,127.0.0.1"
 __proxy_url: "http://{{__proxy_login}}:{{__proxy_password}}@{{__proxy_host}}:{{__proxy_port}}"
 __proxy_server: "http://{{__proxy_host}}:{{__proxy_port}}"
 
-__proxy_env:
-  http_proxy: "{{__proxy_url}}"
-  https_proxy: "{{__proxy_url}}"
-  no_proxy: "{{__no_proxy}}"
-
 #
 # python
 #
@@ -42,7 +37,7 @@ elasticsearch_config_directory: "{{elasticsearch_home_directory}}/config"
 elasticsearch_log_directory: "/var/log/elasticsearch"
 elasticsearch_data_directory: "/var/lib/elasticsearch"
 elasticsearch_config_network_bind_host: "0.0.0.0"
-elasticsearch_config_http_server_host: es
+elasticsearch_config_http_server_host: localhost
 elasticsearch_config_http_server_port: 9200
 elasticsearch_config_tcp_transport_port: 9300
 elasticsearch_config_cluster_name: 'elasticsearch'

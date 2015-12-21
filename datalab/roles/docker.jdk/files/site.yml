@@ -1,0 +1,10 @@
+---
+
+#########################
+# Docker jdk install    #
+#########################
+
+  - name: Install jdk
+    hosts: local
+    roles:
+      - jdk
