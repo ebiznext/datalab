@@ -1,0 +1,10 @@
+---
+
+dependencies:
+  - { role: mirror }
+
+galaxy_info:
+  author: "Stéphane Manciot, Ahmed Bessifi"
+  company: EBIZNEXT
+  license: MIT
+  min_ansible_version: 1.9

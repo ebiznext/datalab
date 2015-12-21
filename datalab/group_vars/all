@@ -14,6 +14,11 @@ __proxy_url: "http://{{__proxy_login}}:{{__proxy_password}}@{{__proxy_host}}:{{_
 __proxy_server: "http://{{__proxy_host}}:{{__proxy_port}}"
 
 #
+# mirror
+#
+__apache_mirror: "http://www.us.apache.org/dist/"
+
+#
 # python
 #
 __pip_version_six: "1.4"

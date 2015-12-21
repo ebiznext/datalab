@@ -1,3 +1,3 @@
 ---
 
-default_apache_mirror: "http://www.us.apache.org/dist/"
+default_apache_mirror: "{{__apache_mirror}}"
