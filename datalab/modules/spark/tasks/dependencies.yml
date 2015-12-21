@@ -1,0 +1,16 @@
+---
+
+# Install Debian dependencies
+- name: install spark dependencies for Debian OS family
+  apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
+  with_items: spark.depends.apt
+  sudo: yes
+  when: ansible_os_family == 'Debian' and spark.build.do|bool
+
+# Install Redhat dependencies
+- name: install spark dependencies for RedHat OS family
+  yum: name={{item}} state=present update_cache=yes
+  with_items: spark.depends.yum
+  sudo: yes
+  when: ansible_os_family == 'RedHat' and spark.build.do|bool
+

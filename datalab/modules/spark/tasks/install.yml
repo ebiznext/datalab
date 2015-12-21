@@ -1,0 +1,23 @@
+---
+
+- name: Create symlink for config dir
+  file: src="{{ spark.conf_dir }}"
+        dest="{{ spark.config.dirname }}"
+        state=link
+        force=yes
+
+- name: copy configuration files
+  template: src={{ item }}.j2 dest={{spark.config.dirname}}/{{item}} owner={{spark.user}}
+  with_items:
+     - spark-defaults.conf
+     - spark-env.sh
+
+- name:  install spark binaries
+  template: src=spark-shim.j2
+            dest="{{ spark.bin_dir }}/{{ item }}.sh"
+            mode=0755
+  with_items:
+    - spark-class
+    - spark-shell
+    - spark-sql
+    - spark-submit

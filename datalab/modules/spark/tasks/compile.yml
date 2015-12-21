@@ -1,0 +1,13 @@
+---
+
+- file: path={{ spark.base_dir }}/build state=directory
+
+- name: download sbt-launch
+  shell: "wget -q -O {{ spark.base_dir }}/build/sbt-launch-{{ spark.build.sbt_launch.version }}.jar {{spark.build.sbt_launch.url}}"
+
+- name: building spark (this takes a while)
+  sudo_user: "{{ spark.user }}"
+  shell: "sbt/sbt assembly {{ spark.build.options }}"
+  args:
+    chdir: "{{ spark.base_dir }}"
+  environment: spark.build.environment

@@ -1,0 +1,10 @@
+---
+
+- name: retreive spark from tarball
+  include: install_from_tarball.yml
+  when: spark.build.checkout == 'tarball'
+
+- name: retreive spark from git
+  include: install_from_git.yml
+  when: spark.build.checkout == 'git'
+

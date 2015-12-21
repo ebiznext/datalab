@@ -1,0 +1,46 @@
+---
+
+spark:
+  user: "{{spark_user}}"
+  group: "{{spark_group}}"
+  version: "{{ spark_version }}"
+  download_dir: "{{ spark_download_directory }}"
+  install_dir: "{{ spark_download_directory }}/spark"
+  base_dir: "{{ spark_home_directory }}"
+  conf_dir: "{{ spark_home_directory }}/conf"
+  log_dir: "{{ spark_home_directory }}/log"
+  run_dir: "{{ spark_home_directory }}/run"
+  bin_dir: "{{ spark_home_directory }}/bin"
+
+  depends:
+    apt:
+      - git
+    yum:
+      - git
+
+  prebuilt:
+    package_name: "{{ spark_prebuilt_package_name }}"
+    file: "{{spark_download_directory}}/{{spark_prebuilt_file}}"
+    url: "{{spark_prebuilt_url}}"
+
+  build:
+    do: "{{ spark_do_build }}"
+    options: "{{ spark_build_options }}"
+    checkout: "{{ spark_build_checkout }}"
+    git_repository: "https://github.com/apache/spark.git"
+    sbt_launch:
+      version: "{{spark_build_sbt_launch_version}}"
+      url: "{{spark_build_sbt_launch_url}}"
+    tarball:
+      package_name: "{{ spark_tarball_package_name }}"
+      file: "{{spark_download_directory}}/{{spark_tarball_file}}"
+      url: "{{spark_tarball_url}}"
+    environment: {}
+
+  config:
+    dirname: "{{ spark_home_directory }}/etc"
+    defaults: {}
+    env_vars: {}
+
+  mesos:
+    native_java_library: "{{spark_mesos_native_java_library}}"

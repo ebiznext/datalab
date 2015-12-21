@@ -1,0 +1,14 @@
+---
+
+- name: install dependencies
+  include: dependencies.yml
+
+- name: pre-install actions
+  include: pre-install.yml
+
+- name: compile spark
+  include: compile.yml
+  when: spark.build.do|bool
+
+- name: install spark
+  include: install.yml
