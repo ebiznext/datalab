@@ -5,11 +5,33 @@
         shell=/bin/false
         state=present
 
-- name: Download Maven
-  get_url:
-    url={{ maven.mirror }}/{{ maven.tarball_name }}
-    dest=/tmp/{{ maven.tarball_name }}
-    mode=0644
+- file: path="{{ maven.download_dir }}" state=directory
+
+- stat: path={{maven.file}}
+  register: maven_file
+
+- name: get maven prebuilt asc
+  shell: wget -q -O {{maven.file}}.asc {{maven.url}}.asc
+  when: maven_file.stat.exists
+
+- name: get maven keys
+  shell: wget -q -O {{ maven.install_dir }}/KEYS {{apache_mirror}}maven/KEYS
+  register: maven_keys
+  when: maven_file.stat.exists
+
+- name: import maven keys
+  shell: gpg --import {{ maven.install_dir }}/KEYS
+  when: maven_file.stat.exists and maven_keys|success
+
+- name: verify maven prebuilt file
+  shell: gpg --verify {{maven.file}}.asc {{maven.file}}
+  register: maven_file_check
+  when: maven_file.stat.exists
+
+# Download Maven
+- name: download maven
+  shell: "wget -q -O {{maven.file}} {{maven.url}}"
+  when: not maven_file.stat.exists or (not maven_file_check|success)
 
 - name: Install Maven installation directory
   file:
@@ -18,10 +40,9 @@
     dest={{ maven.install_dir }}
 
 - name: Install Maven
-  unarchive:
-    src=/tmp/{{ maven.tarball_name }}
-    dest={{ maven.install_dir }}
-    copy=no
+  unarchive: src="{{maven.file}}"
+             dest="{{maven.install_dir}}"
+             copy=no
 
 - name: Install Maven bin directory
   file:

@@ -1,5 +1,7 @@
 ---
 
+apache_mirror: "{{__apache_mirror}}"
+
 flume_version: 1.6.0
 flume_download_dir: "/tmp"
 flume_home_dir: "/usr/local/flume"

@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+
+# Default system properties included when running spark-submit.
+# This is useful for setting default environmental settings.
+
+{% for key, value in spark.config.defaults.items() %}
+"{{key}}"  "{{value}}"
+{% endfor %}

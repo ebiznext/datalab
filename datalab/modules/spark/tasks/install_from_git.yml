@@ -1,0 +1,10 @@
+---
+
+- file: path={{spark.base_dir}} state=absent
+
+- name: retreive spark from git
+  git: repo={{ spark.build.git_repository }}
+       dest={{ spark.base_dir }}
+       version="v{{ spark.version }}" update=yes depth=1
+  when: spark.build.checkout == 'git'
+

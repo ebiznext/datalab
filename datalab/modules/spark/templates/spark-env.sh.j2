@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# {{ ansible_managed }}
+# This file is sourced when running various Spark programs.
+
+export SPARK_LOG_DIR="{{ spark.log_dir }}"
+export SPARK_PID_DIR="{{ spark.run_dir }}"
+export MESOS_NATIVE_JAVA_LIBRARY="{{ spark.mesos.native_java_library }}"
+
+{% for key, value in spark.config.env_vars.items() %}
+export {{ key }}="{{ value }}"
+{% endfor %}

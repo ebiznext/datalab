@@ -1,0 +1,37 @@
+---
+
+- stat: path={{spark.build.tarball.file}}
+  register: spark_file
+
+- name: get spark tarball asc
+  shell: wget -q -O {{spark.build.tarball.file}}.asc {{spark.build.tarball.url}}.asc
+  when: spark_file.stat.exists
+
+- name: get spark keys
+  shell: wget -q -O {{ spark.install_dir }}/KEYS {{apache_mirror}}spark/KEYS
+  register: spark_keys
+  when: spark_file.stat.exists
+
+- name: import spark keys
+  shell: gpg --import {{ spark.install_dir }}/KEYS
+  when: spark_file.stat.exists and spark_keys|success
+
+- name: verify spark tarball file
+  shell: gpg --verify {{spark.build.tarball.file}}.asc {{spark.build.tarball.file}}
+  register: spark_file_check
+  when: spark_file.stat.exists
+
+# Download tarball
+- name: download spark tarball package
+  shell: "wget -q -O {{spark.build.tarball.file}} {{spark.build.tarball.url}}"
+  when: not spark_file.stat.exists or (not spark_file_check|success)
+
+- name: extract spark
+  unarchive: src="{{ spark.build.tarball.file }}"
+             dest="{{ spark.install_dir }}"
+             copy=no
+
+- file: path={{ spark.base_dir }} state=absent
+
+- name: rename spark base dir
+  shell: "mv {{ spark.install_dir }}/{{ spark.build.tarball.package_name }} {{ spark.base_dir }}"

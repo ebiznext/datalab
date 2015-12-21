@@ -3,12 +3,14 @@
 ## Maven
 maven:
   version: "{{ maven_version }}"
-  mirror: "http://archive.apache.org/dist/maven/maven-{{ maven_version|regex_replace('\\..*', '') }}/{{ maven_version }}/binaries"
-  tarball_name: "apache-maven-{{ maven_version }}-bin.tar.gz"
   bin_path: '/usr/bin'
-  install_dir: '/usr/share/maven'
-  lib_dir: '/var/lib/maven'
+  download_dir: '{{maven_download_directory}}'
+  install_dir: '{{maven_install_directory}}'
+  lib_dir: '{{maven_lib_directory}}'
   user: 'maven'
+  package_name: "{{ maven_package_name }}"
+  file: "{{maven_download_directory}}/{{maven_package_file}}"
+  url: "{{maven_url}}"
 
 ## SBT
 sbt:

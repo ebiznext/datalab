@@ -1,0 +1,25 @@
+---
+
+- name: ensure base dir exists
+  file: path="{{ spark.install_dir }}" state=directory owner="{{ ansible_ssh_user }}" group="{{ ansible_ssh_user }}"
+
+- name: ensure spark group exist
+  group: name={{spark.group}}
+
+- name: ensure spark user exist
+  user: name={{spark.user}} group={{spark.group}}
+
+- name: install from pre-built packaged
+  include: install_from_prebuilt.yml
+  when: not spark.build.do|bool
+
+- name: install from source
+  include: install_from_source.yml
+  when: spark.build.do|bool
+
+- name: ensure spark dirs exist
+  file: state=directory path={{ item }} owner={{ spark.user }} group={{ spark.group }} recurse=yes
+  with_items:
+    - "{{ spark.base_dir }}"
+    - "{{ spark.log_dir }}"
+    - "{{ spark.run_dir }}"
