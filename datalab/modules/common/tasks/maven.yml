@@ -63,11 +63,11 @@
     dest="{{ maven.lib_dir }}"
     owner="{{ maven.user }}"
     group="{{ maven.user }}"
-    mode=0755
+    mode=0777
 
 - name: Deploy default maven settings.xml
   template:
     src=maven_settings.xml.j2
-    dest="{{ maven.lib_dir }}/settings.xml"
+    dest="{{ maven.install_dir }}/apache-maven-{{ maven.version }}/conf/settings.xml"
     owner="{{ maven.user }}"
     group="{{ maven.user }}"
