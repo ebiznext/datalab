@@ -19,3 +19,8 @@
       - {role: docker.registry}
       - {role: docker.registry.login}
 
+  - name: Build and launch datalab docker images
+    hosts: docker
+    remote_user: $user
+    roles:
+      - {role: docker.flume}
