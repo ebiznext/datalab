@@ -1,0 +1,11 @@
+---
+
+- file: path={{mesos.base_dir}} state=absent
+
+- name: retreive mesos from git
+  git: repo={{ mesos.build.git.url }}
+       version={{mesos.build.git.branch}}
+       dest={{ mesos.base_dir }}
+       update=yes
+       depth=1
+

@@ -1,0 +1,11 @@
+---
+
+dependencies:
+#  - { role: zookeeper, when: "ansible_os_family == 'RedHat' and mesos.master|bool" }
+  - { role: common, install_maven, when: "mesos.build.do|bool" }
+
+galaxy_info:
+  author: Stephane Manciot
+  description: An Ansible role for installing Apache Mesos.
+  company: Ebiznext.
+  min_ansible_version: 1.9

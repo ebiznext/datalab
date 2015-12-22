@@ -1,0 +1,18 @@
+---
+
+apache_mirror: "{{__apache_mirror}}"
+
+mesos_version: 0.26.0
+mesos_standalone: yes
+mesos_master: "{{ 'master' in group_names or mesos_standalone }}"
+
+mesos_do_build: no
+mesos_build_opts: ""
+mesos_build_checkout: tarball
+mesos_download_directory: /tmp
+mesos_home_directory: /usr/local/mesos
+mesos_tarball_package_name: "mesos-{{ mesos_version }}"
+mesos_tarball_file: "{{mesos_tarball_package_name}}.tar.gz"
+mesos_tarball_url: "{{apache_mirror}}/mesos/{{mesos_version}}/{{mesos_tarball_file}}"
+mesos_git_url: "https://git-wip-us.apache.org/repos/asf/mesos.git"
+mesos_git_branch: "{{ mesos_version }}"

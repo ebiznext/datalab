@@ -79,6 +79,9 @@ zookeeper_config_syncLimit: 5
 zookeeper_config_dataDir: /var/lib/zookeeper
 zookeeper_config_clientPort: 2181
 zookeeper_log_dir: /var/log/zookeeper
+zookeeper_id: 0
+zookeeper_ip: "{{ hostvars[inventory_hostname]['ansible_eth1']['ipv4']['address'] }}"
+zookeepers: []
 
 #
 # kafka
@@ -142,3 +145,10 @@ zeppelin_service_server_addr: "0.0.0.0"
 zeppelin_service_action: stop
 zeppelin_dependencies: yes
 zeppelin_mesos_master: zk://localhost:2181/mesos
+
+#
+# mesos
+#
+mesos_version: 0.26.0
+mesos_standalone: yes
+mesos_master: "{{ 'master' in group_names or mesos_standalone }}"

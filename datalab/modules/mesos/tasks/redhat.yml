@@ -1,0 +1,105 @@
+---
+
+# Setup Repositories
+- name: Add the repository for RedHat / CentOS 6
+  yum:
+    name: http://repos.mesosphere.com/el/6/noarch/RPMS/mesosphere-el-repo-6-2.noarch.rpm
+  when: ansible_distribution_version|version_compare(7, '<')
+
+- name: Add the repository for RedHat / CentOS 7
+  yum:
+    name: http://repos.mesosphere.com/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
+  when: ansible_distribution_version|version_compare(7, '>=')
+
+# Install
+- name: Install mesos for RedHat / CentOS
+  yum:
+    pkg: "mesos-{{mesos.version}}"
+    state: present
+    update_cache: yes
+
+- name: Install marathon for RedHat / CentOS
+  yum:
+    pkg: marathon
+    state: present
+  when: mesos.master|bool or mesos.standalone|bool
+
+# Configure
+- name: Configure
+  include: configure.yml
+
+# Stop/Disable mesos-slave service
+- name: stop mesos-slave service on RedHat / CentOS 6
+  shell: stop mesos-slave
+  sudo: yes
+  ignore_errors: yes
+  when: ansible_distribution_version|version_compare(7, '<')
+
+- name: disable mesos-slave service on RedHat / CentOS 6
+  shell: echo manual > /etc/init/mesos-slave.override
+  sudo: yes
+  when: mesos.master|bool and (not mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '<')
+
+- name: disable mesos-slave service on RedHat / CentOS 7
+  service: name=mesos-slave state=stopped enabled=no
+  ignore_errors: yes
+  when: mesos.master|bool and (not mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '>=')
+
+# Stop/Disable mesos-master service
+- name: stop mesos-master service on RedHat / CentOS 6
+  shell: stop mesos-master
+  sudo: yes
+  ignore_errors: yes
+  when: ansible_distribution_version|version_compare(7, '<')
+
+- name: disable mesos-master service on RedHat / CentOS 6
+  shell: echo manual > /etc/init/mesos-master.override
+  sudo: yes
+  when: not mesos.master|bool and (not mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '<')
+
+- name: disable mesos-master service on RedHat / CentOS 7
+  service: name=mesos-master state=stopped enabled=no
+  ignore_errors: yes
+  when: not mesos.master|bool and (not mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '>=')
+
+# Stop marathon
+- name: stop marathon service on RedHat / CentOS 6
+  shell: stop marathon
+  sudo: yes
+  ignore_errors: yes
+  when: ansible_distribution_version|version_compare(7, '<')
+
+- name: stop marathon service on RedHat / CentOS 7
+  service: name=marathon state=stopped
+  ignore_errors: yes
+  when: ansible_distribution_version|version_compare(7, '>=')
+
+# Start mesos-master
+- name: start mesos-master service on RedHat / CentOS 6
+  shell: start mesos-master
+  sudo: yes
+  when: (mesos.master|bool or mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '<')
+
+- name: start mesos-master service on RedHat / CentOS 7
+  service: name=mesos-master state=started
+  when: (mesos.master|bool or mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '>=')
+
+# Start marathon
+- name: start marathon service on RedHat / CentOS 6
+  shell: start marathon
+  sudo: yes
+  when: (mesos.master|bool or mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '<')
+
+- name: start marathon service on RedHat / CentOS 7
+  service: name=marathon state=started
+  when: (mesos.master|bool or mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '>=')
+
+# Start mesos-slave
+- name: start mesos-slave service on RedHat / CentOS 6
+  shell: start mesos-slave
+  sudo: yes
+  when: (not mesos.master|bool or mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '<')
+
+- name: start mesos-slave service on RedHat / CentOS 7
+  service: name=mesos-slave state=started
+  when: (not mesos.master|bool or mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '>=')

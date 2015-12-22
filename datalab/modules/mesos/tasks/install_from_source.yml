@@ -1,0 +1,23 @@
+---
+
+- name: Fail if not a new release of Ubuntu
+  fail:
+    msg: "{{ ansible_distribution_version }} is not an acceptable version of Ubuntu for this role"
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version|version_compare(14.04, '<')
+
+- name: Fail if not a new release of CentOS
+  fail:
+    msg: "{{ ansible_distribution_version }} is not an acceptable version of CentOS for this role"
+  when: ansible_distribution == 'CentOS' and ansible_distribution_version|version_compare(6.6, '<')
+
+- name: ensure installation directory exists
+  file: path="{{ mesos.install_dir }}" state=directory owner="{{ ansible_ssh_user }}" group="{{ ansible_ssh_user }}"
+
+- name: retreive mesos from tarball
+  include: install_from_tarball.yml
+  when: mesos.build.checkout == 'tarball'
+
+- name: retreive mesos from git
+  include: install_from_git.yml
+  when: mesos.build.checkout == 'git'
+

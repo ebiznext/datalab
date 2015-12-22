@@ -1,0 +1,19 @@
+---
+
+- name: Fail if not a new release of CentOS or RHEL
+  fail:
+    msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ansible_distribution}} for this role"
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and ansible_distribution_version|version_compare(6, '<')
+
+- include: redhat.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: Fail if not a new release of Ubuntu
+  fail:
+    msg: "{{ ansible_distribution_version }} is not an acceptable version of Ubuntu for this role"
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version|version_compare(12.04, '<')
+
+- include: ubuntu.yml
+  when: ansible_os_family == 'Debian'
+
+- include: test.yml

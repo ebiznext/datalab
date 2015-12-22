@@ -1,14 +1,10 @@
 ---
 
-  - name: Build and launch datalab
-    hosts: qualif
+  - name: Install and launch Zookeeper
+    hosts: zookeeper
     remote_user: $user
     roles:
-      - {role: es}
-      - {role: kibana}
       - {role: zookeeper}
-      - {role: kafka}
-      - {role: flume}
 
   - name: Build and launch docker registry
     hosts: registry
@@ -19,8 +15,26 @@
       - {role: docker.registry}
       - {role: docker.registry.login}
 
-  - name: Build and launch datalab docker images
-    hosts: docker
+  - name: Install and launch Mesos
+    hosts: mesos
     remote_user: $user
     roles:
-      - {role: docker.flume}
+      - {role: mesos}
+
+  - name: Build and launch datalab
+    hosts: qualif
+    remote_user: $user
+    roles:
+      - {role: es}
+      - {role: kibana}
+      - {role: kafka}
+      - {role: flume}
+      - {role: spark}
+      - {role: zeppelin}
+      # - {role: marathon}
+
+#  - name: Build and launch datalab docker images
+#    hosts: docker
+#    remote_user: $user
+#    roles:
+#      - {role: docker.flume}

@@ -1,0 +1,87 @@
+---
+
+# Setup Repositories
+- name: Setup
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: E56151BF
+    state: present
+  sudo: true
+
+- name: get distro
+  shell: lsb_release -is | tr '[:upper:]' '[:lower:]'
+  register: DISTRO
+
+- name: get codename
+  shell: lsb_release -cs
+  register: CODENAME
+
+- name: add repository
+  template: src=mesosphere.list dest=/etc/apt/sources.list.d/
+  sudo: true
+
+# Install
+- name: Install mesos and marathon for Debian
+  apt:
+    pkg: "mesos-{{mesos.version}}"
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  sudo: yes
+
+- name: Install marathon for Debian
+  apt:
+    pkg: marathon
+    state: present
+  sudo: yes
+  when: mesos.master|bool
+
+# Configure
+- name: Configure
+  include: configure.yml
+
+# Stop/Disable mesos-slave service
+- name: stop mesos-slave service on Ubuntu
+  service: name=mesos-slave state=stopped
+  sudo: yes
+  when: mesos.master|bool and (not mesos.standalone|bool)
+
+- name: disable mesos-slave service on Ubuntu
+  shell: echo manual > /etc/init/mesos-slave.override
+  sudo: yes
+  when: mesos.master|bool and (not mesos.standalone|bool)
+
+# Stop/Disable mesos-master service
+- name: stop mesos-master service on Ubuntu
+  service: name=mesos-master state=stopped
+  sudo: yes
+  when: not mesos.master|bool and (not mesos.standalone|bool)
+
+- name: disable mesos-master service on Ubuntu
+  shell: echo manual > /etc/init/mesos-master.override
+  sudo: yes
+  when: not mesos.master|bool and (not mesos.standalone|bool)
+
+# Stop marathon
+- name: stop marathon service on Ubuntu
+  service: name=marathon state=stopped
+  sudo: yes
+  when: mesos.master|bool or mesos.standalone|bool
+
+# Restart mesos-master
+- name: restart mesos-master service on Ubuntu
+  service: name=mesos-master state=restarted
+  sudo: yes
+  when: mesos.master|bool or mesos.standalone|bool
+
+# Restart marathon
+- name: restart marathon service on Ubuntu
+  service: name=marathon state=restarted
+  sudo: yes
+  when: mesos.master|bool or mesos.standalone|bool
+
+# Restart mesos-slave
+- name: restart mesos-slave service on Ubuntu
+  service: name=mesos-slave state=restarted
+  sudo: yes
+  when: not mesos.master|bool or mesos.standalone|bool

@@ -60,3 +60,16 @@
         state=directory
   sudo: yes
 
+- name: Configure Zk id
+  template: src=myid
+            dest={{ zookeeper.home_dir }}/conf/
+  sudo: yes
+  when: zookeeper.id > 0
+
+- file: path=/etc/ansible/facts.d state=directory
+  sudo: yes
+  when: zookeeper.id > 0
+
+- template: src=datalab.fact dest="/etc/ansible/facts.d/datalab.fact"
+  sudo: yes
+  when: zookeeper.id > 0

@@ -5,3 +5,5 @@ ansible_ssh_user: vagrant
 ansible_ssh_pass: vagrant
 
 __proxy_mock: yes
+
+zookeeper_id: 1

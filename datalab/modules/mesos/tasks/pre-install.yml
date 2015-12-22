@@ -1,0 +1,9 @@
+---
+
+- name: install from source
+  include: install_from_source.yml
+  when: mesos.build.do|bool
+
+- name: install from repository
+  include: install_from_repository.yml
+  when: not mesos.build.do|bool

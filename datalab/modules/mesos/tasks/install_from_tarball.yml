@@ -1,0 +1,39 @@
+---
+
+- file: path="{{ mesos.install_dir }}" state=directory
+
+- stat: path={{mesos.build.tarball.file}}
+  register: mesos_file
+
+- name: get mesos tarball asc
+  shell: wget -q -O {{mesos.build.tarball.file}}.asc {{mesos.build.tarball.url}}.asc
+  when: mesos_file.stat.exists
+
+- name: get mesos keys
+  shell: wget -q -O {{ mesos.install_dir }}/KEYS {{apache_mirror}}mesos/KEYS
+  register: mesos_keys
+  when: mesos_file.stat.exists
+
+- name: import mesos keys
+  shell: gpg --import {{ mesos.install_dir }}/KEYS
+  when: mesos_file.stat.exists and mesos_keys|success
+
+- name: verify mesos tarball file
+  shell: gpg --verify {{mesos.build.tarball.file}}.asc {{mesos.build.tarball.file}}
+  register: mesos_file_check
+  when: mesos_file.stat.exists
+
+# Download pre-built
+- name: download mesos tarball package
+  shell: "wget -q -O {{mesos.build.tarball.file}} {{mesos.build.tarball.url}}"
+  when: not mesos_file.stat.exists or (not mesos_file_check|success)
+
+- name: untar package
+  unarchive: src="{{mesos.build.tarball.file}}"
+             dest="{{mesos.install_dir}}"
+             copy=no
+
+- file: path={{mesos.base_dir}} state=absent
+
+- name: rename mesos base dir
+  shell: "mv {{ mesos.install_dir }}/{{ mesos.build.tarball.package_name }} {{ mesos.base_dir }}"
