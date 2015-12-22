@@ -152,3 +152,15 @@ zeppelin_mesos_master: zk://localhost:2181/mesos
 mesos_version: 0.26.0
 mesos_standalone: yes
 mesos_master: "{{ 'master' in group_names or mesos_standalone }}"
+
+#
+# mesos-dns
+#
+mesos_dns_version: 0.5.1
+mesos_dns_download_directory: /tmp
+mesos_dns_home_directory: /usr/local/mesos-dns
+mesos_dns_config_resolvers: 8.8.8.8
+mesos_dns_config_domain: mesos
+mesos_dns_config_listener: 0.0.0.0
+mesos_dns_config_port: 53
+mesos_dns_config_http_port: 8123

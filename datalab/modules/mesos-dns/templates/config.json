@@ -1,0 +1,22 @@
+{
+  "zk": "{{mesos_zookeepers}}",
+  "zkDetectionTimeout": 30,
+  "refreshSeconds": 60,
+  "ttl": 60,
+  "domain": "mesos",
+  "port": {{mesos_dns.config.port}},
+  "resolvers": ["{{mesos_dns.config.resolvers}}"],
+  "timeout": 5,
+  "httpon": true,
+  "dnson": true,
+  "httpport": {{mesos_dns.config.http_port}},
+  "externalon": true,
+  "listener": "{{mesos_dns.config.listener}}",
+  "SOAMname": "ns1.mesos",
+  "SOARname": "root.ns1.mesos",
+  "SOARefresh": 60,
+  "SOARetry":   600,
+  "SOAExpire":  86400,
+  "SOAMinttl": 60,
+  "IPSources": ["netinfo", "mesos", "host"]
+}
