@@ -1,0 +1,19 @@
+---
+
+mesos_dns:
+  version: "{{mesos_dns_version}}"
+  download_dir: "{{mesos_dns_download_directory}}"
+  install_dir: "{{mesos_dns_download_directory}}/mesos-dns"
+  base_dir: "{{mesos_dns_home_directory}}"
+
+  prebuilt:
+    package_name: "{{mesos_dns_prebuilt_package_name}}"
+    file: "{{mesos_dns_download_directory}}/{{mesos_dns_prebuilt_package_name}}"
+    url: "{{mesos_dns_prebuilt_url}}"
+
+  config:
+    resolvers: "{{mesos_dns_config_resolvers}}"
+    domain: "{{mesos_dns_config_domain}}"
+    listener: "{{mesos_dns_config_listener}}"
+    port: "{{mesos_dns_config_port}}"
+    http_port: "{{mesos_dns_config_http_port}}"

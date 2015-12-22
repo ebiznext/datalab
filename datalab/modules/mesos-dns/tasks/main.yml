@@ -1,0 +1,58 @@
+---
+
+- file: path="{{ mesos_dns.install_dir }}" state=directory
+
+- stat: path={{mesos_dns.prebuilt.file}}
+  register: mesos_dns_file
+  sudo: yes
+
+- name: get mesos-dns prebuilt asc
+  shell: wget -q -O {{mesos_dns.prebuilt.file}}.asc {{mesos_dns.prebuilt.url}}.asc
+  when: mesos_dns_file.stat.exists
+
+- name: get mesos-dns keys
+  copy: src=KEYS dest={{ mesos_dns.install_dir }}/KEYS
+  register: mesos_dns_keys
+  when: mesos_dns_file.stat.exists
+
+- name: import mesos-dns keys
+  shell: gpg --import {{ mesos_dns.install_dir }}/KEYS
+  when: mesos_dns_file.stat.exists and mesos_dns_keys|success
+
+- name: verify mesos-dns prebuilt file
+  shell: gpg --verify {{mesos_dns.prebuilt.file}}.asc {{mesos_dns.prebuilt.file}}
+  register: mesos_dns_file_check
+  when: mesos_dns_file.stat.exists
+
+# Download pre-built package
+- name: download mesos-dns prebuilt package
+  shell: "wget -q -O {{mesos_dns.prebuilt.file}} {{mesos_dns.prebuilt.url}}"
+  when: not mesos_dns_file.stat.exists or (not mesos_dns_file_check|success)
+
+- file: path={{mesos_dns.base_dir}} state=directory
+  sudo: yes
+
+# Install pre-built package
+- name: install mesos-dns
+  shell: "cp {{ mesos_dns.prebuilt.file }} {{ mesos_dns.base_dir }}/mesos-dns"
+  sudo: yes
+
+- file: path={{ mesos_dns.base_dir }}/mesos-dns mode=u+x owner=root group=root
+  sudo: yes
+
+# Configure mesos-dns
+- name: gather facts from zookeeper servers
+  setup:
+    filter: ansible_local
+  delegate_to: "{{item}}"
+  with_items: "{{groups['zookeeper']|list}}"
+  register: zookeeper_facts
+  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+
+- set_fact: mesos_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/mesos"
+  when: zookeeper_facts.results is defined
+
+- name: configure mesos-dns
+  template:
+    src: config.json
+    dest: "{{ mesos_dns.base_dir }}/config.json"

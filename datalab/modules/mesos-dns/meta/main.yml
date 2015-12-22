@@ -1,0 +1,10 @@
+---
+
+dependencies:
+  - { role: proxy }
+
+galaxy_info:
+  author: Stephane Manciot
+  description: An Ansible role for installing Apache Mesos DNS.
+  company: Ebiznext.
+  min_ansible_version: 1.9

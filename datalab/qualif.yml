@@ -22,9 +22,10 @@
       - {role: mesos}
 
   - name: Build and launch datalab
-    hosts: qualif
+    hosts: slave
     remote_user: $user
     roles:
+      - {role: mesos-dns}
       - {role: es}
       - {role: kibana}
       - {role: kafka}
