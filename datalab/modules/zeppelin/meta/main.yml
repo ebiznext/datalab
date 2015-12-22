@@ -1,7 +1,7 @@
 ---
 
 dependencies:
-  - { role: mirror}
+  - { role: spark }
   - { role: common, install_maven, when: "zeppelin.build.do|bool" }
 
 galaxy_info:
