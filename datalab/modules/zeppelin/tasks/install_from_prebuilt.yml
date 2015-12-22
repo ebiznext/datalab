@@ -1,6 +1,6 @@
 ---
 
-- file: path="{{ zeppelin.download_dir }}" state=directory
+- file: path="{{ zeppelin.install_dir }}" state=directory
 
 - stat: path={{zeppelin.prebuilt.file}}
   register: zeppelin_file
