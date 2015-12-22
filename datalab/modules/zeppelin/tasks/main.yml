@@ -1,0 +1,12 @@
+---
+
+- include: dependencies.yml
+  when: zeppelin.dependencies|bool
+
+- include: pre-install.yml
+
+- include: compile.yml
+  when: zeppelin.build.do|bool
+
+- include: install.yml
+

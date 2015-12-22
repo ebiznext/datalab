@@ -1,8 +1,21 @@
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 
+   xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
    http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
-      <localRepository>{{ maven.lib_dir }}/repository</localRepository>
-
+  <localRepository>{{ maven.lib_dir }}/repository</localRepository>
+{% if proxy_enabled|bool %}
+  <proxies>
+    <proxy>
+      <id>pandore</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>{{proxy_host}}</host>
+      <port>{{proxy_port}}</port>
+      <username>{{proxy_login}}</username>
+      <password>{{proxy_password}}</password>
+      <nonProxyHosts>{{no_proxy|replace(",", "|")}}</nonProxyHosts>
+    </proxy>
+  </proxies>
+{% endif %}
 </settings>

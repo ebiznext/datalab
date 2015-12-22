@@ -1,0 +1,11 @@
+---
+
+- file: path={{zeppelin.base_dir}} state=absent
+
+- name: retreive zeppelin from git
+  git: repo={{ zeppelin.build.git.url }}
+       version={{zeppelin.build.git.branch}}
+       dest={{ zeppelin.base_dir }}
+       update=yes
+       depth=1
+

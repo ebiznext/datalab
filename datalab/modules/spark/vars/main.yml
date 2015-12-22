@@ -27,7 +27,6 @@ spark:
     do: "{{ spark_do_build }}"
     options: "{{ spark_build_options }}"
     checkout: "{{ spark_build_checkout }}"
-    git_repository: "https://github.com/apache/spark.git"
     sbt_launch:
       version: "{{spark_build_sbt_launch_version}}"
       url: "{{spark_build_sbt_launch_url}}"
@@ -35,6 +34,9 @@ spark:
       package_name: "{{ spark_tarball_package_name }}"
       file: "{{spark_download_directory}}/{{spark_tarball_file}}"
       url: "{{spark_tarball_url}}"
+    git:
+      url: "{{spark_git_url}}"
+      branch: "{{spark_git_branch}}"
     environment: {}
 
   config:

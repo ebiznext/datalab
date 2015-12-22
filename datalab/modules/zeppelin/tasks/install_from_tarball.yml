@@ -1,0 +1,37 @@
+---
+
+- stat: path={{zeppelin.build.tarball.file}}
+  register: zeppelin_file
+
+- name: get zeppelin tarball asc
+  shell: wget -q -O {{zeppelin.build.tarball.file}}.asc {{zeppelin.build.tarball.url}}.asc
+  when: zeppelin_file.stat.exists
+
+- name: get zeppelin keys
+  shell: wget -q -O {{ zeppelin.install_dir }}/KEYS {{apache_mirror}}incubator/zeppelin/KEYS
+  register: zeppelin_keys
+  when: zeppelin_file.stat.exists
+
+- name: import zeppelin keys
+  shell: gpg --import {{ zeppelin.install_dir }}/KEYS
+  when: zeppelin_file.stat.exists and zeppelin_keys|success
+
+- name: verify zeppelin tarball file
+  shell: gpg --verify {{zeppelin.build.tarball.file}}.asc {{zeppelin.build.tarball.file}}
+  register: zeppelin_file_check
+  when: zeppelin_file.stat.exists
+
+# Download tarball
+- name: download zeppelin tarball package
+  shell: "wget -q -O {{zeppelin.build.tarball.file}} {{zeppelin.build.tarball.url}}"
+  when: not zeppelin_file.stat.exists or (not zeppelin_file_check|success)
+
+- name: extract zeppelin
+  unarchive: src="{{ zeppelin.build.tarball.file }}"
+             dest="{{ zeppelin.install_dir }}"
+             copy=no
+
+- file: path={{ zeppelin.base_dir }} state=absent
+
+- name: rename zeppelin base dir
+  shell: "mv {{ zeppelin.install_dir }}/{{ zeppelin.build.tarball.package_name }} {{ zeppelin.base_dir }}"

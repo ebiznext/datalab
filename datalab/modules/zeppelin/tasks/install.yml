@@ -1,0 +1,21 @@
+---
+
+- name: Fix permissions
+  file: path={{ zeppelin.base_dir }} owner={{ zeppelin.user }} group={{ zeppelin.group }} state=directory recurse=yes
+
+- name: Copy zeppelin-site.xml file
+  template: src=zeppelin-site.xml.j2 dest="{{ zeppelin.base_dir }}/conf/zeppelin-site.xml"
+
+- name: Copy zeppelin-env.sh file
+  template: src=zeppelin-env.sh.j2 dest="{{ zeppelin.base_dir }}/conf/zeppelin-env.sh"
+
+- name: Make sure zeppelin-daemon.sh is executable
+  file: path="{{ zeppelin.base_dir }}/bin/zeppelin-daemon.sh" owner={{ zeppelin.user }} group={{ zeppelin.group }} mode=0744
+
+# NOTE: This is a hack to make sure that zeppelin is stopped by default (it should be already)
+# as it is not installed as a service (zeppelin.service_action flag is set to stop).
+- name: Handle service status
+  shell: "{{ zeppelin.base_dir }}/bin/zeppelin-daemon.sh {{ zeppelin.service.action }}"
+#  sudo: yes
+#  sudo_user: "{{zeppelin.user}}"
+#  when: zeppelin.service.action == "start"

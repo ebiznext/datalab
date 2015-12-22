@@ -2,21 +2,24 @@
 
 apache_mirror: "{{__apache_mirror}}"
 
-spark_user: "spark"
-spark_group: "spark"
-spark_version: "1.4.1"
-hadoop_version: "2.6"
-spark_home_directory: '/usr/local/spark'
-spark_download_directory: '/tmp'
-spark_prebuilt_package_name: "spark-{{ spark_version }}-bin-hadoop{{hadoop_version}}"
+hadoop_version: 2.6.0
+
+spark_user: spark
+spark_group: spark
+spark_version: 1.4.1
+spark_home_directory: /usr/local/spark
+spark_download_directory: /tmp
+spark_prebuilt_package_name: 'spark-{{ spark_version }}-bin-hadoop{{hadoop_version|group("(.*\..*)\..*", 1)}}'
 spark_prebuilt_file: "{{spark_prebuilt_package_name}}.tgz"
 spark_prebuilt_url: "{{apache_mirror}}spark/spark-{{spark_version}}/{{spark_prebuilt_file}}"
-spark_do_build: yes
-spark_build_checkout: "tarball"
-spark_build_sbt_launch_version: "0.13.7"
+spark_do_build: no
+spark_build_checkout: tarball
+spark_build_sbt_launch_version: 0.13.7
 spark_build_sbt_launch_url: "https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/{{spark_build_sbt_launch_version}}/sbt-launch.jar"
 spark_build_options: ""
 spark_tarball_package_name: "spark-{{ spark_version }}"
 spark_tarball_file: "{{spark_tarball_package_name}}.tgz"
 spark_tarball_url: "{{apache_mirror}}spark/spark-{{spark_version}}/{{spark_tarball_file}}"
-spark_mesos_native_java_library: '/usr/local/lib/libmesos.so'
+spark_git_url: https://github.com/apache/spark.git
+spark_git_branch: "v{{ spark_version }}"
+spark_mesos_native_java_library: /usr/local/lib/libmesos.so

@@ -1,0 +1,19 @@
+---
+
+dependencies:
+  - { role: spark }
+  - { role: common, install_maven, when: "zeppelin.build.do|bool" }
+
+galaxy_info:
+  author: Stephane Manciot
+  description: An Ansible role for installing Apache Zeppelin.
+  company: Ebiznext.
+  min_ansible_version: 1.9
+  platforms:
+  - name: Ubuntu
+    versions:
+      - trusty
+      - precise
+  categories:
+    - system
+    - development
