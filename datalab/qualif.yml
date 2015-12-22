@@ -1,6 +1,6 @@
 ---
 
-  - name: Install and launch Zookeeper
+  - name: Install Zookeeper
     hosts: zookeeper
     remote_user: $user
     roles:
