@@ -1,39 +1,39 @@
 ---
 
-- file: path="{{ spark.download_dir }}" state=directory
+- file: path="{{ zeppelin.download_dir }}" state=directory
 
-- stat: path={{spark.prebuilt.file}}
-  register: spark_file
+- stat: path={{zeppelin.prebuilt.file}}
+  register: zeppelin_file
 
-- name: get spark prebuilt asc
-  shell: wget -q -O {{spark.prebuilt.file}}.asc {{spark.prebuilt.url}}.asc
-  when: spark_file.stat.exists
+- name: get zeppelin prebuilt asc
+  shell: wget -q -O {{zeppelin.prebuilt.file}}.asc {{zeppelin.prebuilt.url}}.asc
+  when: zeppelin_file.stat.exists
 
-- name: get spark keys
-  shell: wget -q -O {{ spark.install_dir }}/KEYS {{apache_mirror}}spark/KEYS
-  register: spark_keys
-  when: spark_file.stat.exists
+- name: get zeppelin keys
+  shell: wget -q -O {{ zeppelin.install_dir }}/KEYS {{apache_mirror}}incubator/zeppelin/KEYS
+  register: zeppelin_keys
+  when: zeppelin_file.stat.exists
 
-- name: import spark keys
-  shell: gpg --import {{ spark.install_dir }}/KEYS
-  when: spark_file.stat.exists and spark_keys|success
+- name: import zeppelin keys
+  shell: gpg --import {{ zeppelin.install_dir }}/KEYS
+  when: zeppelin_file.stat.exists and zeppelin_keys|success
 
-- name: verify spark prebuilt file
-  shell: gpg --verify {{spark.prebuilt.file}}.asc {{spark.prebuilt.file}}
-  register: spark_file_check
-  when: spark_file.stat.exists
+- name: verify zeppelin prebuilt file
+  shell: gpg --verify {{zeppelin.prebuilt.file}}.asc {{zeppelin.prebuilt.file}}
+  register: zeppelin_file_check
+  when: zeppelin_file.stat.exists
 
 # Download pre-built
-- name: download spark prebuilt package
-  shell: "wget -q -O {{spark.prebuilt.file}} {{spark.prebuilt.url}}"
-  when: not spark_file.stat.exists or (not spark_file_check|success)
+- name: download zeppelin prebuilt package
+  shell: "wget -q -O {{zeppelin.prebuilt.file}} {{zeppelin.prebuilt.url}}"
+  when: not zeppelin_file.stat.exists or (not zeppelin_file_check|success)
 
 - name: untar package
-  unarchive: src="{{spark.prebuilt.file}}"
-             dest="{{spark.install_dir}}"
+  unarchive: src="{{zeppelin.prebuilt.file}}"
+             dest="{{zeppelin.install_dir}}"
              copy=no
 
-- file: path={{spark.base_dir}} state=absent
+- file: path={{zeppelin.base_dir}} state=absent
 
-- name: rename spark base dir
-  shell: "mv {{ spark.install_dir }}/{{ spark.prebuilt.package_name }} {{ spark.base_dir }}"
+- name: rename zeppelin base dir
+  shell: "mv {{ zeppelin.install_dir }}/{{ zeppelin.prebuilt.package_name }} {{ zeppelin.base_dir }}"

@@ -2,8 +2,6 @@
 
 zeppelin:
   version: "{{ zeppelin_version }}"
-  git_url: 'https://github.com/apache/incubator-zeppelin'
-  git_branch: 'master'
   download_dir: "{{ zeppelin_download_directory }}"
   install_dir: "{{ zeppelin_download_directory }}/incubator-zeppelin"
   base_dir: "{{ zeppelin_home_directory }}"
@@ -11,8 +9,9 @@ zeppelin:
   group: '{{zeppelin_group}}'
 
   prebuilt:
-#    pull: "{{ zeppelin_download_prebuilt_package }}"
-#    link: "{{ zeppelin_prebuilt_package_url }}"
+    package_name: "{{ zeppelin_prebuilt_package_name }}"
+    file: "{{zeppelin_download_directory}}/{{zeppelin_prebuilt_file}}"
+    url: "{{zeppelin_prebuilt_url}}"
 
   build:
     do: "{{ zeppelin_do_build }}"
