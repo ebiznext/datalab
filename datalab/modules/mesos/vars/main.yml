@@ -1,0 +1,42 @@
+---
+
+mesos:
+  version: "{{ mesos_version }}"
+  master: "{{ mesos_master }}"
+  standalone: "{{ mesos_standalone }}"
+
+  download_dir: "{{ mesos_download_directory }}"
+  install_dir: "{{ mesos_download_directory }}/mesos"
+  base_dir: "{{ mesos_home_directory }}"
+
+  build:
+    do: "{{ mesos_do_build }}"
+    checkout: "{{ mesos_build_checkout }}"
+    opts: "{{ mesos_build_opts }}"
+    tarball:
+      package_name: "{{ mesos_tarball_package_name }}"
+      file: "{{mesos_download_directory}}/{{mesos_tarball_file}}"
+      url: "{{mesos_tarball_url}}"
+    git:
+      url: "{{mesos_git_url}}"
+      branch: "{{mesos_git_branch}}"
+    apt:
+      - wget
+      - git
+      - autoconf
+      - libtool
+      - build-essential
+      - python-dev
+      - python-boto
+      - libcurl4-nss-dev
+      - libsasl2-dev
+      - libsasl2-modules
+      - libapr1-dev
+      - libsvn-dev
+    yum:
+      - tar
+      - wget
+      - git
+      - which
+      - nss
+

@@ -6,6 +6,7 @@ dependencies:
 
 galaxy_info:
   author: Julien DAUPHANT, Ahmed Bessifi, Stephane Manciot
+  description: An Ansible role for installing Apache Spark.
   license: BSD
   min_ansible_version: 1.9
   #

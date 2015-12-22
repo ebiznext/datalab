@@ -1,0 +1,39 @@
+---
+
+# TODO Configure Zookeeper
+
+# Start Zookeeper
+- name: Start zookeeper
+  shell: "{{zookeeper_home_dir}}/bin/zkServer.sh restart"
+  sudo: yes
+  when: mesos.master|bool
+
+# Configure Mesos & Marathon
+# Zookeeper
+- name: gather facts from zookeeper servers
+  setup:
+    filter: ansible_local
+  delegate_to: "{{item}}"
+  with_items: "{{groups['zookeeper']|list}}"
+  register: zookeeper_facts
+  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+
+- set_fact: mesos_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/mesos"
+  when: zookeeper_facts.results is defined
+
+- name: update zookeeper configuration for mesos
+  template: src=zk dest=/etc/mesos/zk
+  sudo: yes
+
+# Quorum
+- name: calculate quorum
+  set_fact: mesos_quorum={{(groups['master']|length)/2 + 1}}
+  when: mesos.master|bool and (groups['master']|length > 1)
+
+- name: fix quorum
+  set_fact: mesos_quorum=1
+  when: mesos.master|bool and (groups['master']|length <= 1)
+
+- name: update quorum configuration for mesos
+  template: src=quorum dest=/etc/mesos-master/quorum
+  when: mesos.master|bool

@@ -1,6 +1,8 @@
 ---
 
 zookeeper:
+  id: "{{zookeeper_id}}"
+  ip: "{{ zookeeper_ip }}"
   version: "{{ zookeeper_version }}"
   package_name: "{{ zookeeper_package_name }}"
   download_dir: "{{ zookeeper_download_dir }}"

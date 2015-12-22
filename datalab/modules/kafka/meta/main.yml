@@ -6,6 +6,7 @@ dependencies:
 
 galaxy_info:
   author: "Stéphane Manciot"
+  description: An Ansible role for installing Apache Kafka.
   company: EBIZNEXT
   license: MIT
   min_ansible_version: 1.9
