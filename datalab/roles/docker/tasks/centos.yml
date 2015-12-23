@@ -17,17 +17,17 @@
     when: (rpm_check.stdout.find('is not installed') != -1)
 
   - name: Download the Docker rpm for centos 6.5 or above
-    command: wget -O /tmp/docker-engine-1.7.1-1.el6.x86_64.rpm --no-check-certificate https://get.docker.com/rpm/1.7.1/centos-6/RPMS/x86_64/docker-engine-1.7.1-1.el6.x86_64.rpm
+    command: wget -O /tmp/docker-engine-1.7.1.rpm --no-check-certificate https://get.docker.com/rpm/1.7.1/centos-6/RPMS/x86_64/docker-engine-1.7.1-1.el6.x86_64.rpm
     register: docker_centos6
     when: (rpm_check.stdout.find('is not installed') != -1) and (ansible_distribution_version|version_compare(7, '<'))
 
   - name: Download the Docker rpm for centos 7 or above
-    command: wget -O /tmp/docker-engine-1.7.1-1.el7.centos.x86_64.rpm --no-check-certificate https://get.docker.com/rpm/1.7.1/centos-7/RPMS/x86_64/docker-engine-1.7.1-1.el7.centos.x86_64.rpm
+    command: wget -O /tmp/docker-engine-1.7.1.rpm --no-check-certificate https://get.docker.com/rpm/1.7.1/centos-7/RPMS/x86_64/docker-engine-1.7.1-1.el7.centos.x86_64.rpm
     register: docker_centos7
     when: (rpm_check.stdout.find('is not installed') != -1) and (ansible_distribution_version|version_compare(7, '>'))
 
   - name: Install Docker package
-    yum: name=/tmp/docker-engine-1.7.1-1.el6.x86_64.rpm disable_gpg_check=yes update_cache=yes state=present
+    yum: name=/tmp/docker-engine-1.7.1.rpm disable_gpg_check=yes update_cache=yes state=present
     sudo: yes
     when: (rpm_check.stdout.find('is not installed') != -1) and (docker_centos6|changed or docker_centos7|changed)
 
@@ -43,3 +43,9 @@
       - python-setuptools
 
   - include: pip.yml
+
+  - name: Enable Docker service on boot
+    service: name=docker enabled=yes
+
+  - name: Start the Docker daemon
+    service: name=docker state=started
