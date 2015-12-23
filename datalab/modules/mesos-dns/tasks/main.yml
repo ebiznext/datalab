@@ -1,5 +1,13 @@
 ---
 
+- apt: name=wget state=latest update_cache=yes cache_valid_time=3600
+  sudo: yes
+  when: (ansible_os_family == "Debian")
+
+- yum: name=wget state=latest update_cache=yes
+  sudo: yes
+  when: (ansible_os_family == "RedHat")
+
 - file: path="{{ mesos_dns.install_dir }}" state=directory
 
 - stat: path={{mesos_dns.prebuilt.file}}
