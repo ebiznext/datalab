@@ -5,12 +5,14 @@
         dest="{{ spark.config.dirname }}"
         state=link
         force=yes
+  sudo: yes
 
 - name: copy configuration files
   template: src={{ item }}.j2 dest={{spark.config.dirname}}/{{item}} owner={{spark.user}}
   with_items:
      - spark-defaults.conf
      - spark-env.sh
+  sudo: yes
 
 - name:  install spark binaries
   template: src=spark-shim.j2
@@ -21,3 +23,4 @@
     - spark-shell
     - spark-sql
     - spark-submit
+  sudo: yes

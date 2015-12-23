@@ -1,6 +1,7 @@
 ---
 
 - file: path={{spark.base_dir}} state=absent
+  sudo: yes
 
 - name: retreive spark from git
   git: repo={{ spark.build.git.url }}
