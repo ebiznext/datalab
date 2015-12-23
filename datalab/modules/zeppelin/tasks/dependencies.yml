@@ -19,12 +19,12 @@
   when: ansible_os_family == 'Debian'
 
 - name: Add nodejs PPA repo for Debian
-  shell: curl {{curl_proxy_args}} -sL https://deb.nodesource.com/setup | sudo bash -
+  shell: curl {{curl_proxy_args | default("")}} -sL https://deb.nodesource.com/setup | sudo bash -
   sudo: yes
   when: ansible_os_family == 'Debian' and nodejs_ppa.stat.exists == false
 
 - name: Add nodejs dependencies for RedHat
-  shell: curl {{curl_proxy_args}} --silent --location https://rpm.nodesource.com/setup | bash -
+  shell: curl {{curl_proxy_args | default("")}} --silent --location https://rpm.nodesource.com/setup | bash -
   sudo: yes
   when: ansible_os_family == 'RedHat'
 

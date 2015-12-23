@@ -1,0 +1,17 @@
+---
+
+- file: path="{{ zeppelin.install_dir }}" state=directory
+
+# Upload pre-built
+- name: upload zeppelin prebuilt package
+  copy: src={{zeppelin.prebuilt.local_file}} dest={{zeppelin.prebuilt.file}}
+
+- name: untar package
+  unarchive: src="{{zeppelin.prebuilt.file}}"
+             dest="{{zeppelin.install_dir}}"
+             copy=no
+
+- file: path={{zeppelin.base_dir}} state=absent
+
+- name: rename zeppelin base dir
+  shell: "mv {{ zeppelin.install_dir }}/zeppelin-{{ zeppelin.version }}-incubating {{ zeppelin.base_dir }}"

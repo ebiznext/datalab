@@ -12,7 +12,7 @@ zeppelin_prebuilt_file: "{{zeppelin_prebuilt_package_name}}.tgz"
 zeppelin_prebuilt_url: "{{apache_mirror}}incubator/zeppelin/{{zeppelin_version}}-incubating/{{zeppelin_prebuilt_file}}"
 zeppelin_do_build: yes
 zeppelin_build_checkout: tarball
-zeppelin_build_opts: '-Pspark-{{spark_version|group("(.*\..*)\..*", 1)}} -Dspark.version={{spark_version}} -Phadoop-{{hadoop_version|group("(.*\..*)\..*", 1)}} -Dhadoop.version={{hadoop_version}} -DskipTests'
+zeppelin_build_opts: '-P build-distr -Pspark-{{spark_version|group("(.*\..*)\..*", 1)}} -Dspark.version={{spark_version}} -Phadoop-{{hadoop_version|group("(.*\..*)\..*", 1)}} -Dhadoop.version={{hadoop_version}} -DskipTests'
 zeppelin_tarball_package_name: "zeppelin-{{ zeppelin_version }}-incubating"
 zeppelin_tarball_file: "{{zeppelin_tarball_package_name}}.tgz"
 zeppelin_tarball_url: "{{apache_mirror}}incubator/zeppelin/{{zeppelin_version}}-incubating/{{zeppelin_tarball_file}}"
@@ -20,6 +20,7 @@ zeppelin_git_url: "https://github.com/apache/incubator-zeppelin"
 zeppelin_git_branch: "v{{ zeppelin_version }}"
 zeppelin_download_directory: /tmp
 zeppelin_home_directory: /usr/local/incubator-zeppelin
+zeppelin_local_directory: ~/incubator-zeppelin
 zeppelin_service_server_port: 8080
 zeppelin_service_server_addr: "0.0.0.0"
 zeppelin_service_action: stop

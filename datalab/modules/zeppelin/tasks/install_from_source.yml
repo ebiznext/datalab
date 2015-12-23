@@ -1,10 +1,9 @@
 ---
 
-- name: retreive zeppelin from tarball
+- name: retrieve zeppelin from tarball
   include: install_from_tarball.yml
   when: zeppelin.build.checkout == 'tarball'
 
-- name: retreive zeppelin from git
+- name: retrieve zeppelin from git
   include: install_from_git.yml
   when: zeppelin.build.checkout == 'git'
-

@@ -5,3 +5,11 @@
   args:
     chdir: "{{ zeppelin.base_dir }}"
 
+- local_action: file path={{ zeppelin.local_dir }} state=directory
+  sudo: no
+
+- name: fetch zeppelin package
+  fetch:
+    src: "{{ zeppelin.build.distrib.file }}"
+    dest: "{{ zeppelin.local_dir }}/"
+    flat: yes

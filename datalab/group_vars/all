@@ -136,10 +136,11 @@ zeppelin_group: zeppelin
 zeppelin_version: 0.5.5
 zeppelin_do_build: yes
 zeppelin_build_checkout: tarball
-zeppelin_build_opts: '-Pspark-{{spark_version|group("(.*\..*)\..*", 1)}} -Dspark.version={{spark_version}} -Phadoop-{{hadoop_version|group("(.*\..*)\..*", 1)}} -Dhadoop.version={{hadoop_version}} -DskipTests'
+zeppelin_build_opts: '-P build-distr -Pspark-{{spark_version|group("(.*\..*)\..*", 1)}} -Dspark.version={{spark_version}} -Phadoop-{{hadoop_version|group("(.*\..*)\..*", 1)}} -Dhadoop.version={{hadoop_version}} -DskipTests'
 zeppelin_git_branch: "v{{ zeppelin_version }}"
 zeppelin_download_directory: /tmp
 zeppelin_home_directory: /usr/local/incubator-zeppelin
+zeppelin_local_directory: ~/incubator-zeppelin
 zeppelin_service_server_port: 8080
 zeppelin_service_server_addr: "0.0.0.0"
 zeppelin_service_action: stop

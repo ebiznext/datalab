@@ -4,7 +4,7 @@
   file: path={{ zeppelin.base_dir }} owner={{ zeppelin.user }} group={{ zeppelin.group }} state=directory recurse=yes
 
 - name: Copy zeppelin-site.xml file
-  template: src=zeppelin-site.xml.j2 dest="{{ zeppelin.base_dir }}/conf/zeppelin-site.xml"
+  template: src=zeppelin-site.xml.j2 dest="{{ zeppelin.base_dir }}/conf/zeppelin-site.xml" owner={{ zeppelin.user }} group={{ zeppelin.group }} mode=0744
 
 - name: gather facts from zookeeper servers
   setup:
@@ -18,7 +18,7 @@
   when: zookeeper_facts.results is defined
 
 - name: Copy zeppelin-env.sh file
-  template: src=zeppelin-env.sh.j2 dest="{{ zeppelin.base_dir }}/conf/zeppelin-env.sh"
+  template: src=zeppelin-env.sh.j2 dest="{{ zeppelin.base_dir }}/conf/zeppelin-env.sh" owner={{ zeppelin.user }} group={{ zeppelin.group }} mode=0744
 
 - name: Make sure zeppelin-daemon.sh is executable
   file: path="{{ zeppelin.base_dir }}/bin/zeppelin-daemon.sh" owner={{ zeppelin.user }} group={{ zeppelin.group }} mode=0744
