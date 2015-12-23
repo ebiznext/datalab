@@ -64,3 +64,4 @@
   template:
     src: config.json
     dest: "{{ mesos_dns.base_dir }}/config.json"
+  sudo: yes
