@@ -8,4 +8,5 @@
        dest={{ spark.base_dir }}
        update=yes
        depth=1
+  sudo: yes
 

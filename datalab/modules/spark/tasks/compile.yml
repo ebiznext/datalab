@@ -4,6 +4,7 @@
 
 - name: download sbt-launch
   shell: "wget -q -O {{ spark.base_dir }}/build/sbt-launch-{{ spark.build.sbt_launch.version }}.jar {{spark.build.sbt_launch.url}}"
+  sudo: yes
 
 - name: building spark (this takes a while)
   sudo_user: "{{ spark.user }}"
@@ -11,3 +12,4 @@
   args:
     chdir: "{{ spark.base_dir }}"
   environment: spark.build.environment
+  sudo: yes
