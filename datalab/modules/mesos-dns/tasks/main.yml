@@ -58,7 +58,7 @@
   when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
 
 - set_fact: mesos_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/mesos"
-  when: zookeeper_facts.results is defined
+  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
 
 - name: configure mesos-dns
   template:
