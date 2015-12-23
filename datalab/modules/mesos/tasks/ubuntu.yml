@@ -6,7 +6,7 @@
     keyserver: keyserver.ubuntu.com
     id: E56151BF
     state: present
-  sudo: true
+  sudo: yes
 
 - name: get distro
   shell: lsb_release -is | tr '[:upper:]' '[:lower:]'
@@ -18,7 +18,7 @@
 
 - name: add repository
   template: src=mesosphere.list dest=/etc/apt/sources.list.d/
-  sudo: true
+  sudo: yes
 
 # Install
 - name: Install mesos and marathon for Debian

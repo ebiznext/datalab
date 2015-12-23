@@ -32,6 +32,8 @@
              copy=no
 
 - file: path={{ spark.base_dir }} state=absent
+  sudo: yes
 
 - name: rename spark base dir
   shell: "mv {{ spark.install_dir }}/{{ spark.build.tarball.package_name }} {{ spark.base_dir }}"
+  sudo: yes

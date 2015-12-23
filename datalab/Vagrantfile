@@ -7,21 +7,75 @@
 # you're doing.
 Vagrant.configure(2) do |config|
 
-  # config.vm.box_check_update = false
+  config.vm.box_check_update = false
 
-  config.vm.define "qualif" do |qualif|
-    qualif.vm.box = "nrel/CentOS-6.5-x86_64"
-    qualif.vm.hostname = "vagrant-qualif-datalab.vm"
-    qualif.vm.network "private_network", ip:"192.168.33.10"#, virtualbox__intnet:true
-    # qualif.vm.synced_folder "./", "/vagrant", disabled:true
-    qualif.vm.provider "virtualbox" do |vb|
-      vb.name = "vagrant-qualif-datalab"
-      vb.cpus = 2
-      vb.memory = 8*1024
+  config.vm.define "proxy" do |datalab|
+    datalab.vm.box = "centos/7"
+    datalab.vm.hostname = "datalab-proxy.vm"
+    datalab.vm.network "private_network", ip:"192.168.33.60"
+    datalab.vm.provider "virtualbox" do |vb|
+      vb.name = "datalab-proxy"
+      vb.cpus = 1
+      vb.memory = 1024
     end
-    qualif.vm.provision :ansible do |ansible|
+  end
+
+  config.vm.define "docker-registry" do |datalab|
+    datalab.vm.box = "centos/7"
+    datalab.vm.hostname = "datalab-docker-registry.vm"
+    datalab.vm.network "private_network", ip:"192.168.33.70"
+    datalab.vm.provider "virtualbox" do |vb|
+      vb.name = "datalab-docker-registry"
+      vb.cpus = 1
+      vb.memory = 1024
+    end
+  end
+
+  config.vm.define "mesos-master" do |datalab|
+    datalab.vm.box = "centos/7"
+    datalab.vm.hostname = "datalab-mesos-master.vm"
+    datalab.vm.network "private_network", ip:"192.168.33.80"
+    datalab.vm.provider "virtualbox" do |vb|
+      vb.name = "datalab-mesos-master"
+      vb.cpus = 1
+      vb.memory = 1024
+    end
+  end
+
+  config.vm.define "mesos-slave1" do |datalab|
+    datalab.vm.box = "centos/7"
+    datalab.vm.hostname = "datalab-mesos-slave1.vm"
+    datalab.vm.network "private_network", ip:"192.168.33.81"
+    datalab.vm.provider "virtualbox" do |vb|
+      vb.name = "datalab-mesos-slave1"
+      vb.cpus = 2
+      vb.memory = 2*1024
+    end
+  end
+
+  config.vm.define "mesos-slave2" do |datalab|
+    datalab.vm.box = "centos/7"
+    datalab.vm.hostname = "datalab-mesos-slave2.vm"
+    datalab.vm.network "private_network", ip:"192.168.33.82"
+    datalab.vm.provider "virtualbox" do |vb|
+      vb.name = "datalab-mesos-slave2"
+      vb.cpus = 2
+      vb.memory = 2*1024
+    end
+  end
+
+  config.vm.define "mesos-slave3" do |datalab|
+    datalab.vm.box = "centos/7"
+    datalab.vm.hostname = "datalab-mesos-slave3.vm"
+    datalab.vm.network "private_network", ip:"192.168.33.83"
+    datalab.vm.provider "virtualbox" do |vb|
+      vb.name = "datalab-mesos-slave3"
+      vb.cpus = 2
+      vb.memory = 2*1024
+    end
+    datalab.vm.provision :ansible do |ansible|
       ansible.inventory_path = "vagrant-inventory.ini"
-      ansible.playbook = "qualif.yml"
+      ansible.playbook = "datalab.yml"
       ansible.extra_vars = { user:"vagrant"}
       ansible.sudo = true
       ansible.limit = 'all'

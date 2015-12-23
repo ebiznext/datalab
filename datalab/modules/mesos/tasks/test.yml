@@ -1,6 +1,12 @@
 ---
 
 # Test mesos cluster
-- name: test mesos cluster
-  shell: MASTER=$(mesos-resolve `cat /etc/mesos/zk`) && mesos-execute --master=$MASTER --name="cluster-test" --command="sleep 2"
+- name: test mesos master
+  shell: MASTER=$(mesos-resolve `cat /etc/mesos/zk`)
   sudo: yes
+  when: mesos.master|bool
+
+- name: test mesos slave
+  shell: MASTER=$(mesos-resolve `cat /etc/mesos/zk`) && mesos-execute --master=$MASTER --name="cluster-test-{{ansible_hostname}}" --command="sleep 2"
+  sudo: yes
+  when: not mesos.master|bool

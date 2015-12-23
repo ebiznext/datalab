@@ -1,5 +1,13 @@
 ---
 
+- apt: name=wget state=latest update_cache=yes cache_valid_time=3600
+  sudo: yes
+  when: (ansible_os_family == "Debian")
+
+- yum: name=wget state=latest update_cache=yes
+  sudo: yes
+  when: (ansible_os_family == "RedHat")
+
 - file: path="{{ mesos_dns.install_dir }}" state=directory
 
 - stat: path={{mesos_dns.prebuilt.file}}
@@ -50,9 +58,10 @@
   when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
 
 - set_fact: mesos_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/mesos"
-  when: zookeeper_facts.results is defined
+  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
 
 - name: configure mesos-dns
   template:
     src: config.json
     dest: "{{ mesos_dns.base_dir }}/config.json"
+  sudo: yes

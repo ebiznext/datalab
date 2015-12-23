@@ -3,10 +3,14 @@
 - include: dependencies.yml
   when: zeppelin.dependencies|bool
 
+- local_action: stat path={{zeppelin.prebuilt.local_file}}
+  sudo: no
+  register: zeppelin_local_file
+
 - include: pre-install.yml
 
 - include: compile.yml
-  when: zeppelin.build.do|bool
+  when: zeppelin.build.do|bool and not zeppelin_local_file.stat.exists
 
 - include: install.yml
 

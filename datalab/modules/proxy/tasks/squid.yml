@@ -5,7 +5,7 @@
     sudo: yes
     when: ansible_os_family == "Debian"
 
-  - name: Install easy_install, python-dev package with apt
+  - name: Install dependencies for Debian
     apt:
       pkg: "{{ item }}"
       state: latest
@@ -15,6 +15,7 @@
     with_items:
       - python-dev
       - python-setuptools #easy_install
+      - apache2-utils
     when: ansible_os_family == "Debian"
 
   - lineinfile: dest=/etc/yum.conf regexp='^proxy.*=' state=absent
@@ -27,11 +28,12 @@
       state: absent
     when: ansible_os_family == "RedHat"
 
-  - name: Install easy_install package
+  - name: Install dependencies for RedHat
     yum: name={{item}} state=latest update_cache=yes
     sudo: yes
     with_items:
       - python-setuptools
+      - httpd-tools
     when: ansible_os_family == "RedHat"
 
   # We must install pip before we can use the pip module below
@@ -49,14 +51,12 @@
     sudo: yes
     with_items:
       - squid
-      - apache2-utils
     when: ansible_os_family == "Debian"
 
   - yum: name={{item}} state=latest
     sudo: yes
     with_items:
       - squid
-      - httpd-tools
     when: ansible_os_family == "RedHat"
 
 # Configure squid
@@ -76,11 +76,24 @@
       password: "{{proxy_password}}"
       state: present
 
+  - name: retrieve squid version for RedHat
+    shell: rpm -q squid
+    register: redhat_squid_version
+    when: ansible_os_family == "RedHat"
+
+  - name: retrieve squid version for Debian
+    shell: dpkg -s squid | grep Version
+    register: debian_squid_version
+    when: ansible_os_family == "Debian"
+
   - set_fact: ncsa_auth=/usr/lib/squid3/basic_ncsa_auth
     when: ansible_os_family == "Debian"
 
   - set_fact: ncsa_auth=/usr/lib64/squid/ncsa_auth
-    when: ansible_os_family == "RedHat"
+    when: ansible_os_family == "RedHat" and (redhat_squid_version.stdout | group("squid-([0-9]+\.[0-9]+\.[0-9]+).*", 1) | version_compare(3.3, '<'))
+
+  - set_fact: ncsa_auth=/usr/lib64/squid/basic_ncsa_auth
+    when: ansible_os_family == "RedHat" and (redhat_squid_version.stdout | group("squid-([0-9]+\.[0-9]+\.[0-9]+).*", 1) | version_compare(3.3, '>='))
 
   - set_fact: cache_dir=/var/spool/squid3
     when: ansible_os_family == "Debian"
@@ -88,9 +101,15 @@
   - set_fact: cache_dir=/var/spool/squid
     when: ansible_os_family == "RedHat"
 
-  - template: src=squid.conf dest=/etc/squid3/ mode=644
+  - template: src=squid.conf dest=/etc/squid3/squid.conf mode=644
     register: squid_conf
     sudo: yes
+    when: (ansible_os_family == "Debian" and (debian_squid_version.stdout | group("Version:\s([0-9]+\.[0-9]+\.[0-9]+).*", 1) | version_compare(3.3, '<'))) or (ansible_os_family == "RedHat" and (redhat_squid_version.stdout | group("squid-([0-9]+\.[0-9]+\.[0-9]+).*", 1) | version_compare(3.3, '<')))
+
+  - template: src=squid2.conf dest=/etc/squid3/squid.conf mode=644
+    register: squid2_conf
+    sudo: yes
+    when: (ansible_os_family == "Debian" and (debian_squid_version.stdout | group("Version:\s([0-9]+\.[0-9]+\.[0-9]+).*", 1) | version_compare(3.3, '>='))) or (ansible_os_family == "RedHat" and (redhat_squid_version.stdout | group("squid-([0-9]+\.[0-9]+\.[0-9]+).*", 1) | version_compare(3.3, '>=')))
 
 # (Re)Start squid
   - set_fact: squid_service=squid3

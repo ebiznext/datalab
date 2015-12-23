@@ -5,6 +5,7 @@ zeppelin:
   download_dir: "{{ zeppelin_download_directory }}"
   install_dir: "{{ zeppelin_download_directory }}/incubator-zeppelin"
   base_dir: "{{ zeppelin_home_directory }}"
+  local_dir: "{{ zeppelin_local_directory }}"
   user: '{{zeppelin_user}}'
   group: '{{zeppelin_group}}'
 
@@ -12,6 +13,7 @@ zeppelin:
     package_name: "{{ zeppelin_prebuilt_package_name }}"
     file: "{{zeppelin_download_directory}}/{{zeppelin_prebuilt_file}}"
     url: "{{zeppelin_prebuilt_url}}"
+    local_file: "{{ zeppelin_local_directory }}/zeppelin-{{ zeppelin_version }}-incubating.tar.gz"
 
   build:
     do: "{{ zeppelin_do_build }}"
@@ -24,6 +26,8 @@ zeppelin:
     git:
       url: "{{zeppelin_git_url}}"
       branch: "{{zeppelin_git_branch}}"
+    distrib:
+      file: "{{ zeppelin_home_directory }}/zeppelin-distribution/target/zeppelin-{{ zeppelin_version }}-incubating.tar.gz"
 
   service:
     server_port: "{{ zeppelin_service_server_port }}"

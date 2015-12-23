@@ -1,8 +1,12 @@
 ---
 
 # Install jdk 7
+- stat: path=/tmp/jdk-7u79-linux-x64.tar.gz
+  register: jdk_file
+
 - name: get jdk7
   shell: "wget --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' -q -O /tmp/jdk-7u79-linux-x64.tar.gz http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-linux-x64.tar.gz"
+  when: not jdk_file.stat.exists
 
 - unarchive: src=/tmp/jdk-7u79-linux-x64.tar.gz dest=/tmp/ copy=no
 
