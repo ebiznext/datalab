@@ -4,6 +4,7 @@
   user: name="{{ maven.user }}"
         shell=/bin/false
         state=present
+  sudo: yes
 
 - file: path="{{ maven.download_dir }}" state=directory
 
@@ -15,12 +16,12 @@
   when: maven_file.stat.exists
 
 - name: get maven keys
-  shell: wget -q -O {{ maven.install_dir }}/KEYS {{apache_mirror}}maven/KEYS
+  shell: wget -q -O {{ maven.download_dir }}/KEYS {{apache_mirror}}maven/KEYS
   register: maven_keys
   when: maven_file.stat.exists
 
 - name: import maven keys
-  shell: gpg --import {{ maven.install_dir }}/KEYS
+  shell: gpg --import {{ maven.download_dir }}/KEYS
   when: maven_file.stat.exists and maven_keys|success
 
 - name: verify maven prebuilt file
@@ -38,17 +39,20 @@
     state=directory
     mode=0755
     dest={{ maven.install_dir }}
+  sudo: yes
 
 - name: Install Maven
   unarchive: src="{{maven.file}}"
              dest="{{maven.install_dir}}"
              copy=no
+  sudo: yes
 
 - name: Install Maven bin directory
   file:
     state=directory
     mode=0755
     dest={{ maven.bin_path }}
+  sudo: yes
 
 - name: Install Maven binary
   file:
@@ -56,6 +60,7 @@
     force=true
     src={{ maven.install_dir }}/apache-maven-{{ maven.version }}/bin/mvn
     dest={{ maven.bin_path }}/mvn
+  sudo: yes
 
 - name: Create default maven lib directory
   file:
@@ -64,6 +69,7 @@
     owner="{{ maven.user }}"
     group="{{ maven.user }}"
     mode=0777
+  sudo: yes
 
 - name: Deploy default maven settings.xml
   template:
@@ -71,3 +77,4 @@
     dest="{{ maven.install_dir }}/apache-maven-{{ maven.version }}/conf/settings.xml"
     owner="{{ maven.user }}"
     group="{{ maven.user }}"
+  sudo: yes
