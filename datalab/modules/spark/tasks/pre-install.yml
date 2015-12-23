@@ -5,9 +5,11 @@
 
 - name: ensure spark group exist
   group: name={{spark.group}}
+  sudo: yes
 
 - name: ensure spark user exist
   user: name={{spark.user}} group={{spark.group}}
+  sudo: yes
 
 - name: install from pre-built packaged
   include: install_from_prebuilt.yml
@@ -23,3 +25,4 @@
     - "{{ spark.base_dir }}"
     - "{{ spark.log_dir }}"
     - "{{ spark.run_dir }}"
+  sudo: yes
