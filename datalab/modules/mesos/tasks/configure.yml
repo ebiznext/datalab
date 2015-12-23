@@ -41,13 +41,23 @@
   when: mesos.master|bool
 
 # Hostname
-- name: update hostname configuration for mesos
+- name: update hostname configuration for mesos master
   template: src=hostname dest=/etc/mesos-master/hostname
   sudo: yes
   when: mesos.master|bool
 
+- name: update hostname configuration for mesos slave
+  template: src=hostname dest=/etc/mesos-slave/hostname
+  sudo: yes
+  when: not mesos.master|bool
+
 # ip
-- name: update ip configuration for mesos
+- name: update ip configuration for mesos master
   template: src=ip dest=/etc/mesos-master/ip
   sudo: yes
   when: mesos.master|bool
+
+- name: update ip configuration for mesos slave
+  template: src=ip dest=/etc/mesos-slave/ip
+  sudo: yes
+  when: not mesos.master|bool
