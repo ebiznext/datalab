@@ -1,10 +1,11 @@
 ---
 
-  - name: Install Zookeeper
-    hosts: zookeeper
+  - name: Install proxy
+    hosts: proxy
     remote_user: $user
+    sudo: yes
     roles:
-      - {role: zookeeper}
+      - {role: proxy}
 
   - name: Build and launch docker registry
     hosts: registry
@@ -13,7 +14,19 @@
     roles:
       - {role: docker}
       - {role: docker.registry}
-      - {role: docker.registry.login}
+
+  - name: Install Docker
+    hosts: docker
+    remote_user: $user
+    roles:
+      - {role: docker}
+#      - {role: docker.registry.login}
+
+  - name: Install Zookeeper
+    hosts: zookeeper
+    remote_user: $user
+    roles:
+      - {role: zookeeper}
 
   - name: Install and launch Mesos
     hosts: mesos

@@ -1,0 +1,10 @@
+---
+
+ansible_ssh_host: 192.168.33.70
+ansible_ssh_user: vagrant
+ansible_ssh_pass: vagrant
+
+zookeeper_id: 2
+
+docker_registry_host: "datalab-docker-registry.vm"
+docker_registry_ip: "192.168.33.70"

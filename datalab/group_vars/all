@@ -150,7 +150,7 @@ zeppelin_dependencies: yes
 # mesos
 #
 mesos_version: 0.26.0
-mesos_standalone: yes
+mesos_standalone: no
 mesos_master: "{{ 'master' in group_names or mesos_standalone }}"
 
 #

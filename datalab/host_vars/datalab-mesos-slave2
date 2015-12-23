@@ -1,0 +1,5 @@
+---
+
+ansible_ssh_host: 192.168.33.82
+ansible_ssh_user: vagrant
+ansible_ssh_pass: vagrant
