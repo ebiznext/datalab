@@ -16,6 +16,7 @@
   delegate_to: "{{item}}"
   with_items: "{{groups['zookeeper']|list}}"
   register: zookeeper_facts
+  sudo: yes
   when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
 
 - set_fact: mesos_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/mesos"
@@ -36,4 +37,5 @@
 
 - name: update quorum configuration for mesos
   template: src=quorum dest=/etc/mesos-master/quorum
+  sudo: yes
   when: mesos.master|bool
