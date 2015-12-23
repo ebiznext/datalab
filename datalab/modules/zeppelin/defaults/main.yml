@@ -24,5 +24,3 @@ zeppelin_service_server_port: 8080
 zeppelin_service_server_addr: "0.0.0.0"
 zeppelin_service_action: stop
 zeppelin_dependencies: yes
-zeppelin_mesos_master: "zk://{{ansible_fqdn}}:2181/mesos"
-

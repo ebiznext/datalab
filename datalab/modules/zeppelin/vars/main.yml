@@ -43,6 +43,3 @@ zeppelin:
       - fontconfig-devel
     npm:
       - grunt-cli
-
-  mesos:
-    master: "{{zeppelin_mesos_master}}"

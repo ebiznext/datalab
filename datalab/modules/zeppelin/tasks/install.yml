@@ -6,6 +6,17 @@
 - name: Copy zeppelin-site.xml file
   template: src=zeppelin-site.xml.j2 dest="{{ zeppelin.base_dir }}/conf/zeppelin-site.xml"
 
+- name: gather facts from zookeeper servers
+  setup:
+    filter: ansible_local
+  delegate_to: "{{item}}"
+  with_items: "{{groups['zookeeper']|list}}"
+  register: zookeeper_facts
+  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+
+- set_fact: mesos_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/mesos"
+  when: zookeeper_facts.results is defined
+
 - name: Copy zeppelin-env.sh file
   template: src=zeppelin-env.sh.j2 dest="{{ zeppelin.base_dir }}/conf/zeppelin-env.sh"
 
