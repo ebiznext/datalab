@@ -28,7 +28,7 @@
 
 # Quorum
 - name: calculate quorum
-  set_fact: mesos_quorum={{(groups['master']|length)/2 + 1}}
+  set_fact: mesos_quorum={{((groups['master']|length)/2)|int + 1}}
   when: mesos.master|bool and (groups['master']|length > 1)
 
 - name: fix quorum
