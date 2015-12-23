@@ -6,3 +6,6 @@ ansible_ssh_pass: vagrant
 
 zookeeper_id: 3
 zookeeper_ip: 192.168.33.80
+
+mesos_master_hostname: "{{ansible_fqdn}}"
+mesos_master_ip: 192.168.33.80

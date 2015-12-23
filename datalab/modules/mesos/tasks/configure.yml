@@ -39,3 +39,15 @@
   template: src=quorum dest=/etc/mesos-master/quorum
   sudo: yes
   when: mesos.master|bool
+
+# Hostname
+- name: update hostname configuration for mesos
+  template: src=hostname dest=/etc/mesos-master/hostname
+  sudo: yes
+  when: mesos.master|bool
+
+# ip
+- name: update ip configuration for mesos
+  template: src=ip dest=/etc/mesos-master/ip
+  sudo: yes
+  when: mesos.master|bool
