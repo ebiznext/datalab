@@ -121,7 +121,7 @@ spark_group: spark
 spark_version: 1.4.1
 spark_home_directory: /usr/local/spark
 spark_download_directory: /tmp
-spark_do_build: yes
+spark_do_build: no
 spark_build_checkout: tarball
 spark_build_sbt_launch_version: 0.13.7
 spark_build_options: ""
