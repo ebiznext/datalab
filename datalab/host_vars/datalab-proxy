@@ -7,3 +7,4 @@ ansible_ssh_pass: vagrant
 __proxy_mock: yes
 
 zookeeper_id: 1
+zookeeper_ip: 192.168.33.60

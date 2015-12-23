@@ -5,3 +5,4 @@ ansible_ssh_user: vagrant
 ansible_ssh_pass: vagrant
 
 zookeeper_id: 3
+zookeeper_ip: 192.168.33.80
