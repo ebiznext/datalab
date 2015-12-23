@@ -5,9 +5,11 @@
 
 - name: ensure zeppelin group exist
   group: name={{zeppelin.group}}
+  sudo: yes
 
 - name: ensure zeppelin user exist
   user: name={{zeppelin.user}} group={{zeppelin.group}}
+  sudo: yes
 
 - name: install from pre-built packaged
   include: install_from_prebuilt.yml

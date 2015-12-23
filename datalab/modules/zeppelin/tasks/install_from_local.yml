@@ -12,6 +12,8 @@
              copy=no
 
 - file: path={{zeppelin.base_dir}} state=absent
+  sudo: yes
 
 - name: rename zeppelin base dir
   shell: "mv {{ zeppelin.install_dir }}/zeppelin-{{ zeppelin.version }}-incubating {{ zeppelin.base_dir }}"
+  sudo: yes
