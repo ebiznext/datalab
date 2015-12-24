@@ -1,13 +1,5 @@
 ---
 
-# TODO Configure Zookeeper
-
-# Start Zookeeper
-- name: Start zookeeper
-  shell: "{{zookeeper_home_dir}}/bin/zkServer.sh restart"
-  sudo: yes
-  when: mesos.master|bool
-
 # Configure Mesos & Marathon
 # Zookeeper
 - name: gather facts from zookeeper servers
