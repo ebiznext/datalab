@@ -82,6 +82,8 @@ zookeeper_log_dir: /var/log/zookeeper
 zookeeper_id: 0
 zookeeper_ip: 127.0.0.1
 zookeepers: []
+zookeeper_user: zookeeper
+zookeeper_group: "{{zookeeper_user}}"
 
 #
 # kafka

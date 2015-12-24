@@ -45,27 +45,72 @@
   shell: "mv {{ zookeeper.download_dir}}/{{zookeeper.package_name}} {{zookeeper.home_dir}}"
   sudo: yes
 
-- name: Configure Zk
+# Configure
+- name: Create zookeeper group
+  group: name={{ zookeeper.group }}
+  sudo: yes
+
+- name: Create zookeeper user
+  user: name={{ zookeeper.user }} group={{ zookeeper.group }} createhome=no system=yes shell=/bin/bash
+  sudo: yes
+
+- file: path={{ zookeeper.home_dir }} owner={{ zookeeper.user }} group={{ zookeeper.group }} recurse=yes state=directory
+  sudo: yes
+
+- name: Create zookeeper configuration
   template: src=zoo.cfg
             dest={{ zookeeper.home_dir }}/conf/
+            owner={{ zookeeper.user }}
+            group={{ zookeeper.group }}
+  sudo: yes
+
+- name: Create zookeeper environment
+  template: src=zookeeper-env.sh
+            dest={{ zookeeper.home_dir }}/conf/
+            owner={{ zookeeper.user }}
+            group={{ zookeeper.group }}
   sudo: yes
 
 - name: Create zookeeper log dir if it does not exist
   file: path={{ zookeeper.log.dir }}
         state=directory
+        owner={{ zookeeper.user }}
+        group={{ zookeeper.group }}
   sudo: yes
 
 - name: Create zookeeper data dir if it does not exist
   file: path={{ zookeeper.config.dataDir }}
         state=directory
+        owner={{ zookeeper.user }}
+        group={{ zookeeper.group }}
+        recurse=yes
   sudo: yes
 
 - name: Configure Zk id
   template: src=myid
             dest={{ zookeeper.config.dataDir }}/
+        owner={{ zookeeper.user }}
+        group={{ zookeeper.group }}
   sudo: yes
   when: zookeeper.id > 0
 
+# (Re)Start Zookeeper
+- template: src=zookeeper-redhat dest=/etc/init.d/zookeeper mode=0750
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: enable and restart zookeeper service
+  service: name=zookeeper state=restarted enabled=yes
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: (Re)Start zookeeper #TODO start as a service
+  shell: "{{zookeeper_home_dir}}/bin/zkServer.sh restart"
+  sudo: yes
+  sudo_user: "{{ zookeeper.user }}"
+  when: ansible_os_family == 'Debian'
+
+# Update local ansible facts
 - file: path=/etc/ansible/facts.d state=directory
   sudo: yes
   when: zookeeper.id > 0

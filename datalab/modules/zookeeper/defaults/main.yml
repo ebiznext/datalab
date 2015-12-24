@@ -16,3 +16,5 @@ zookeeper_config_clientPort: 2181
 zookeeper_log_dir: /var/log/zookeeper
 zookeeper_id: 0
 zookeeper_ip: "{{ hostvars[inventory_hostname]['ansible_eth1']['ipv4']['address'] }}"
+zookeeper_user: zookeeper
+zookeeper_group: "{{zookeeper_user}}"

@@ -1,0 +1,83 @@
+#!/bin/bash
+#
+# zookeeper - Startup script for the Apache Zookeeper service
+# description: A high-performance coordination service for distributed applications.
+# processname: zookeeper
+# chkconfig: 244 30 80
+
+### BEGIN INIT INFO
+# Provides: zookeeper
+# Required-Start: $local_fs $network $remote_fs
+# Required-Stop: $local_fs $network $remote_fs
+# Should-Start: $named $time
+# Should-Stop: $named $time
+# Short-Description: Startup script for the Apache Zookeeper service
+# Description: A high-performance coordination service for distributed applications.
+### END INIT INFO
+
+exec="{{ zookeeper.home_dir }}/bin/zkServer.sh"
+config={{ zookeeper.home_dir }}/conf/zoo.cfg
+service_user="{{ zookeeper.user }}"
+prog="zookeeper"
+
+[ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
+
+lockfile=${LOCKFILE-/var/lock/subsys/$prog}
+pidfile=${PIDFILE-/var/run/$prog.pid}
+
+start() {
+    [ -x $exec ] || exit 5
+    [ -f $config ] || exit 6
+    echo -n $"Starting $prog: "
+    runuser --shell=/bin/sh $service_user $exec start
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && touch $lockfile
+    return $retval
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    runuser --shell=/bin/sh $service_user $exec stop
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
+
+status() {
+    runuser --shell=/bin/sh $service_user $exec status
+}
+
+restart () {
+    runuser --shell=/bin/sh $service_user $exec restart
+}
+
+force_reload() {
+    restart
+}
+
+case "$1" in
+    start)
+        $1
+        ;;
+    stop)
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    force-reload|reload)
+        restart
+        ;;
+    status)
+        $1
+        ;;
+    condrestart|try-restart)
+        restart
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        exit 2
+esac
+exit $?

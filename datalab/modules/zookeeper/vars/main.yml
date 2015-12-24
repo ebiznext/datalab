@@ -10,6 +10,8 @@ zookeeper:
   url: "{{zookeeper_download_package_url}}"
   sha1: "{{zookeeper_download_package_url}}.sha1"
   home_dir: "{{ zookeeper_home_dir }}"
+  user: "{{ zookeeper_user }}"
+  group: "{{ zookeeper_group }}"
 
   config:
     # The number of milliseconds of each tick
