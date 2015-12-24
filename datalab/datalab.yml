@@ -7,20 +7,20 @@
     roles:
       - {role: proxy}
 
-#  - name: Build and launch docker registry
-#    hosts: registry
-#    remote_user: $user
-#    sudo: yes
-#    roles:
-#      - {role: docker}
-#      - {role: docker.registry}
+  - name: Build and launch docker registry
+    hosts: registry
+    remote_user: $user
+    sudo: yes
+    roles:
+      - {role: docker}
+      - {role: docker.registry}
 
-#  - name: Install Docker
-#    hosts: docker
-#    remote_user: $user
-#    roles:
-#      - {role: docker}
-#      - {role: docker.registry.login}
+  - name: Install Docker
+    hosts: docker
+    remote_user: $user
+    roles:
+      - {role: docker}
+      - {role: docker.registry.login}
 
   - name: Install Zookeeper
     hosts: zookeeper
