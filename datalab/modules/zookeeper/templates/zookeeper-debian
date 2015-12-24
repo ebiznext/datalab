@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 # zookeeper - Startup script for the Apache Zookeeper service
-# chkconfig: 2345 89 9
+#
+# chkconfig: 35 85 15
 # description: A high-performance coordination service for distributed applications.
-# processname: zookeeper
 
 ### BEGIN INIT INFO
 # Provides: zookeeper
@@ -20,37 +20,32 @@ config={{ zookeeper.home_dir }}/conf/zoo.cfg
 service_user="{{ zookeeper.user }}"
 prog="zookeeper"
 
-[ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
-
-lockfile=${LOCKFILE-/var/lock/subsys/$prog}
-pidfile=${PIDFILE-/var/run/$prog.pid}
+[ -e /etc/default/$prog ] && . /etc/default/$prog
 
 start() {
     [ -x $exec ] || exit 5
     [ -f $config ] || exit 6
     echo -n $"Starting $prog: "
-    runuser --shell=/bin/sh $service_user $exec start
+    su --shell /bin/bash $service_user -c "$exec start"
     retval=$?
     echo
-    [ $retval -eq 0 ] && touch $lockfile
     return $retval
 }
 
 stop() {
     echo -n $"Stopping $prog: "
-    runuser --shell=/bin/sh $service_user $exec stop
+    su --shell /bin/bash $service_user -c "$exec stop"
     retval=$?
     echo
-    [ $retval -eq 0 ] && rm -f $lockfile
     return $retval
 }
 
 status() {
-    runuser --shell=/bin/sh $service_user $exec status
+    exec $exec status
 }
 
 restart () {
-    runuser --shell=/bin/sh $service_user $exec restart
+    su --shell /bin/bash $service_user -c "$exec restart"
 }
 
 force_reload() {

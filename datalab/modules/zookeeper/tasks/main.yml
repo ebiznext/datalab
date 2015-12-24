@@ -92,29 +92,26 @@
         owner={{ zookeeper.user }}
         group={{ zookeeper.group }}
   sudo: yes
-  when: zookeeper.id > 0
+  when: zookeeper.id|int > 0
 
 # (Re)Start Zookeeper
 - template: src=zookeeper-redhat dest=/etc/init.d/zookeeper mode=0750
   sudo: yes
   when: ansible_os_family == 'RedHat'
 
+- template: src=zookeeper-debian dest=/etc/init.d/zookeeper mode=0750
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
 - name: enable and restart zookeeper service
   service: name=zookeeper state=restarted enabled=yes
   sudo: yes
-  when: ansible_os_family == 'RedHat'
-
-- name: (Re)Start zookeeper #TODO start as a service
-  shell: "{{zookeeper_home_dir}}/bin/zkServer.sh restart"
-  sudo: yes
-  sudo_user: "{{ zookeeper.user }}"
-  when: ansible_os_family == 'Debian'
 
 # Update local ansible facts
 - file: path=/etc/ansible/facts.d state=directory
   sudo: yes
-  when: zookeeper.id > 0
+  when: zookeeper.id|int > 0
 
 - template: src=datalab.fact dest="/etc/ansible/facts.d/datalab.fact"
   sudo: yes
-  when: zookeeper.id > 0
+  when: zookeeper.id|int > 0
