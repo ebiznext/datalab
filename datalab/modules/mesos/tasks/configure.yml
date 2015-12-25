@@ -77,3 +77,9 @@
   template: src=ip dest=/etc/mesos-slave/ip
   sudo: yes
   when: not mesos.master|bool
+
+# Cluster
+- name: update cluster configuration for mesos master
+  template: src=cluster dest=/etc/mesos-master/cluster
+  sudo: yes
+  when: mesos.master|bool

@@ -156,6 +156,7 @@ mesos_standalone: no
 mesos_hostname: localhost
 mesos_ip: 127.0.0.1
 mesos_master: "{{ 'master' in group_names or mesos_standalone }}"
+mesos_cluster: datalab
 
 #
 # mesos-dns
