@@ -1,6 +1,11 @@
 ---
 
 # Configure Mesos & Marathon
+
+- file: path=/etc/marathon/conf state=directory
+  sudo: yes
+  when: mesos.master|bool
+
 # Zookeeper
 - name: gather facts from zookeeper servers
   setup:
@@ -9,14 +14,28 @@
   with_items: "{{groups['zookeeper']|list}}"
   register: zookeeper_facts
   sudo: yes
-  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+  ignore_errors: yes
+  when: groups.zookeeper is defined and (not mesos_zookeepers is defined or not marathon_zookeepers is defined)
 
 - set_fact: mesos_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/mesos"
-  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+  when: groups.zookeeper is defined and (not mesos_zookeepers is defined) and zookeeper_facts|success
 
-- name: update zookeeper configuration for mesos
-  template: src=zk dest=/etc/mesos/zk
+- name: update master zookeeper configuration for mesos
+  template: src=master_zk dest=/etc/mesos/zk
   sudo: yes
+
+- name: update master zookeeper configuration for marathon
+  template: src=master_zk dest=/etc/marathon/conf/master
+  sudo: yes
+  when: mesos.master|bool
+
+- set_fact: marathon_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/marathon"
+  when: groups.zookeeper is defined and (not marathon_zookeepers is defined) and zookeeper_facts|success
+
+- name: update marathon zookeeper configuration
+  template: src=marathon_zk dest=/etc/marathon/conf/zk
+  sudo: yes
+  when: mesos.master|bool
 
 # Quorum
 - name: calculate quorum
@@ -35,6 +54,11 @@
 # Hostname
 - name: update hostname configuration for mesos master
   template: src=hostname dest=/etc/mesos-master/hostname
+  sudo: yes
+  when: mesos.master|bool
+
+- name: update hostname configuration for mesos marathon
+  template: src=hostname dest=/etc/marathon/conf/hostname
   sudo: yes
   when: mesos.master|bool
 
