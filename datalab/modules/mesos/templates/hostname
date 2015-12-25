@@ -1,1 +1,1 @@
-{{mesos_master_hostname}}
+{{mesos_hostname}}

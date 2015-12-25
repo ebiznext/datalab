@@ -153,8 +153,8 @@ zeppelin_dependencies: yes
 #
 mesos_version: 0.26.0
 mesos_standalone: no
-mesos_master_hostname: localhost
-mesos_master_ip: 127.0.0.1
+mesos_hostname: localhost
+mesos_ip: 127.0.0.1
 mesos_master: "{{ 'master' in group_names or mesos_standalone }}"
 
 #
