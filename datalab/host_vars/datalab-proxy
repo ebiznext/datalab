@@ -9,5 +9,5 @@ __proxy_mock: yes
 zookeeper_id: 1
 zookeeper_ip: 192.168.33.60
 
-mesos_master_hostname: "{{ansible_fqdn}}"
-mesos_master_ip: 192.168.33.60
+mesos_hostname: "{{ansible_fqdn}}"
+mesos_ip: 192.168.33.60

@@ -7,8 +7,8 @@ ansible_ssh_pass: vagrant
 zookeeper_id: 2
 zookeeper_ip: 192.168.33.70
 
-mesos_master_hostname: "{{ansible_fqdn}}"
-mesos_master_ip: 192.168.33.70
+mesos_hostname: "{{ansible_fqdn}}"
+mesos_ip: 192.168.33.70
 
 docker_registry_host: "datalab-docker-registry.vm"
 docker_registry_ip: "192.168.33.70"
