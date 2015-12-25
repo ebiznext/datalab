@@ -44,8 +44,14 @@
   sudo: yes
   when: mesos.master|bool and (not mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '<')
 
+- name: stop mesos-slave service on RedHat / CentOS 7
+  service: name=mesos-slave state=stopped
+  sudo: yes
+  ignore_errors: yes
+  when: ansible_distribution_version|version_compare(7, '>=')
+
 - name: disable mesos-slave service on RedHat / CentOS 7
-  service: name=mesos-slave state=stopped enabled=no
+  service: name=mesos-slave enabled=no
   sudo: yes
   ignore_errors: yes
   when: mesos.master|bool and (not mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '>=')
@@ -62,8 +68,14 @@
   sudo: yes
   when: not mesos.master|bool and (not mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '<')
 
+- name: stop mesos-master service on RedHat / CentOS 7
+  service: name=mesos-master state=stopped
+  sudo: yes
+  ignore_errors: yes
+  when: ansible_distribution_version|version_compare(7, '>=')
+
 - name: disable mesos-master service on RedHat / CentOS 7
-  service: name=mesos-master state=stopped enabled=no
+  service: name=mesos-master enabled=no
   sudo: yes
   ignore_errors: yes
   when: not mesos.master|bool and (not mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '>=')
