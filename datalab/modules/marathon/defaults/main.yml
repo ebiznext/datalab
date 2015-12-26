@@ -3,7 +3,7 @@
 #
 # Marathon
 #
-marathon_api: "http://{{ ansible_fqdn }}:8080/v2/apps"
+marathon_api: "http://{{ hostvars[inventory_hostname]['ansible_eth1']['ipv4']['address'] }}:8080/v2/apps"
 
 #
 # elasticsearch
@@ -18,3 +18,10 @@ elasticsearch_config_java_opts: ""
 #
 mesos_dns_id: mesos-dns
 mesos_dns_mem: 512
+mesos_dns_fqdn: "marathon.mesos"
+
+#
+# kibana
+#
+kibana_id: kibana
+kibana_mem: 512

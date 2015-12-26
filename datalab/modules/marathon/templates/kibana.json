@@ -1,0 +1,19 @@
+{
+    "id": "{{kibana_id}}",
+    "instances": 1,
+    "cpus": {{ kibana_nb_cpus | default(1) }},
+    "mem": {{ kibana_mem }},
+    "requirePorts": false,
+    "cmd": "ip_es=$(curl http://{{mesos_dns_hostname}}:{{mesos_dns_config_http_port}}/v1/hosts/{{elasticsearch_id}}.{{mesos_dns_fqdn}} | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0][\"ip\"]') && port_es=$(curl {{marathon_api}}/{{elasticsearch_id}}/tasks | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[\"tasks\"][0][\"ports\"][0]') && cd {{ kibana_home_directory }}/config && sed \"s/{{elasticsearch_config_http_server_host|replace(".", "\\\\.")}}/$ip_es/g;s/{{elasticsearch_config_http_server_port}}/$port_es/g;s/{{kibana_config_server_port}}/$PORT/g\" < ./kibana.yml > ./kibana-mesos.yml && chown {{kibana_user}} ./kibana-mesos.yml && cd {{ kibana_home_directory }}/bin && sed \"s/kibana\\.yml/kibana-mesos\\.yml/g;s/{{kibana_config_server_port}}/$PORT/g\" < ./kibana > ./kibana-mesos && chmod u+x ./kibana-mesos && chown {{kibana_user}} ./kibana-mesos && su - {{kibana_user}} -c \"{{ kibana_home_directory }}/bin/kibana-mesos\"",
+    "constraints": [["hostname", "UNIQUE"]],
+    "dependencies": ["/{{ elasticsearch_id }}"],
+    "healthChecks": [
+      {
+        "protocol": "COMMAND",
+        "command": { "value": "curl -f -X GET http://$HOST:$PORT" },
+        "gracePeriodSeconds": 5,
+        "intervalSeconds": 20,
+        "maxConsecutiveFailures": 3
+      }
+    ]
+}
