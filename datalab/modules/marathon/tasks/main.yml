@@ -14,3 +14,5 @@
 - name: install kibana
   include: kibana.yml
 
+- name: install zeppelin
+  include: zeppelin.yml

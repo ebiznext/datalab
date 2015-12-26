@@ -25,3 +25,9 @@ mesos_dns_fqdn: "marathon.mesos"
 #
 kibana_id: kibana
 kibana_mem: 512
+
+#
+# zeppelin
+#
+zeppelin_id: zeppelin
+zeppelin_mem: 512
