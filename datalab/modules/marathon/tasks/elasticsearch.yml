@@ -19,7 +19,7 @@
   when: install_es_response is defined
 
 - name: Wait untils es app is available
-  shell: curl --head --silent {{marathon_api}}/{{elasticsearch_id}}
+  shell: curl --head --silent {{marathon_api}}/{{elasticsearch_id}}/tasks
   register: result
   until: result.stdout.find("200 OK") != -1
   retries: 12

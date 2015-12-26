@@ -19,7 +19,7 @@
   when: install_kibana_response is defined
 
 - name: Wait untils kibana app is available
-  shell: curl --head --silent {{marathon_api}}/{{kibana_id}}
+  shell: curl --head --silent {{marathon_api}}/{{kibana_id}}/tasks
   register: result
   until: result.stdout.find("200 OK") != -1
   retries: 12
