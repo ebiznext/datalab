@@ -1,0 +1,14 @@
+---
+
+#
+# Marathon
+#
+marathon_api: "http://{{ ansible_fqdn }}:8080/v2/apps"
+
+#
+# elasticsearch
+#
+elasticsearch_id: elasticsearch
+elasticsearch_mem: 512
+elasticsearch_config_heap_size: "{{ elasticsearch_mem }}m"
+elasticsearch_config_java_opts: ""

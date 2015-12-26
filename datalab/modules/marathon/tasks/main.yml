@@ -1,0 +1,10 @@
+---
+
+- debug: msg="{{marathon_api}}"
+
+- name: install dependencies
+  include: dependencies.yml
+
+- name: install es
+  include: elasticsearch.yml
+
