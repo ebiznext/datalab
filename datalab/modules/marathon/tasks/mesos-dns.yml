@@ -1,5 +1,6 @@
 ---
 
+# Retrieve mesos master
 - name: Retrieve mesos master
   shell: mesos-resolve `cat /etc/mesos/zk`
   sudo: yes
@@ -9,7 +10,7 @@
 - set_fact: master_api=http://{{master_response.stdout}}
   when: not mesos_dns_hostname is defined and not master_api is defined
 
-# Choose appropriate ;V:BHMG mesos slave
+# Choose appropriate mesos slave
 - name: Retrieve mesos slaves
   uri: url="{{master_api}}/master/state.json" HEADER_Content-Type="application/json" method=GET return_content=yes status_code=200
   register: mesos_state_response
@@ -18,6 +19,7 @@
 - set_fact: mesos_dns_hostname={{(mesos_state_response.content|from_json).slaves | map(attribute='hostname') | list | first}} #FIXME | selectattr("active", "equalto", "true")
   when: not mesos_dns_hostname is defined
 
+# Deploy mesos-dns app
 - name: Retrieve mesos-dns app
   uri: url="{{marathon_api}}/{{mesos_dns_id}}" HEADER_Content-Type="application/json" method=GET return_content=yes status_code=200,404
   register: mesos_dns_app_response
@@ -43,6 +45,7 @@
   retries: 12
   delay: 5
 
+# Update slaves
 - name: update resolve.conf
 #  shell: sed -i '1s/^/nameserver {{ mesos_dns_hostname }}\n /' /etc/resolv.conf
   lineinfile: dest=/etc/resolv.conf line="nameserver {{ mesos_dns_hostname }}" state=present insertbefore=BOF
