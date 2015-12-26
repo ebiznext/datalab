@@ -22,7 +22,7 @@
       - {role: docker}
       - {role: docker.registry.login}
 
-  - name: Install Zookeeper
+  - name: Install and launch Zookeeper
     hosts: zookeeper
     remote_user: $user
     roles:
@@ -34,7 +34,7 @@
     roles:
       - {role: mesos}
 
-  - name: Build and launch datalab
+  - name: Build datalab
     hosts: slave
     remote_user: $user
     roles:
@@ -45,10 +45,15 @@
       - {role: flume}
       - {role: spark}
       - {role: zeppelin}
-#      - {role: marathon}
 
-#  - name: Build and launch datalab docker images
+#  - name: Build datalab docker images
 #    hosts: docker
 #    remote_user: $user
 #    roles:
 #      - {role: docker.flume}
+
+  - name: Launch datalab
+    hosts: marathon
+    remote_user: $user
+    roles:
+      - {role: marathon}

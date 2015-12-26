@@ -1,0 +1,26 @@
+---
+
+- name: Retrieve es app
+  uri: url="{{marathon_api}}/{{elasticsearch_id}}" HEADER_Content-Type="application/json" method=GET return_content=yes status_code=200,404
+  register: es_app_response
+
+- name: remove es app
+  uri: url={{marathon_api}}/{{elasticsearch_id}} HEADER_Content-Type="application/json" method=DELETE return_content=yes status_code=200,204
+  when: "'message' not in {{es_app_response.content}}"
+
+- name: copy es marathon json file
+  template: src=elasticsearch.json dest=/tmp/elasticsearch.json
+
+- name: Install es application
+  shell: 'curl -X POST -H "Content-Type: application/json" {{marathon_api}}?force=true -d@/tmp/elasticsearch.json'
+  register: install_es_response
+
+- debug: var=install_es_response
+  when: install_es_response is defined
+
+- name: Wait untils es app is available
+  shell: curl --head --silent {{marathon_api}}/{{elasticsearch_id}}/tasks
+  register: result
+  until: result.stdout.find("200 OK") != -1
+  retries: 12
+  delay: 5

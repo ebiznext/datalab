@@ -1,0 +1,57 @@
+---
+
+# Retrieve mesos master
+- name: Retrieve mesos master
+  shell: mesos-resolve `cat /etc/mesos/zk`
+  sudo: yes
+  register: master_response
+  when: not mesos_dns_hostname is defined or not mesos_dns_ip is defined or not master_api is defined
+
+- set_fact: master_api=http://{{master_response.stdout}}
+  when: not mesos_dns_hostname is defined or not mesos_dns_ip is defined or not master_api is defined
+
+# Choose appropriate mesos slave
+- name: Retrieve mesos slaves
+  uri: url="{{master_api}}/master/state.json" HEADER_Content-Type="application/json" method=GET return_content=yes status_code=200
+  register: mesos_state_response
+  when: not mesos_dns_hostname is defined or not mesos_dns_ip is defined
+
+- set_fact: mesos_dns_hostname={{(mesos_state_response.content|from_json).slaves | map(attribute='hostname') | list | first }} #FIXME | selectattr("active", "equalto", "true")
+  when: not mesos_dns_hostname is defined or not mesos_dns_ip is defined
+
+- set_fact: mesos_dns_ip={{(mesos_state_response.content|from_json).slaves | map(attribute='pid') | list | first | group('.*@([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}):[0-9]+', 1)}}
+  when: not mesos_dns_hostname is defined or not mesos_dns_ip is defined
+
+# Deploy mesos-dns app
+- name: Retrieve mesos-dns app
+  uri: url="{{marathon_api}}/{{mesos_dns_id}}" HEADER_Content-Type="application/json" method=GET return_content=yes status_code=200,404
+  register: mesos_dns_app_response
+
+- name: remove mesos-dns app
+  uri: url={{marathon_api}}/{{mesos_dns_id}} HEADER_Content-Type="application/json" method=DELETE return_content=yes status_code=200,204
+  when: "'message' not in {{mesos_dns_app_response.content}}"
+
+- name: copy mesos-dns marathon json file
+  template: src=mesos_dns.json dest=/tmp/mesos_dns.json
+
+- name: Install mesos-dns application
+  shell: 'curl -X POST -H "Content-Type: application/json" {{marathon_api}}?force=true -d@/tmp/mesos_dns.json'
+  register: install_mesos_dns_response
+
+- debug: var=install_mesos_dns_response
+  when: install_mesos_dns_response is defined
+
+- name: Wait untils mesos-dns app is available
+  shell: curl --head --silent {{marathon_api}}/{{mesos_dns_id}}/tasks
+  register: result
+  until: result.stdout.find("200 OK") != -1
+  retries: 12
+  delay: 5
+
+# Update slaves
+- name: update resolve.conf
+#  shell: sed -i '1s/^/nameserver {{ mesos_dns_ip }}\n /' /etc/resolv.conf
+  lineinfile: dest=/etc/resolv.conf line="nameserver {{ mesos_dns_ip }}" state=present insertbefore=BOF
+  sudo: yes
+  delegate_to: "{{item}}"
+  with_items: "{{groups['slave']|list}}"

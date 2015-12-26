@@ -1,0 +1,18 @@
+---
+
+- debug: msg="{{marathon_api}}"
+
+- name: install dependencies
+  include: dependencies.yml
+
+- name: install mesos-dns
+  include: mesos-dns.yml
+
+- name: install es
+  include: elasticsearch.yml
+
+- name: install kibana
+  include: kibana.yml
+
+- name: install zeppelin
+  include: zeppelin.yml

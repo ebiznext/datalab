@@ -1,0 +1,23 @@
+{
+    "id": "{{elasticsearch_id}}",
+    "instances": {{ elasticsearch_nb_instances | default(1) }},
+    "cpus": {{ elasticsearch_nb_cpus | default(0.5) }},
+    "mem": {{ elasticsearch_mem }},
+    "env": {
+        "ES_HEAP_SIZE": "{{ elasticsearch_config_heap_size }}",
+        "ES_JAVA_OPTS": "{{ elasticsearch_config_java_opts }}"
+    },
+    "ports":[0, 0],
+    "requirePorts": false,
+    "cmd": "cd {{ elasticsearch_config_directory }} && sed \"s/{{elasticsearch_config_http_server_port}}/$PORT0/g;s/{{elasticsearch_config_tcp_transport_port}}/$PORT1/g\" < ./elasticsearch.yml > ./elasticsearch-mesos.yml && chown {{elasticsearch_user}} ./elasticsearch-mesos.yml && su - {{elasticsearch_user}} -c \"{{ elasticsearch_home_directory }}/bin/elasticsearch -Des.default.path.conf={{ elasticsearch_config_directory }} -Des.config={{ elasticsearch_config_directory }}/elasticsearch-mesos.yml\"",
+    "constraints": [["hostname", "UNIQUE"]],
+    "healthChecks": [
+      {
+        "protocol": "COMMAND",
+        "command": { "value": "curl -f -X GET http://$HOST:$PORT0" },
+        "gracePeriodSeconds": 5,
+        "intervalSeconds": 20,
+        "maxConsecutiveFailures": 3
+      }
+    ]
+}

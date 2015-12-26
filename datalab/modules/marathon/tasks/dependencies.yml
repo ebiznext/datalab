@@ -1,0 +1,33 @@
+---
+
+- name: Install easy_install package for RedHat
+  yum:
+    name: python-setuptools
+    state: latest
+    update_cache: yes
+  sudo: yes
+  with_items:
+    - python-setuptools
+  when: ansible_os_family == 'RedHat'
+
+- name: Install easy_install for Debian
+  apt:
+    pkg: python-setuptools
+    state: latest
+    update_cache: yes
+    cache_valid_time: 3600
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+# We must install pip before we can use the pip module below
+- easy_install: name=pip #state=latest required ansible 2.x
+  environment: "{{proxy_env}}"
+  sudo: yes
+
+# Install latest version of httplib2
+- name: Install latest version of httplib2 with pip
+  pip:
+    name: httplib2
+    state: latest
+    extra_args: "{{ pip_extra_args }}"
+  sudo: yes
