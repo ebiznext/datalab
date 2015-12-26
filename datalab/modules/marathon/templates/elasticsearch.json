@@ -1,7 +1,7 @@
 {
     "id": "{{elasticsearch_id}}",
-    "instances": 1,
-    "cpus": 0.25,
+    "instances": {{ elasticsearch_nb_instances | default(1) }},
+    "cpus": {{ elasticsearch_nb_cpus | default(0.5) }},
     "mem": {{ elasticsearch_mem }},
     "env": {
         "ES_HEAP_SIZE": "{{ elasticsearch_config_heap_size }}",

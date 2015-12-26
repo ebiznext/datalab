@@ -12,3 +12,9 @@ elasticsearch_id: elasticsearch
 elasticsearch_mem: 512
 elasticsearch_config_heap_size: "{{ elasticsearch_mem }}m"
 elasticsearch_config_java_opts: ""
+
+#
+# mesos-dns
+#
+mesos_dns_id: mesos-dns
+mesos_dns_mem: 512

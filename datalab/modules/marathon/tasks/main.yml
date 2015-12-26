@@ -5,6 +5,9 @@
 - name: install dependencies
   include: dependencies.yml
 
+- name: install mesos-dns
+  include: mesos-dns.yml
+
 - name: install es
   include: elasticsearch.yml
 

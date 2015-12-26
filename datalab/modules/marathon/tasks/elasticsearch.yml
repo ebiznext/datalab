@@ -9,13 +9,18 @@
   when: "'message' not in {{es_app_response.content}}"
 
 - name: copy es marathon json file
-  template: src=es-marathon.json dest=/tmp/es-marathon.json
+  template: src=elasticsearch.json dest=/tmp/elasticsearch.json
 
 - name: Install es application
-  shell: 'curl -X POST -H "Content-Type: application/json" {{marathon_api}}?force=true -d@/tmp/es-marathon.json'
+  shell: 'curl -X POST -H "Content-Type: application/json" {{marathon_api}}?force=true -d@/tmp/elasticsearch.json'
   register: install_es_response
 
 - debug: var=install_es_response
   when: install_es_response is defined
 
-- pause: seconds=10
+- name: Wait untils es app is available
+  shell: curl --head --silent {{marathon_api}}/{{elasticsearch_id}}
+  register: result
+  until: result.stdout.find("200 OK") != -1
+  retries: 12
+  delay: 5
