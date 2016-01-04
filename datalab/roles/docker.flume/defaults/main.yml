@@ -1,3 +1,5 @@
 ---
 
 java_major_version: "{{__java_major_version}}"
+
+flume_ext_dir: "{{flume_home_dir}}/ext"
