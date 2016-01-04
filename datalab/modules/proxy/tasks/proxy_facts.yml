@@ -4,8 +4,16 @@
   setup:
   delegate_to: "{{groups.proxy | first}}"
   register: registry_facts
+  when: groups.proxy is defined and groups.proxy|length > 0
 
 - set_fact:
     proxy_host: "{{registry_facts.ansible_facts.ansible_eth1.ipv4.address}}"
     __proxy_url: "http://{{proxy_login}}:{{proxy_password}}@{{registry_facts.ansible_facts.ansible_eth1.ipv4.address}}:{{proxy_port}}"
     __proxy_server: "http://{{registry_facts.ansible_facts.ansible_eth1.ipv4.address}}:{{proxy_port}}"
+  when: groups.proxy is defined and groups.proxy|length > 0
+
+- set_fact:
+    proxy_host: "{{__proxy_host}}"
+    __proxy_url: "http://{{proxy_login}}:{{proxy_password}}@{{__proxy_host}}:{{proxy_port}}"
+    __proxy_server: "http://{{__proxy_host}}:{{proxy_port}}"
+  when: not groups.proxy is defined or groups.proxy|length == 0
