@@ -1,7 +1,13 @@
 ---
 
   - include: proxy_facts.yml
-    when: proxy_enabled|bool and not proxy_host is defined
+    when: proxy_enabled|bool and not proxy_host is defined and groups.proxy is defined and groups.proxy | length > 0
+
+  - set_fact:
+      proxy_host: "{{__proxy_host}}"
+      __proxy_url: "http://{{proxy_login}}:{{proxy_password}}@{{__proxy_host}}:{{proxy_port}}"
+      __proxy_server: "http://{{__proxy_host}}:{{proxy_port}}"
+    when: proxy_enabled|bool and not proxy_host is defined and not groups.proxy is defined or groups.proxy|length == 0
 
   - name: add squid
     include: squid.yml
