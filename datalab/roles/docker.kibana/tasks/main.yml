@@ -72,7 +72,7 @@
     sudo: yes
 
   # Configure logs
-  - file: path={{kibana_log_dir}} group={{kibana_group}} owner={{kibana_user}} mode=0777 state=directory #FIXME
+  - file: path={{kibana_log_dir}} group={{kibana_group}} owner={{kibana_user}} mode=0775 state=directory recurse=yes
     sudo: yes
 
   - name: ensure kibana is running

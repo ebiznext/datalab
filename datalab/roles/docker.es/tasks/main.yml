@@ -72,9 +72,9 @@
     sudo: yes
 
   # Configure data and logs
-  - file: path={{elasticsearch_data_directory}} group={{elasticsearch_group}} owner={{elasticsearch_user}} mode=0775 state=directory
+  - file: path={{elasticsearch_data_directory}} group={{elasticsearch_group}} owner={{elasticsearch_user}} mode=0775 state=directory recurse=yes
     sudo: yes
-  - file: path={{elasticsearch_log_directory}} group={{elasticsearch_group}} owner={{elasticsearch_user}} mode=0775 state=directory
+  - file: path={{elasticsearch_log_directory}} group={{elasticsearch_group}} owner={{elasticsearch_user}} mode=0775 state=directory recurse=yes
     sudo: yes
 
   - name: ensure elasticsearch is running
