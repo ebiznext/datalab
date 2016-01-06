@@ -23,3 +23,5 @@ ADD start.sh /
 RUN chmod u+x /start.sh
 
 CMD /start.sh
+
+EXPOSE 41414

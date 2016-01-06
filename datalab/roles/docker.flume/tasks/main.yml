@@ -99,6 +99,10 @@
       links:
         - zk:zk1
         - es:es
+      expose:
+        - 41414
+      ports:
+        - 41414
       volumes:
         - "{{flume_log_dir}}:{{flume_log_dir}}:rw"
         - "{{flume_config_dir}}:{{flume_config_dir}}:ro"
