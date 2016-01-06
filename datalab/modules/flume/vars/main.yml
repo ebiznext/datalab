@@ -12,5 +12,9 @@ flume:
   config:
     dir: "{{flume_config_dir}}"
 
+  ext:
+    dir: "{{flume_ext_dir}}"
+
   log:
     dir: "{{ flume_log_dir }}"
+    file: "{{ flume_log_file}} "

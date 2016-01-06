@@ -1,0 +1,33 @@
+---
+
+- name: clean previous dependencies
+  shell: "rm -f {{flume.ext.dir}}/*.jar"
+  sudo: yes
+
+#elasticsearch dependencies
+- file: path="{{ elasticsearch_download_directory }}" state=directory
+
+- stat: path={{elasticsearch_download_directory}}/{{elasticsearch_prebuilt_file}} get_checksum=yes
+  register: elasticsearch_file
+
+- shell: curl {{curl_proxy_args}} --stderr /dev/null {{ elasticsearch_prebuit_package_url }}.sha1.txt
+  register: elasticsearch_sha1
+  when: elasticsearch_file.stat.exists
+
+- name: download elasticsearch package
+  shell: wget -q -O {{elasticsearch_download_directory}}/{{elasticsearch_prebuilt_file}} {{ elasticsearch_prebuit_package_url }}
+  when: not elasticsearch_file.stat.exists or (elasticsearch_file.stat.checksum != (elasticsearch_sha1.stdout|split(' '))[0])
+
+- name: untar elasticsearch package
+  unarchive: src="{{elasticsearch_download_directory}}/{{elasticsearch_prebuilt_file}}"
+             dest="{{ elasticsearch_download_directory }}"
+             copy=no
+
+- name: copy elasticsearch dependencies
+  shell: "cp *.jar {{flume.ext.dir}}/ chdir={{elasticsearch_download_directory}}/{{ elasticsearch_package_name }}/lib"
+  sudo: yes
+
+#zookeeper dependencies
+- name: download zookeeper package
+  shell: wget -q -O {{flume.ext.dir}}/zookeeper-{{zookeeper_version}}.jar https://repo1.maven.org/maven2/org/apache/zookeeper/zookeeper/{{zookeeper_version}}/zookeeper-{{zookeeper_version}}.jar
+  sudo: yes

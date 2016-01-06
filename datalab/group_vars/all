@@ -113,6 +113,8 @@ flume_home_dir: /usr/local/flume
 flume_package_name: "apache-flume-{{ flume_version }}-bin"
 flume_config_dir: "{{flume_home_dir}}/conf"
 flume_log_dir: /var/log/flume
+flume_log_file: flume.log
+flume_ext_dir: "{{ flume_home_dir }}/ext"
 
 #
 # hadoop

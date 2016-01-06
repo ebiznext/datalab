@@ -54,8 +54,20 @@
 - file: path="{{ flume.config.dir }}" state=directory
   sudo: yes
 
-- name: Configure flume
-  template: src=flume-conf.properties
-            dest={{ flume.config.dir }}/
+- file: path={{flume.ext.dir}} mode=0755 state=directory
+  sudo: yes
+
+- include: dependencies.yml
+
+- name: copy log4j file
+  template: src=log4j.properties dest={{flume.config.dir}}/
+  sudo: yes
+
+- name: copy flume configuration file
+  template: src=flume-conf.properties dest={{flume.config.dir}}/
+  sudo: yes
+
+- name: copy flume env file
+  template: src=flume-env.sh dest={{flume.config.dir}}/
   sudo: yes
 
