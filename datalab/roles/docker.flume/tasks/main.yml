@@ -77,6 +77,8 @@
   - file: path={{flume_ext_dir}} mode=0755 state=directory
     sudo: yes
 
+  - include: dependencies.yml
+
   - name: copy log4j file
     template: src=log4j.properties dest={{flume_config_dir}}/
     sudo: yes
@@ -102,7 +104,7 @@
         - "{{flume_config_dir}}:{{flume_config_dir}}:ro"
         - "{{flume_ext_dir}}:{{flume_ext_dir}}:ro"
 #        - "/var/run/docker.sock:/var/run/docker.sock"
-      state: reloaded
+      state: restarted
       restart_policy: always
       privileged: yes
     sudo: yes

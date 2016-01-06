@@ -49,6 +49,10 @@ elasticsearch_config_cluster_name: elasticsearch
 elasticsearch_plugins:
   - { name: 'head', url: 'mobz/elasticsearch-head', file: 'head.zip' }
   - { name: 'analysis-icu', url: 'https://github.com/elastic/elasticsearch-analysis-icu/archive/v2.5.0.tar.gz', file: 'analysis-icu-2.5.0.zip' } # when using another version of es, you should update the url and remove the file entry
+elasticsearch_download_directory: /tmp
+elasticsearch_package_name: "elasticsearch-{{ elasticsearch_version }}"
+elasticsearch_prebuilt_file: "{{elasticsearch_package_name}}.tar.gz"
+elasticsearch_prebuit_package_url: "https://download.elastic.co/elasticsearch/elasticsearch/{{elasticsearch_prebuilt_file}}"
 
 #
 # Kibana
