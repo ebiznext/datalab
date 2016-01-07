@@ -90,7 +90,7 @@
       state: reloaded
       restart_policy: "no"
       privileged: yes
-    with_sequence: count={{kafka_cluster_size}}
+    with_items: "{{range(1,(kafka_cluster_size+1))|list}}"
     sudo: yes
     register: start_kafka
 
