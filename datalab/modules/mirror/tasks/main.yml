@@ -1,28 +1,7 @@
 ---
 
-# Install Debian dependencies
-- name: Install Debian dependencies
-  apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
-  with_items:
-    - curl
-  sudo: yes
-  when: ansible_os_family == 'Debian'
-
-# Install Redhat dependencies
-- name: Install Redhat dependencies
-  yum: name={{item}} state=present update_cache=yes
-  with_items:
-    - curl
-  sudo: yes
-  when: ansible_os_family == 'RedHat'
-
-- name: apache preferred mirror
-  shell: curl {{curl_proxy_args}} --stderr /dev/null https://www.apache.org/dyn/closer.cgi?as_json=1
-  register: apache_mirrors
-  ignore_errors: yes
-
-- set_fact: apache_mirror="{{(apache_mirrors.stdout|from_json).preferred}}"
-  when: apache_mirrors|success
+- include: mirror.yml
+  when: not use_default_apache_mirror|bool
 
 - set_fact: apache_mirror="{{default_apache_mirror}}"
-  when: not apache_mirrors|success
+  when: use_default_apache_mirror|bool
