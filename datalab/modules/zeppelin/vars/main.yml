@@ -41,11 +41,13 @@ zeppelin:
       - git
       - curl
       - libfontconfig1-dev
-      - gunzip
+      - tar
+      - gzip
     yum:
       - git
       - curl
       - fontconfig-devel
-      - gunzip
+      - tar
+      - gzip
     npm:
       - grunt-cli
