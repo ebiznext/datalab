@@ -17,6 +17,7 @@ __proxy_server: "http://{{__proxy_host}}:{{__proxy_port}}"
 # mirror
 #
 __apache_mirror: http://www.us.apache.org/dist/
+__use_default_apache_mirror: yes
 
 #
 # python
