@@ -4,7 +4,7 @@
     "cpus": {{ zeppelin_nb_cpus | default(1) }},
     "mem": {{ zeppelin_mem }},
     "requirePorts": false,
-    "cmd": "mkdir -p {{ zeppelin_home_directory }}/mesos && cp {{ zeppelin_home_directory }}/conf/* {{ zeppelin_home_directory }}/mesos/ && cd {{ zeppelin_home_directory }} && sed \"s/{{zeppelin_service_server_port}}/$PORT/g\" < ./conf/zeppelin-env.sh > ./mesos/zeppelin-env.sh && chown -R {{zeppelin_user}} {{ zeppelin_home_directory }}/mesos && su - {{zeppelin_user}} -c \"{{ zeppelin_home_directory }}/bin/zeppelin.sh --config {{ zeppelin_home_directory }}/mesos\"",
+    "cmd": "mkdir -p {{ zeppelin_home_directory }}/mesos && cp {{ zeppelin_home_directory }}/conf/* {{ zeppelin_home_directory }}/mesos/ && cd {{ zeppelin_home_directory }} && sed \"s/{{zeppelin_service_server_port}}/$PORT/g\" < ./conf/zeppelin-env.sh > ./mesos/zeppelin-env.sh && sed \"s/{{zeppelin_service_server_port}}/$PORT/g\" < ./conf/zeppelin-site.xml > ./mesos/zeppelin-site.xml && chown -R {{zeppelin_user}} {{ zeppelin_home_directory }}/mesos && su - {{zeppelin_user}} -c \"{{ zeppelin_home_directory }}/bin/zeppelin.sh --config {{ zeppelin_home_directory }}/mesos\"",
     "constraints": [["hostname", "UNIQUE"]],
     "healthChecks": [
       {

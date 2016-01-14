@@ -62,5 +62,5 @@
 export ZEPPELIN_PORT="{{ zeppelin.service.server_port }}"
 
 export MESOS_NATIVE_LIBRARY="/usr/local/lib/libmesos.so"
-export MASTER="{{mesos_zookeepers}}"
+export MASTER="mesos://{{mesos_zookeepers}}"
 export SPARK_HOME="{{spark_home_directory}}"
