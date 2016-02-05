@@ -93,6 +93,14 @@
   ignore_errors: yes
   when: ansible_distribution_version|version_compare(7, '>=')
 
+- file: path=/tmp/mesos/meta/slaves/latest state=absent
+  sudo: yes
+
+# restart syslogd
+- name: start rsyslog RedHat / CentOS 7
+  service: name=rsyslog state=restarted
+  sudo: yes
+
 # Start mesos-master
 - name: start mesos-master service on RedHat / CentOS 6
   shell: start mesos-master

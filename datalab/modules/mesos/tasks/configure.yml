@@ -83,3 +83,8 @@
   template: src=cluster dest=/etc/mesos-master/cluster
   sudo: yes
   when: mesos.master|bool
+
+# Log file
+- name: update log file configuration for mesos master and slave
+  template: src=mesos.conf dest=/etc/rsyslog.d/mesos.conf
+  sudo: yes
