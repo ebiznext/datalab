@@ -20,8 +20,18 @@
   sudo: yes
   when: ansible_os_family == 'RedHat'
 
+- name: stop zookeeper service
+  service: name=zookeeper state=stopped
+  sudo: yes
+
+
 - file: path="{{ zookeeper.home_dir }}" state=absent
   sudo: yes
+
+- file: path="{{ zookeeper.config.dataDir }}" state=absent
+  sudo: yes
+
+- file: path="{{ zookeeper.config.dataDir }}" state=directory
 
 - file: path="{{ zookeeper.download_dir }}" state=directory
 
