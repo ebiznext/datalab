@@ -78,6 +78,12 @@
   sudo: yes
   when: (not mesos.master|bool or mesos.standalone|bool)
 
+# node type
+- name: update node type configuration for mesos slave
+  template: src=attributes dest=/etc/mesos-slave/attributes
+  sudo: yes
+  when: (not mesos.master|bool or mesos.standalone|bool)
+
 # Cluster
 - name: update cluster configuration for mesos master
   template: src=cluster dest=/etc/mesos-master/cluster
