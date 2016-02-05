@@ -21,6 +21,10 @@
   when: ansible_os_family == 'RedHat'
 
 # Prepare
+- name: Create kafka user
+  user: name={{ kafka.user }} state=present
+  sudo: yes
+
 - file: path="{{ kafka.home_dir }}" state=absent
   sudo: yes
 
@@ -65,6 +69,18 @@
 # Configure kafka
 - file: path="{{ kafka.log.dirs }}" state=directory
   sudo: yes
+
+- name: gather facts from zookeeper servers
+  setup:
+    filter: ansible_local
+  delegate_to: "{{item}}"
+  with_items: "{{groups['zookeeper']|list}}"
+  register: zookeeper_facts
+  sudo: yes
+  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+
+- set_fact: mesos_zookeepers="{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}"
+  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
 
 - name: Configure kafka
   template: src=server.properties

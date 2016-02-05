@@ -1,6 +1,8 @@
 ---
 
 kafka:
+  user: "{{kafka_user | default('kafka')}}"
+  partitions: "{{kafka_partitions}}"
   version: "{{ kafka_version }}"
   package_name: "{{ kafka_package_name }}"
   download_dir: "{{ kafka_download_dir }}"
@@ -17,7 +19,6 @@ kafka:
     advertised:
       hostname: "{{kafka_config_advertised_hostname}}"
       port: "{{kafka_config_advertised_port}}"
-    zookeepers: "{{kafka_config_zookeepers}}"
 
   log:
     dirs: "{{ kafka_log_dirs }}"
