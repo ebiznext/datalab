@@ -4,7 +4,7 @@
 
 - file: path=/etc/marathon/conf state=directory
   sudo: yes
-  when: mesos.master|bool
+  when: (mesos.master|bool or mesos.standalone|bool)
 
 # Zookeeper
 - name: gather facts from zookeeper servers
@@ -27,7 +27,7 @@
 - name: update master zookeeper configuration for marathon
   template: src=master_zk dest=/etc/marathon/conf/master
   sudo: yes
-  when: mesos.master|bool
+  when: (mesos.master|bool or mesos.standalone|bool)
 
 - set_fact: marathon_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/marathon"
   when: groups.zookeeper is defined and (not marathon_zookeepers is defined) and zookeeper_facts|success
@@ -35,54 +35,54 @@
 - name: update marathon zookeeper configuration
   template: src=marathon_zk dest=/etc/marathon/conf/zk
   sudo: yes
-  when: mesos.master|bool
+  when: (mesos.master|bool or mesos.standalone|bool)
 
 # Quorum
 - name: calculate quorum
   set_fact: mesos_quorum={{((groups['master']|length)/2)|int + 1}}
-  when: mesos.master|bool and (groups['master']|length > 1)
+  when: (mesos.master|bool or mesos.standalone|bool) and (groups['master']|length > 1)
 
 - name: fix quorum
   set_fact: mesos_quorum=1
-  when: mesos.master|bool and (groups['master']|length <= 1)
+  when: (mesos.master|bool or mesos.standalone|bool) and (groups['master']|length <= 1)
 
 - name: update quorum configuration for mesos
   template: src=quorum dest=/etc/mesos-master/quorum
   sudo: yes
-  when: mesos.master|bool
+  when: (mesos.master|bool or mesos.standalone|bool)
 
 # Hostname
 - name: update hostname configuration for mesos master
   template: src=hostname dest=/etc/mesos-master/hostname
   sudo: yes
-  when: mesos.master|bool
+  when: (mesos.master|bool or mesos.standalone|bool)
 
 - name: update hostname configuration for mesos marathon
   template: src=hostname dest=/etc/marathon/conf/hostname
   sudo: yes
-  when: mesos.master|bool
+  when: (mesos.master|bool or mesos.standalone|bool)
 
 - name: update hostname configuration for mesos slave
   template: src=hostname dest=/etc/mesos-slave/hostname
   sudo: yes
-  when: not mesos.master|bool
+  when: (not mesos.master|bool or mesos.standalone|bool)
 
 # ip
 - name: update ip configuration for mesos master
   template: src=ip dest=/etc/mesos-master/ip
   sudo: yes
-  when: mesos.master|bool
+  when: (mesos.master|bool or mesos.standalone|bool)
 
 - name: update ip configuration for mesos slave
   template: src=ip dest=/etc/mesos-slave/ip
   sudo: yes
-  when: not mesos.master|bool
+  when: (not mesos.master|bool or mesos.standalone|bool)
 
 # Cluster
 - name: update cluster configuration for mesos master
   template: src=cluster dest=/etc/mesos-master/cluster
   sudo: yes
-  when: mesos.master|bool
+  when: (mesos.master|bool or mesos.standalone|bool)
 
 # Log file
 - name: update log file configuration for mesos master and slave
