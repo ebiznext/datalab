@@ -5,22 +5,24 @@
   shell: mesos-resolve `cat /etc/mesos/zk`
   sudo: yes
   register: master_response
-  when: not mesos_dns_hostname is defined or not mesos_dns_ip is defined or not master_api is defined
+  when: not mesos_dns_ips is defined or not master_api is defined
 
 - set_fact: master_api=http://{{master_response.stdout}}
-  when: not mesos_dns_hostname is defined or not mesos_dns_ip is defined or not master_api is defined
+  when: not mesos_dns_ips is defined or not master_api is defined
 
-# Choose appropriate mesos slave
+# Choose appropriate mesos slaves
 - name: Retrieve mesos slaves
   uri: url="{{master_api}}/master/state.json" HEADER_Content-Type="application/json" method=GET return_content=yes status_code=200
   register: mesos_state_response
-  when: not mesos_dns_hostname is defined or not mesos_dns_ip is defined
+  when: not mesos_dns_ips is defined
 
-- set_fact: mesos_dns_hostname={{(mesos_state_response.content|from_json).slaves | map(attribute='hostname') | list | first }} #FIXME | selectattr("active", "equalto", "true")
-  when: not mesos_dns_hostname is defined or not mesos_dns_ip is defined
+- set_fact: slaves="{{(mesos_state_response.content|from_json).slaves|list}}"
+  when: not mesos_dns_ips is defined
 
-- set_fact: mesos_dns_ip={{(mesos_state_response.content|from_json).slaves | map(attribute='pid') | list | first | group('.*@([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}):[0-9]+', 1)}}
-  when: not mesos_dns_hostname is defined or not mesos_dns_ip is defined
+- set_fact: mesos_dns_ips="{% for slave in slaves%}{%if slave.active|bool and slave.attributes['node_dns']|bool%}{{slave.pid | group('.*@([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}):[0-9]+', 1) + ' '}}{%endif%}{%endfor%}"
+  when: not mesos_dns_ips is defined
+
+#- debug: msg="{{mesos_dns_ips|trim|split(' ')}}"
 
 # Deploy mesos-dns app
 - name: Retrieve mesos-dns app
@@ -50,8 +52,8 @@
 
 # Update slaves
 - name: update resolve.conf
-#  shell: sed -i '1s/^/nameserver {{ mesos_dns_ip }}\n /' /etc/resolv.conf
-  lineinfile: dest=/etc/resolv.conf line="nameserver {{ mesos_dns_ip }}" state=present insertbefore=BOF
-  sudo: yes
-  delegate_to: "{{item}}"
-  with_items: "{{groups['slave']|list}}"
+  lineinfile: dest=/etc/resolv.conf line="nameserver {{ item[1] }}" state=present insertbefore=BOF
+  delegate_to: "{{item[0]}}"
+  with_nested:
+    - "{{groups['slave']|list}}"
+    - "{{mesos_dns_ips|trim|split(' ')|list}}"

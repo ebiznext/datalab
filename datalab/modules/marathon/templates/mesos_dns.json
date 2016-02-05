@@ -4,5 +4,5 @@
   "instances": 1,
   "cpus": {{ mesos_dns_nb_cpus | default(0.5) }},
   "mem": {{ mesos_dns_mem }},
-  "constraints": [["hostname", "CLUSTER", "{{ mesos_dns_hostname }}"]]
+  "constraints": [["hostname", "UNIQUE"], ["node_type", "CLUSTER", "slave_node"]]
 }
