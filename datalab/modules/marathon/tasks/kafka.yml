@@ -1,0 +1,26 @@
+---
+
+- name: Retrieve kafka app
+  uri: url={{marathon_api}}/{{kafka_id}} HEADER_Content-Type="application/json" method=GET return_content=yes status_code=200,404
+  register: kafka_app_response
+
+- name: remove kafka app
+  uri: url={{marathon_api}}/{{kafka_id}} HEADER_Content-Type="application/json" method=DELETE return_content=yes status_code=200,204
+  when: "'message' not in {{kafka_app_response.content}}"
+
+- name: copy kafka marathon json file
+  template: src=kafka.json dest=/tmp/kafka.json
+
+- name: Install kafka application
+  shell: 'curl -X POST -H "Content-Type: application/json" {{marathon_api}}?force=true -d@/tmp/kafka.json'
+  register: install_kafka_response
+
+- debug: var=install_kafka_response
+  when: install_kafka_response is defined
+
+- name: Wait untils kafka app is available
+  shell: curl --head --silent {{marathon_api}}/{{kafka_id}}/tasks
+  register: result
+  until: result.stdout.find("200 OK") != -1
+  retries: 12
+  delay: 5

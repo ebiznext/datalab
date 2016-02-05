@@ -27,6 +27,13 @@ kibana_id: kibana
 kibana_mem: 512
 
 #
+# kafka
+#
+kafka_id: kafka
+kafka_mem: 512
+kafka_node_type: batch_node
+
+#
 # zeppelin
 #
 zeppelin_id: zeppelin

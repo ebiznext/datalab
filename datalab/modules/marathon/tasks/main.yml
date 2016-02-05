@@ -19,3 +19,6 @@
 
 - name: install chronos
   include: chronos.yml
+
+- name: install kafka
+  include: kafka.yml
