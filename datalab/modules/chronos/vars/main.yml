@@ -1,0 +1,6 @@
+---
+
+chronos:
+  port: "{{chronos_port}}"
+  user: "{{chronos_user}}"
+  group: "{{chronos_group}}"
