@@ -6,6 +6,7 @@ mesos_version: 0.26.0
 mesos_standalone: yes
 mesos_master: "{{ 'master' in group_names or mesos_standalone }}"
 mesos_node_type: mesos_node
+mesos_node_dns: False
 mesos_do_build: no
 mesos_build_opts: ""
 mesos_build_checkout: tarball
