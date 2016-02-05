@@ -51,12 +51,20 @@
   delay: 5
 
 # Update slaves
+- name: unlock resolv.conf file
+  file: path=/etc/resolv.conf mode=0644
+  delegate_to: "{{item}}"
+  with_items:
+    - "{{groups['slave']|list}}"
+  sudo: yes
+
 - name: clean resolve.conf
   lineinfile: dest=/etc/resolv.conf regexp='^(.*)\#\smesos-dns' state=absent
   sudo: yes
   delegate_to: "{{item}}"
   with_items:
     - "{{groups['slave']|list}}"
+  sudo: yes
 
 - name: update resolve.conf
   lineinfile: "dest=/etc/resolv.conf line='nameserver {{ item[1] }} # mesos-dns' insertbefore=BOF"
@@ -65,3 +73,12 @@
   with_nested:
     - "{{groups['slave']|list}}"
     - "{{mesos_dns_ips|trim|split(' ')|list}}"
+  sudo: yes
+
+- name: lock back resolv.conf file to avoid network manager changes on restart
+  file: path=/etc/resolv.conf mode=0444
+  delegate_to: "{{item}}"
+  with_items:
+    - "{{groups['slave']|list}}"
+  sudo: yes
+
