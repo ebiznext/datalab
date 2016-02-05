@@ -52,13 +52,15 @@
 
 # Update slaves
 - name: clean resolve.conf
-  lineinfile: dest=/etc/resolv.conf regexp='^nameserver\s([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})\s\#\smesos-dns' state=absent
+  lineinfile: dest=/etc/resolv.conf regexp='^(.*)\#\smesos-dns' state=absent
+  sudo: yes
   delegate_to: "{{item}}"
   with_items:
     - "{{groups['slave']|list}}"
 
 - name: update resolve.conf
   lineinfile: "dest=/etc/resolv.conf line='nameserver {{ item[1] }} # mesos-dns' insertbefore=BOF"
+  sudo: yes
   delegate_to: "{{item[0]}}"
   with_nested:
     - "{{groups['slave']|list}}"
