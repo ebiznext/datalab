@@ -9,5 +9,8 @@ __proxy_mock: yes
 zookeeper_id: 1
 zookeeper_ip: 192.168.33.60
 
+kafka_config_broker_id: 1
+
 mesos_hostname: "{{ansible_fqdn}}"
 mesos_ip: 192.168.33.60
+mesos_node_type: batch_node

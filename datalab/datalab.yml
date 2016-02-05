@@ -1,7 +1,26 @@
 ---
-
-  - name: Install proxy
-    hosts: proxy
+#  - name: Install proxy
+#    hosts: proxy
+#    remote_user: $user
+#    sudo: yes
+#    roles:
+#      - {role: proxy}
+#
+#  - name: Build and launch docker registry
+#    hosts: registry
+#    remote_user: $user
+#    sudo: yes
+#    roles:
+#      - {role: docker}
+#      - {role: docker.registry}
+#
+#  - name: Install Docker
+#    hosts: docker
+#    remote_user: $user
+#    roles:
+#      - {role: docker}
+#      - {role: docker.registry.login}
+#
   - name: Install and launch Zookeeper
     hosts: zookeeper
     remote_user: $user
