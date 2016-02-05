@@ -1,0 +1,1 @@
+node_type:{{ mesos_node_type }}

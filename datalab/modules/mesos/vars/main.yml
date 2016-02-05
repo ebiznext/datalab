@@ -4,7 +4,8 @@ mesos:
   version: "{{ mesos_version }}"
   master: "{{ mesos_master }}"
   standalone: "{{ mesos_standalone }}"
-
+  node:
+    type: "{{ mesos_node_type }}"
   download_dir: "{{ mesos_download_directory }}"
   install_dir: "{{ mesos_download_directory }}/mesos"
   base_dir: "{{ mesos_home_directory }}"

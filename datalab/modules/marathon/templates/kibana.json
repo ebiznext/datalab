@@ -5,7 +5,7 @@
     "mem": {{ kibana_mem }},
     "requirePorts": false,
     "cmd": "port_es=$(curl {{marathon_api}}/{{elasticsearch_id}}/tasks | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[\"tasks\"][0][\"ports\"][0]') && cd {{ kibana_home_directory }}/config && sed \"s/{{elasticsearch_config_http_server_host|replace(".", "\\\\.")}}/{{elasticsearch_id}}\\.{{mesos_dns_fqdn|replace(".", "\\\\.")}}/g;s/{{elasticsearch_config_http_server_port}}/$port_es/g;s/{{kibana_config_server_port}}/$PORT/g\" < ./kibana.yml > ./kibana-mesos.yml && chown {{kibana_user}} ./kibana-mesos.yml && cd {{ kibana_home_directory }}/bin && sed \"s/kibana\\.yml/kibana-mesos\\.yml/g;s/{{kibana_config_server_port}}/$PORT/g\" < ./kibana > ./kibana-mesos && chmod u+x ./kibana-mesos && chown {{kibana_user}} ./kibana-mesos && su - {{kibana_user}} -c \"{{ kibana_home_directory }}/bin/kibana-mesos\"",
-    "constraints": [["hostname", "UNIQUE"]],
+    "constraints": [["hostname", "UNIQUE"], ["node_type", "CLUSTER", "{{kibana_node_type}}"]],
     "dependencies": ["/{{ elasticsearch_id }}"],
     "healthChecks": [
       {

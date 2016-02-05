@@ -12,6 +12,7 @@ elasticsearch_id: elasticsearch
 elasticsearch_mem: 512
 elasticsearch_config_heap_size: "{{ elasticsearch_mem }}m"
 elasticsearch_config_java_opts: ""
+elasticsearch_node_type: batch_node
 
 #
 # mesos-dns
@@ -25,6 +26,7 @@ mesos_dns_fqdn: "marathon.mesos"
 #
 kibana_id: kibana
 kibana_mem: 512
+kibana_node_type: batch_node
 
 #
 # kafka
@@ -38,6 +40,7 @@ kafka_node_type: batch_node
 #
 zeppelin_id: zeppelin
 zeppelin_mem: 512
+zeppelin_node_type: batch_node
 
 #
 # chronos
@@ -45,3 +48,4 @@ zeppelin_mem: 512
 chronos_id: chronos
 chronos_mem: 256
 chronos_nb_cpus: 0.2
+chronos_node_type: batch_node

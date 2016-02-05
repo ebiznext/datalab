@@ -6,3 +6,5 @@ ansible_ssh_pass: vagrant
 
 mesos_hostname: "{{ansible_fqdn}}"
 mesos_ip: 192.168.33.81
+
+mesos_node_type: batch_node
