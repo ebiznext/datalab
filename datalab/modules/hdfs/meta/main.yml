@@ -1,0 +1,10 @@
+---
+
+dependencies:
+  - { role: jdk }
+  - { role: mirror }
+
+galaxy_info:
+  company: EBIZNEXT
+  license: MIT
+  min_ansible_version: 1.9

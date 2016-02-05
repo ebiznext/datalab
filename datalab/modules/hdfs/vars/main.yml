@@ -1,0 +1,21 @@
+---
+
+hdfs:
+  version: "{{ hdfs_version }}"
+  package_name: "{{ hdfs_package_name }}"
+  download_dir: "{{ hdfs_download_dir }}"
+  file: "{{hdfs_download_dir}}/{{hdfs_download_file}}"
+  url: "{{ hdfs_download_package_url }}"
+  home_dir: "{{ hdfs_home_dir }}"
+  user: "{{ hdfs_user }}"
+  group: "{{ hdfs_group }}"
+  data_dir: "{{hdfs_data_dir}}"
+  name_dir: "{{hdfs_name_dir}}"
+  config_dir: "{{hdfs_config_dir}}"
+  jn_dir: "{{hdfs_jn_dir}}"
+  fs: "{{hdfs_fs}}"
+  config:
+    dir: "{{hdfs_config_dir}}"
+  log:
+    dir: "{{ hdfs_log_dir }}"
+    file: "{{ hdfs_log_file}} "

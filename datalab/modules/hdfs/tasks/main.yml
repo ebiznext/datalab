@@ -1,0 +1,147 @@
+---
+
+# Install Debian dependencies
+- name: Install Debian dependencies
+  apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - tar
+    - curl
+    - wget
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+# Install Redhat dependencies
+- name: Install Redhat dependencies
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+    - unzip
+    - wget
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
+
+# Prepare
+- file: path="{{ hdfs.home_dir }}" state=absent
+  sudo: yes
+
+- file: path="{{ hdfs.download_dir }}" state=directory
+
+- stat: path={{hdfs.file}}
+  register: hdfs_file
+
+# Get hdfs
+- name: get hdfs
+  shell: "wget -q -O {{hdfs.file}} {{hdfs.url}}"
+  when: not hdfs_file.stat.exists
+
+# Install hdfs
+- name: Extract and install hdfs
+  unarchive: src="{{ hdfs.file }}"
+             dest={{ hdfs.download_dir }}
+             copy=no
+             owner={{hdfs.user}}
+             group={{hdfs.user}}
+
+
+- name: rename install dir
+  shell: "mv {{ hdfs.download_dir}}/{{hdfs.package_name}} {{hdfs.home_dir}}"
+  sudo: yes
+
+- file: path="/etc/profile.d" mode=0755 state=directory
+  sudo: yes
+
+# Configure hdfs
+
+- name: copy hadoop file
+  template: src=hadoop.sh dest=/etc/profile.d/hadoop.sh mode=0755
+  sudo: yes
+
+- file: path="/home/{{ hdfs.user }}/.ssh/" state=directory mode=0700 owner={{hdfs.user}} group={{hdfs.user}}
+
+- name: ensure private key and public one are present
+  copy: src=id_rsa dest="/home/{{ hdfs.user }}/.ssh/id_rsa" mode=0600 owner={{hdfs.user}} group={{hdfs.user}}
+
+- name: deploy ssh key
+  authorized_key: user={{ hdfs.user }} key="{{ lookup('file', 'id_rsa.pub') }}" state=present
+  sudo: yes
+
+- name: restart sshd service
+  service: name=sshd state=restarted
+  sudo: yes
+
+- file: path="{{hdfs.data_dir}}" mode=0755 state=directory owner={{hdfs.user}} group={{hdfs.user}}
+  sudo: yes
+
+- file: path="{{hdfs.name_dir}}" mode=0755 state=directory owner={{hdfs.user}} group={{hdfs.user}}
+  sudo: yes
+
+- file: path="{{hdfs.jn_dir}}" mode=0755 state=directory owner={{hdfs.user}} group={{hdfs.user}}
+  sudo: yes
+
+- name: gather facts from zookeeper servers
+  setup:
+    filter: ansible_local
+  delegate_to: "{{item}}"
+  with_items: "{{groups['zookeeper']|list}}"
+  register: zookeeper_facts
+  sudo: yes
+  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+
+- set_fact: mesos_zookeepers="{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}"
+  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+
+- name: copy core file
+  template: src=core-site.xml dest="{{hdfs.config_dir}}/core-site.xml" mode=0644 owner={{hdfs.user}} group={{hdfs.user}}
+  sudo: yes
+
+- name: copy hdfs file
+  template: src=hdfs-site.xml dest="{{hdfs.config_dir}}/hdfs-site.xml" mode=0644 owner={{hdfs.user}} group={{hdfs.user}}
+  sudo: yes
+
+- name: create marker file for active namenode {{hdfs_isnn1}}
+  file: path={{hdfs.config_dir}}/nn1 state=touch mode=0644 owner={{hdfs.user}} group={{hdfs.user}}
+  when: hdfs_isnn1 is defined and hdfs_isnn1
+
+- name: create marker file for active namenode {{hdfs_isnn2}}
+  file: path={{hdfs.config_dir}}/nn2 state=touch mode=0644 owner={{hdfs.user}} group={{hdfs.user}}
+  when: hdfs_isnn2 is defined and hdfs_isnn2
+
+- name: create marker file for active namenode {{hdfs_isjn}}
+  file: path={{hdfs.config_dir}}/jn state=touch mode=0644 owner={{hdfs.user}} group={{hdfs.user}}
+  when: hdfs_isjn is defined and hdfs_isjn
+
+
+- name: restarting journalnode
+  shell: su {{hdfs.user}} -c "{{hdfs_home_dir}}/sbin/hadoop-daemon.sh stop journalnode" || true && su {{hdfs.user}} -c "{{hdfs_home_dir}}/sbin/hadoop-daemon.sh start journalnode"
+  when: hdfs_isjn is defined and hdfs_isjn
+
+
+- stat: path=/data/namenode/current
+  register: nn_dir
+
+- name: format namenode
+  shell: su {{hdfs.user}} -c "{{hdfs_home_dir}}/bin/hdfs namenode -format -force" && su {{hdfs.user}} -c "{{hdfs_home_dir}}/bin/hdfs zkfc -formatZK -force"
+  when: (nn_dir.stat.isdir is not defined or not nn_dir.stat.isdir) and hdfs_isnn1 is defined and hdfs_isnn1
+
+- name: restarting active namenode
+  shell: su {{hdfs.user}} -c "{{hdfs_home_dir}}/sbin/hadoop-daemon.sh stop namenode" || true && su {{hdfs.user}} -c "{{hdfs_home_dir}}/sbin/hadoop-daemon.sh start namenode" && su {{hdfs.user}} -c "{{hdfs_home_dir}}/sbin/hadoop-daemon.sh stop zkfc" || true && su {{hdfs.user}} -c "{{hdfs_home_dir}}/sbin/hadoop-daemon.sh start zkfc"
+  when: hdfs_isnn1 is defined and hdfs_isnn1
+
+- name: format secondary namenode
+  shell: su {{hdfs.user}} -c "{{hdfs_home_dir}}/bin/hdfs namenode -bootstrapStandby -force" && su {{hdfs.user}} -c "{{hdfs_home_dir}}/bin/hdfs zkfc -formatZK -force"
+  when: (nn_dir.stat.isdir is not defined or not nn_dir.stat.isdir) and hdfs_isnn2 is defined and hdfs_isnn2
+
+- name: restarting secondary namenode
+  shell: su {{hdfs.user}} -c "{{hdfs_home_dir}}/sbin/hadoop-daemon.sh stop namenode" || true && sleep 30 && su {{hdfs.user}} -c "{{hdfs_home_dir}}/sbin/hadoop-daemon.sh start namenode" && su {{hdfs.user}} -c "{{hdfs_home_dir}}/sbin/hadoop-daemon.sh stop zkfc" || true && su {{hdfs.user}} -c "{{hdfs_home_dir}}/sbin/hadoop-daemon.sh start zkfc"
+  when: hdfs_isnn2 is defined and hdfs_isnn2
+
+- name: restarting datanode
+  shell: su {{hdfs.user}} -c "{{hdfs_home_dir}}/sbin/hadoop-daemon.sh stop datanode" || true && su {{hdfs.user}} -c "{{hdfs_home_dir}}/sbin/hadoop-daemon.sh start datanode"
+
+#- name: copy flume configuration file
+#  template: src=flume-conf.properties dest={{flume.config.dir}}/
+#  sudo: yes
+#
+#- name: copy flume env file
+#  template: src=flume-env.sh dest={{flume.config.dir}}/
+#  sudo: yes
+#

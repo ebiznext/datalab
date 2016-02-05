@@ -1,0 +1,19 @@
+---
+
+apache_mirror: "{{__apache_mirror}}"
+
+hdfs_version: 2.6.3
+hdfs_download_dir: /tmp
+hdfs_home_dir: /usr/local/hdfs
+hdfs_package_name: "hadoop-{{ hdfs_version }}"
+hdfs_download_file: "{{hdfs_package_name}}.tar.gz"
+hdfs_download_package_url: "{{apache_mirror}}hadoop/common/hadoop-{{hdfs_version}}/{{hdfs_download_file}}"
+hdfs_config_dir: "{{hdfs_home_dir}}/etc/hadoop"
+hdfs_log_dir: /var/log/hdfs
+hdfs_log_file: flume.log
+hdfs_user: hdfs
+hdfs_group: hdfs
+hdfs_data_dir: /data/datanode
+hdfs_name_dir: /data/namenode
+hdfs_jn_dir: /data/jnnode
+hdfs_fs: hdfs-cluster
