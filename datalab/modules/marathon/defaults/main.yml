@@ -38,3 +38,10 @@ kafka_node_type: batch_node
 #
 zeppelin_id: zeppelin
 zeppelin_mem: 512
+
+#
+# chronos
+#
+chronos_id: chronos
+chronos_mem: 256
+chronos_nb_cpus: 0.2
