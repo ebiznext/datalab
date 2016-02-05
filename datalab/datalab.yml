@@ -2,26 +2,6 @@
 
   - name: Install proxy
     hosts: proxy
-    remote_user: $user
-    sudo: yes
-    roles:
-      - {role: proxy}
-
-  - name: Build and launch docker registry
-    hosts: registry
-    remote_user: $user
-    sudo: yes
-    roles:
-      - {role: docker}
-      - {role: docker.registry}
-
-  - name: Install Docker
-    hosts: docker
-    remote_user: $user
-    roles:
-      - {role: docker}
-      - {role: docker.registry.login}
-
   - name: Install and launch Zookeeper
     hosts: zookeeper
     remote_user: $user
@@ -34,6 +14,50 @@
     roles:
       - {role: mesos}
 
+  - name: Install HDFS
+    hosts: hdfs
+    remote_user: $user
+    pre_tasks:
+
+      - local_action: file path=./ssl state=directory
+        sudo: no
+
+      - local_action: stat path=./ssl/id_rsa
+        register: local_certificate
+        sudo: no
+
+      - name: Generating RSA key for {{hdfs_user}}
+        user: name={{hdfs_user}} group={{hdfs_group}} home="/home/{{hdfs_user}}" generate_ssh_key=yes
+        run_once: true
+        delegate_to: "{{play_hosts[0]}}"
+        sudo: yes
+        when: not local_certificate.stat.exists
+
+      - name: Downloading RSA public and private keys for {{hdfs_user}}
+        fetch: src=/home/{{hdfs_user}}/.ssh/{{item}} dest=./ssh/ flat=yes
+        with_items:
+          - id_rsa.pub
+          - id_rsa
+        run_once: true
+        delegate_to: "{{play_hosts[0]}}"
+        sudo: yes
+        when: not local_certificate.stat.exists
+
+    roles:
+      - {role: hdfs}
+
+  - name: Install Middleware
+    hosts: middleware
+    remote_user: $user
+    roles:
+      - {role: kafka}
+
+  - name: Install Batch
+    hosts: batch
+    remote_user: $user
+    roles:
+      - {role: spark}
+
   - name: Build datalab
     hosts: slave
     remote_user: $user
@@ -41,7 +65,6 @@
       - {role: mesos-dns}
       - {role: es}
       - {role: kibana}
-      - {role: kafka}
       - {role: flume}
       - {role: spark}
       - {role: zeppelin}

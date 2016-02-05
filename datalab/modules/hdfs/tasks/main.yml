@@ -39,7 +39,7 @@
              dest={{ hdfs.download_dir }}
              copy=no
              owner={{hdfs.user}}
-             group={{hdfs.user}}
+             group={{hdfs.group}}
 
 
 - name: rename install dir
@@ -55,26 +55,32 @@
   template: src=hadoop.sh dest=/etc/profile.d/hadoop.sh mode=0755
   sudo: yes
 
-- file: path="/home/{{ hdfs.user }}/.ssh/" state=directory mode=0700 owner={{hdfs.user}} group={{hdfs.user}}
+- name: Create user {{hdfs.user}}
+  user: name={{hdfs.user}} home="/home/{{hdfs.user}}"
+  sudo: yes
+
+- file: path="/home/{{ hdfs.user }}/.ssh/" state=directory mode=0700 owner={{hdfs.user}} group={{hdfs.group}}
+  sudo: yes
 
 - name: ensure private key and public one are present
-  copy: src=id_rsa dest="/home/{{ hdfs.user }}/.ssh/id_rsa" mode=0600 owner={{hdfs.user}} group={{hdfs.user}}
+  copy: src=ssh/id_rsa dest="/home/{{ hdfs.user }}/.ssh/id_rsa" mode=0600 owner={{hdfs.user}} group={{hdfs.group}}
+  sudo: yes
 
 - name: deploy ssh key
-  authorized_key: user={{ hdfs.user }} key="{{ lookup('file', 'id_rsa.pub') }}" state=present
+  authorized_key: user={{ hdfs.user }} key="{{ lookup('file', 'ssh/id_rsa.pub') }}" state=present
   sudo: yes
 
 - name: restart sshd service
   service: name=sshd state=restarted
   sudo: yes
 
-- file: path="{{hdfs.data_dir}}" mode=0755 state=directory owner={{hdfs.user}} group={{hdfs.user}}
+- file: path="{{hdfs.data_dir}}" mode=0755 state=directory owner={{hdfs.user}} group={{hdfs.group}}
   sudo: yes
 
-- file: path="{{hdfs.name_dir}}" mode=0755 state=directory owner={{hdfs.user}} group={{hdfs.user}}
+- file: path="{{hdfs.name_dir}}" mode=0755 state=directory owner={{hdfs.user}} group={{hdfs.group}}
   sudo: yes
 
-- file: path="{{hdfs.jn_dir}}" mode=0755 state=directory owner={{hdfs.user}} group={{hdfs.user}}
+- file: path="{{hdfs.jn_dir}}" mode=0755 state=directory owner={{hdfs.user}} group={{hdfs.group}}
   sudo: yes
 
 - name: gather facts from zookeeper servers
@@ -90,23 +96,23 @@
   when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
 
 - name: copy core file
-  template: src=core-site.xml dest="{{hdfs.config_dir}}/core-site.xml" mode=0644 owner={{hdfs.user}} group={{hdfs.user}}
+  template: src=core-site.xml dest="{{hdfs.config_dir}}/core-site.xml" mode=0644 owner={{hdfs.user}} group={{hdfs.group}}
   sudo: yes
 
 - name: copy hdfs file
-  template: src=hdfs-site.xml dest="{{hdfs.config_dir}}/hdfs-site.xml" mode=0644 owner={{hdfs.user}} group={{hdfs.user}}
+  template: src=hdfs-site.xml dest="{{hdfs.config_dir}}/hdfs-site.xml" mode=0644 owner={{hdfs.user}} group={{hdfs.group}}
   sudo: yes
 
 - name: create marker file for active namenode {{hdfs_isnn1}}
-  file: path={{hdfs.config_dir}}/nn1 state=touch mode=0644 owner={{hdfs.user}} group={{hdfs.user}}
+  file: path={{hdfs.config_dir}}/nn1 state=touch mode=0644 owner={{hdfs.user}} group={{hdfs.group}}
   when: hdfs_isnn1 is defined and hdfs_isnn1
 
 - name: create marker file for active namenode {{hdfs_isnn2}}
-  file: path={{hdfs.config_dir}}/nn2 state=touch mode=0644 owner={{hdfs.user}} group={{hdfs.user}}
+  file: path={{hdfs.config_dir}}/nn2 state=touch mode=0644 owner={{hdfs.user}} group={{hdfs.group}}
   when: hdfs_isnn2 is defined and hdfs_isnn2
 
 - name: create marker file for active namenode {{hdfs_isjn}}
-  file: path={{hdfs.config_dir}}/jn state=touch mode=0644 owner={{hdfs.user}} group={{hdfs.user}}
+  file: path={{hdfs.config_dir}}/jn state=touch mode=0644 owner={{hdfs.user}} group={{hdfs.group}}
   when: hdfs_isjn is defined and hdfs_isjn
 
 
