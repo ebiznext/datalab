@@ -16,3 +16,6 @@
 
 - name: install zeppelin
   include: zeppelin.yml
+
+- name: install chronos
+  include: chronos.yml
