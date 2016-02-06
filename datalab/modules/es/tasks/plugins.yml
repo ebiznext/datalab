@@ -35,6 +35,8 @@
   copy: src={{item}} dest={{elasticsearch.download_dir}}/
   with_fileglob:
     - plugins/*
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
 
 - name: Installing local Plugins
   shell: "{{ elasticsearch.home_dir }}/bin/plugin -install {{ item.name }} -url file:///{{elasticsearch.download_dir}}/{{ item.file }}"
@@ -48,12 +50,12 @@
 
 - name: Install searchguard plugin
   include: searchguard.yml
-  when: "{{ elasticsearch.plugins.searchguard.install }} | bool"
+  when: elasticsearch.plugins.searchguard.install|bool
 
 # Install Marvel Plugin (for Elasticsearch monitoring)
 - name: Install marvel plugin
   include: marvel.yml
-  when: "{{ elasticsearch.plugins.marvel.install }} | bool"
+  when: elasticsearch.plugins.marvel.install|bool
 
 # Fix permissions
 - file: path="{{ elasticsearch.plugins.dirname }}" state=directory

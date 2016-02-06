@@ -2,7 +2,7 @@
 # Elasticsearch Ansible Meta
 dependencies:
   - { role: jdk }
-  - { role: common, install_maven, when: "{{elasticsearch.plugins.searchguard.install}}|bool" }
+  - { role: common, install_maven, when: "{{elasticsearch.plugins.searchguard.install|bool}}" }
 
 galaxy_info:
   author: George Stathis, Ahmed Bessifi, Stephane Manciot

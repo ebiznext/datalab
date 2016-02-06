@@ -45,16 +45,12 @@ node.name: {{ elasticsearch_config_node_name }}
 # Allow this node to be eligible as a master node (enabled by default):
 #
 # node.master: true
-{% if elasticsearch_config_node_master is defined %}
-node.master: {{ elasticsearch_config_node_master }}
-{% endif %}
+node.master: {{ elasticsearch.config.node.master|bool|lower }}
 #
 # Allow this node to store data (enabled by default):
 #
 # node.data: true
-{% if elasticsearch_config_node_data is defined %}
-node.data: {{ elasticsearch_config_node_data }}
-{% endif %}
+node.data: {{ elasticsearch.config.node.data|bool|lower }}
 
 # You can exploit these settings to design advanced cluster topologies.
 #
@@ -94,15 +90,11 @@ node.rack: {{ elasticsearch_config_node_rack }}
 # By default, multiple nodes are allowed to start from the same installation location
 # to disable it, set the following:
 # node.max_local_storage_nodes: 1
-{% if elasticsearch.config.node_max_local_storage_nodes is defined %}
-node.max_local_storage_nodes: {{ elasticsearch.config.node_max_local_storage_nodes }}
-{% endif %}
+node.max_local_storage_nodes: {{ elasticsearch.config.node.max_local_storage_nodes }}
 
 # Disable network discovery by setting the following (useful for development):
 # node.local: true
-{% if elasticsearch_config_node_local is defined %}
-node.local: {{ elasticsearch_config_node_local }}
-{% endif %}
+node.local: {{ elasticsearch.config.node.local|bool|lower }}
 
 #################################### Index ####################################
 
@@ -120,16 +112,12 @@ node.local: {{ elasticsearch_config_node_local }}
 # Set the number of shards (splits) of an index (5 by default):
 #
 # index.number_of_shards: 5
-{% if elasticsearch_config_index_number_of_shards is defined %}
-index.number_of_shards: {{ elasticsearch_config_index_number_of_shards }}
-{% endif %}
+index.number_of_shards: {{ elasticsearch.config.index.number_of_shards }}
 
 # Set the number of replicas (additional copies) of an index (1 by default):
 #
 # index.number_of_replicas: 1
-{% if elasticsearch_config_index_number_of_replicas is defined %}
-index.number_of_replicas: {{ elasticsearch_config_index_number_of_replicas }}
-{% endif %}
+index.number_of_replicas: {{ elasticsearch.config.index.number_of_replicas }}
 
 # Note, that for development on a local machine, with small indices, it usually
 # makes sense to "disable" the distributed features:
@@ -223,9 +211,7 @@ path.plugins: {{ elasticsearch.plugins.dirname }}
 # Set this property to true to lock the memory:
 #
 #
-{% if elasticsearch.config.memory_bootstrap_mlockall is defined %}
-bootstrap.mlockall: {{ elasticsearch.config.memory_bootstrap_mlockall }}
-{% endif %}
+bootstrap.mlockall: {{ elasticsearch.config.memory.bootstrap.mlockall|bool|lower }}
 
 # Make sure that the ES_MIN_MEM and ES_MAX_MEM environment variables are set
 # to the same value, and that the machine has enough memory to allocate
@@ -245,8 +231,8 @@ bootstrap.mlockall: {{ elasticsearch.config.memory_bootstrap_mlockall }}
 # Set the bind address specifically (IPv4 or IPv6):
 #
 # network.bind_host: 192.168.0.1
-{% if elasticsearch.config.network_bind_host is defined %}
-network.bind_host: {{ elasticsearch.config.network_bind_host }}
+{% if elasticsearch.config.network.bind_host is defined %}
+network.bind_host: {{ elasticsearch.config.network.bind_host }}
 {% endif %}
 
 # Set the address other nodes will use to communicate with this node. If not
@@ -267,8 +253,8 @@ network.host: {{ elasticsearch_config_network_host }}
 # Set a custom port for the node to node communication (9300 by default):
 #
 # transport.tcp.port: 9300
-{% if elasticsearch.config.network_transport_tcp_port is defined %}
-transport.tcp.port: {{ elasticsearch.config.network_transport_tcp_port }}
+{% if elasticsearch.config.network.transport_tcp_port is defined %}
+transport.tcp.port: {{ elasticsearch.config.network.transport_tcp_port }}
 {% endif %}
 
 # Enable compression for all communication between nodes (disabled by default):
@@ -281,8 +267,8 @@ transport.tcp.compress: {{ elasticsearch_config_network_transport_tcp_compress }
 # Set a custom port to listen for HTTP traffic:
 #
 # http.port: 9200
-{% if elasticsearch.config.network_http_port is defined %}
-http.port: {{ elasticsearch.config.network_http_port }}
+{% if elasticsearch.config.network.http_port is defined %}
+http.port: {{ elasticsearch.config.network.http_port }}
 {% endif %}
 
 # Set a custom allowed content length:

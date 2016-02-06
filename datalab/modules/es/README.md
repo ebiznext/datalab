@@ -23,7 +23,7 @@ This is an [Ansible](http://www.ansibleworks.com/) playbook for [Elasticsearch](
 - `elasticsearch_config_network_http_port` - Elasticsearch http port (default: "9200")
 - `elasticsearch_service_startonboot` - Make sure Elasticsearch service is not running after system boot (default: "no")
 - `elasticsearch_service_state` - Stop Elasticsearch service (default: "stopped")
-- `elasticsearch_config_heap_size` - ES heap size (default: "512m")
+- `elasticsearch_config_memory_heap_size` - ES heap size (default: "512m")
 
 For more details about configuration parameters see `elasticsearch.default.j2` and `elasticsearch.yml.j2` files.
 
@@ -42,7 +42,7 @@ elasticsearch_plugins:
 ```
 By default head and analysis-icu plugins are installed (see defaults/main.yml).
 
-Concerning [searchguard plugin](https://github.com/floragunncom/search-guard) it is important to note that it [didn't support Elasticsearcl 1.7](https://github.com/floragunncom/search-guard/issues/41) yet. Otherwise, for the previous versions it is possible to build and/or install the plugin. Just set the `elasticsearch_install_searchguard` flag to `true` (disabled by default). The search-guard plugin should not be specified within "elasticsearch_plugins" list as it will has a custom installation.
+Concerning [searchguard plugin](https://github.com/floragunncom/search-guard) it is important to note that it [didn't support Elasticsearcl 1.7](https://github.com/floragunncom/search-guard/issues/41) yet. Otherwise, for the previous versions it is possible to build and/or install the plugin. Just set the `elasticsearch_plugins_searchguard_install` flag to `true` (disabled by default). The search-guard plugin should not be specified within "elasticsearch_plugins" list as it will has a custom installation.
 
 ### Installing Custom JARs
 Custom jars are made available to the Elasticsearch classpath by being downloaded into the elasticsearch_home_dir/lib folder. You will need to define an array called `elasticsearch_custom_jars` in the corresponding playbook or inventory file, such that:
@@ -67,7 +67,7 @@ elasticsearch_config_thread_pools:
 
 If you want to install Marvel plugin for ES, the following variable need to be set to `true` in the playbook or inventory:
 
-- elasticsearch_install_marvel
+- elasticsearch_plugins_marvel_install
 
 The following variables provide configuration for the plugin. More options may be available in the future (see [http://www.elasticsearch.org/guide/en/marvel/current/#stats-export](http://www.elasticsearch.org/guide/en/marvel/current/#stats-export)):
 
