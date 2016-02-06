@@ -5,30 +5,17 @@
   shell: "{{ elasticsearch.home_dir }}/bin/plugin --remove search-guard"
   ignore_errors: yes
 
-- name: Elasticsearch version not supported
+- name: Elasticsearch versions not supported
   debug: msg="Search Guard plugin didn't support ES {{ elasticsearch.version }}"
-  when: "{{ elasticsearch.version | version_compare('1.7', '>=') }}"
+  when: elasticsearch.version | version_compare('1.5', '<') and elasticsearch.version | version_compare('1.7', '>')
 
-- name: install search-guard for ES (versions <= 5.x)
-  shell: "{{ elasticsearch.home_dir }}/bin/plugin --install {{ elasticsearch.plugins.searchguard.default_plugin }}"
-  when: "{{ elasticsearch.version | version_compare('1.6', '<') }}"
+- name: install search-guard for ES versions 1.5.x, 1.6.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin --install com.floragunn/search-guard/0.5"
+  when: elasticsearch.version | version_compare('1.5', '>=') and elasticsearch.version | version_compare('1.7', '<')
 
-# Download and build search-guard plugin for ES 1.6
-- name: retreive search-guard from git
-  git: repo={{ elasticsearch.plugins.searchguard.url }}
-       dest="{{ elasticsearch.plugins.searchguard.build_dir }}/search-guard"
-       version="es1.6" update=yes depth=1
-  when: "{{ elasticsearch.version | version_compare('1.6', '>=') }} and {{ elasticsearch.version | version_compare('1.7', '<') }}"
-
-- name: build search-guard plugin
-  shell: "mvn package -DskipTests"
-  args:
-    chdir: "{{ elasticsearch.plugins.searchguard.build_dir }}/search-guard"
-  when: "{{ elasticsearch.version | version_compare('1.6', '>=') }} and {{ elasticsearch.version | version_compare('1.7', '<') }}"
-
-- name: install search-guard plugin
-  shell: "{{ elasticsearch.home_dir }}/bin/plugin --install search-guard --url file://{{ elasticsearch.plugins.searchguard.build_dir }}/search-guard/target/releases/search-guard-16-0.6-SNAPSHOT.zip"
-  when: "{{ elasticsearch.version | version_compare('1.6', '>=') }} and {{ elasticsearch.version | version_compare('1.7', '<') }}"
+- name: install search-guard for ES versions 1.7.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin --install com.floragunn/search-guard/1.7.3.0"
+  when: elasticsearch.version | version_compare('1.7', '>=') and elasticsearch.version | version_compare('1.8', '<')
 
 - name: create search-guard key directory
   file: path={{ elasticsearch.plugins.searchguard.keypath }} state=directory

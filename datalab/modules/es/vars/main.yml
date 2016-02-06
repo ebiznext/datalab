@@ -64,9 +64,6 @@ elasticsearch:
     dirname: "{{elasticsearch_plugins_directory | default('/usr/share/elasticsearch/plugins')}}"
     searchguard:
       install: "{{ elasticsearch_plugins_searchguard_install | default('no') }}"
-      url: "{{ elasticsearch_plugins_searchguard_url | default('https://github.com/floragunncom/search-guard')}}"
-      default_plugin: "com.floragunn/search-guard/{{elasticsearch_plugins_searchguard_version | default('0.5')}}"
-      build_dir: "{{elasticsearch_plugins_searchguard_build_dir | default('/usr/local/src')}}"
-      keypath: "/home/elasticsearch"
+      keypath: "{{elasticsearch_plugins_searchguard_keypath | default('/home/'+(elasticsearch_user | default('elasticsearch')))}}"
     marvel:
       install: "{{ elasticsearch_plugins_marvel_install | default('no') }}"
