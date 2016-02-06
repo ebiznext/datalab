@@ -1,17 +1,32 @@
 ---
 
 - name: Add sbt apt reporitory
-  apt_repository: repo="{{ sbt.apt.repo_name }}"
+  apt_repository: repo="deb https://dl.bintray.com/sbt/debian /"
   when: ansible_os_family == 'Debian'
 
 - name: Add sbt apt key
-  apt_key: keyserver='keyserver.ubuntu.com' id="{{ sbt.apt.repo_key }}"
+  apt_key: keyserver="keyserver.ubuntu.com" id="642AC823"
   when: ansible_os_family == 'Debian'
 
-- name: Install sbt package
-  apt: name='sbt' state=present force=yes
+- name: Install sbt package for Debian
+  apt: name=sbt state=present force=yes
        update_cache=yes cache_valid_time=3600
   when: ansible_os_family == 'Debian'
+
+# required ansible 2.1
+#- name: add sbt yum repository
+#  yumrepo: name=sbt base_url=https://bintray.com/sbt/rpm/rpm
+#  when: ansible_os_family == 'RedHat'
+
+- name: add sbt yum repository
+  shell: "curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo"
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: Install sbt package for RedHat
+  yum: name='sbt' state=present update_cache=yes enablerepo=bintray--sbt-rpm
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
 
 # Manual installation
 # - name: Download sbt jar

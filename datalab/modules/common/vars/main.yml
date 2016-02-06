@@ -2,21 +2,18 @@
 
 ## Maven
 maven:
-  version: "{{ maven_version }}"
-  bin_path: '/usr/bin'
-  download_dir: '{{maven_download_directory}}'
-  install_dir: '{{maven_install_directory}}'
-  lib_dir: '{{maven_lib_directory}}'
-  user: 'maven'
-  package_name: "{{ maven_package_name }}"
-  file: "{{maven_download_directory}}/{{maven_package_file}}"
-  url: "{{maven_url}}"
+  version: "{{ maven_version | default('3.3.3') }}"
+  bin_path: "{{maven_bin_path | default('/usr/bin')}}"
+  download_dir: "{{maven_download_directory | default('/tmp')}}"
+  install_dir: "{{maven_install_directory | default ('/usr/share/maven')}}"
+  lib_dir: "{{maven_lib_directory | default ('/var/lib/maven')}}"
+  user: "{{maven_user | default('maven')}}"
+  package_name: "{{ maven_package_name | default('apache-maven-'+(maven_version | default('3.3.3'))+'-bin')}}"
+  file: "{{maven_download_directory | default('/tmp')}}/{{maven_package_file | default(maven_package_name | default('apache-maven-'+(maven_version | default('3.3.3'))+'-bin')+'.tar.gz')}}"
+  url: "{{maven_url | default(apache_mirror+'maven/maven-'+((maven_version | default('3.3.3'))|regex_replace('\\..*', ''))+'/'+(maven_version | default('3.3.3'))+'/binaries/'+(maven_package_file | default(maven_package_name | default('apache-maven-'+(maven_version | default('3.3.3'))+'-bin')+'.tar.gz')))}}"
 
 ## SBT
 sbt:
-  version: "{{ sbt_version }}"
-  apt:
-    repo_name: "{{ sbt_apt_repo }}"
-    repo_key: '642AC823'
-  jar: 'https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/{{ sbt_version }}/sbt-launch.jar'
-  install_dir: '/opt'
+  version: "{{ sbt_version | default('0.13.9') }}"
+  jar: "https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/{{ sbt_version | default('0.13.9') }}/sbt-launch.jar"
+  install_dir: "{{sbt_install_dir | default('/opt')}}"

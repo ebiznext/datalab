@@ -8,14 +8,3 @@ proxy_password: "{{__proxy_password}}"
 no_proxy: "{{__no_proxy}}"
 
 apache_mirror: "{{__apache_mirror}}"
-
-maven_version: "3.3.3"
-maven_download_directory: /tmp
-maven_install_directory: /usr/share/maven
-maven_lib_directory: /var/lib/maven
-maven_package_name: "apache-maven-{{ maven_version }}-bin"
-maven_package_file: "{{maven_package_name}}.tar.gz"
-maven_url: "{{apache_mirror}}maven/maven-{{maven_version|regex_replace('\\..*', '')}}/{{maven_version}}/binaries/{{maven_package_file}}"
-
-sbt_apt_repo: "deb https://dl.bintray.com/sbt/debian /"
-sbt_version: "0.13.9"
