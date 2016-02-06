@@ -7,6 +7,14 @@
 - file: path=/etc/chronos/conf state=directory
   sudo: yes
 
+#- name: Create Chronos group
+#  group: name={{ chronos.group }}
+#  sudo: yes
+#
+#- name: Create Chronos user
+#  user: name={{ chronos.user }} group={{ chronos.group }} createhome=no
+#  sudo: yes
+
 # Install Debian dependencies
 - name: Install Debian dependencies
   apt: pkg=chronos state=present update_cache=yes cache_valid_time=3600
