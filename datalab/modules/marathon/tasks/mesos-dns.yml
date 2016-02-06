@@ -59,7 +59,7 @@
   sudo: yes
 
 - name: clean resolve.conf
-  lineinfile: dest=/etc/resolv.conf regexp='^nameserver\s([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})\s\#\smesos-dns' state=absent
+  lineinfile: dest=/etc/resolv.conf regexp='^(.*)\#\smesos-dns' state=absent
   delegate_to: "{{item}}"
   with_items:
     - "{{groups['slave']|list}}"
