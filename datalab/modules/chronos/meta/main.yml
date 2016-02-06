@@ -2,11 +2,10 @@
 
 dependencies:
   - { role: jdk }
-  - { role: mirror }
 
 galaxy_info:
   author: "Stéphane Manciot"
-  description: An Ansible role for installing Apache zookeeper.
+  description: An Ansible role for installing Chronos.
   company: EBIZNEXT
   license: MIT
   min_ansible_version: 1.9

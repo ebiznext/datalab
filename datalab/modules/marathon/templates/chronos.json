@@ -4,7 +4,7 @@
     "cpus": {{ chronos_nb_cpus | default(1) }},
     "mem": {{ chronos_mem }},
     "requirePorts": false,
-    "cmd": "echo $PORT > /etc/chronos/conf/http_port && su - {{chronos_user}} -c \"/usr/bin/chronos\"",
+    "cmd": "echo $PORT > /etc/chronos/conf/http_port && su - root -c \"/usr/bin/chronos\"",
     "constraints": [["hostname", "UNIQUE"], ["node_type", "CLUSTER", "{{chronos_node_type}}"]]
 }
 

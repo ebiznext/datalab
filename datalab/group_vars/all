@@ -186,10 +186,13 @@ mesos_dns_config_http_port: 8123
 #
 # Chronos
 #
-chronos_user: root
+#chronos_user: root
 chronos_port: 4400
-chronos_group: "{{chronos_user}}"
+#chronos_group: "{{chronos_user}}"
 chronos_node_type: batch_node
+chronos_id: chronos # marathon id
+chronos_mem: 256 # in mb
+chronos_nb_cpus: 0.2
 
 #
 # Hdfs
