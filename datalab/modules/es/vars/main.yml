@@ -61,7 +61,7 @@ elasticsearch:
 
   plugins:
     list: "{{ elasticsearch_plugins | default([]) }}"
-    dirname: "{{elasticsearch_plugins_directory | default('/usr/share/elasticsearch/plugins')}}"
+    dirname: "{{elasticsearch_plugins_directory | default((elasticsearch_home_directory | default('/usr/share/elasticsearch'))+'/plugins')}}"
     searchguard:
       install: "{{ elasticsearch_plugins_searchguard_install | default('no') }}"
       keypath: "{{elasticsearch_plugins_searchguard_keypath | default('/home/'+(elasticsearch_user | default('elasticsearch')))}}"
