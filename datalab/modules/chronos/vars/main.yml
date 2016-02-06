@@ -2,5 +2,3 @@
 
 chronos:
   port: "{{chronos_port | default(4400)}}"
-#  user: "{{chronos_user | default('chronos')}}"
-#  group: "{{chronos_group | default(chronos_user | default('chronos'))}}"
