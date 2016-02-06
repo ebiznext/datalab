@@ -1,0 +1,13 @@
+---
+
+# Remove head plugin if exists already
+- name: remove head plugin
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin --remove head"
+  ignore_errors: yes
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+
+- name: install head plugin
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install mobz/elasticsearch-head"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"

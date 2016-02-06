@@ -12,7 +12,7 @@
   ignore_errors: yes
 
 - name: Installing Plugins by Name
-  shell: "{{ elasticsearch.home_dir }}/bin/plugin -install {{ item.name }}"
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install {{ item.name }}"
   args:
     chdir: "{{ elasticsearch.home_dir }}"
   when: item.url is not defined
@@ -22,7 +22,7 @@
   ignore_errors: yes
 
 - name: Installing Plugins by URL
-  shell: "{{ elasticsearch.home_dir }}/bin/plugin -install {{ item.name }} -url {{ item.url }}"
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install {{ item.name }} -url {{ item.url }}"
   args:
     chdir: "{{ elasticsearch.home_dir }}"
   when: item.url is defined and (not item.file is defined)
@@ -47,6 +47,14 @@
   sudo: yes
   sudo_user: "{{ elasticsearch.user }}"
   ignore_errors: yes
+
+- name: Install head plugin
+  include: head.yml
+  when: elasticsearch.plugins.head.install|bool
+
+- name: Install icu plugin
+  include: icu.yml
+  when: elasticsearch.plugins.icu.install|bool
 
 - name: Install searchguard plugin
   include: searchguard.yml

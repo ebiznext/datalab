@@ -67,3 +67,7 @@ elasticsearch:
       keypath: "{{elasticsearch_plugins_searchguard_keypath | default('/home/'+(elasticsearch_user | default('elasticsearch')))}}"
     marvel:
       install: "{{ elasticsearch_plugins_marvel_install | default('no') }}"
+    head:
+      install: "{{ elasticsearch_plugins_head_install | default('yes') }}"
+    icu:
+      install: "{{ elasticsearch_plugins_icu_install | default('yes') }}"

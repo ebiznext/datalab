@@ -47,9 +47,9 @@ elasticsearch_config_http_server_host: localhost
 elasticsearch_config_http_server_port: 9200
 elasticsearch_config_tcp_transport_port: 9300
 elasticsearch_config_cluster_name: elasticsearch
-elasticsearch_plugins:
-  - { name: 'head', url: 'mobz/elasticsearch-head', file: 'head.zip' }
-  - { name: 'analysis-icu', url: 'https://github.com/elastic/elasticsearch-analysis-icu/archive/v2.7.0.tar.gz', file: 'analysis-icu-2.7.0.zip' } # when using another version of es, you should update the url and remove the file entry
+elasticsearch_plugins: []
+#  - { name: 'head', url: 'mobz/elasticsearch-head', file: 'head.zip' }
+#  - { name: 'analysis-icu', url: 'https://github.com/elastic/elasticsearch-analysis-icu/archive/v2.7.0.tar.gz', file: 'analysis-icu-2.7.0.zip' } # when using another version of es, you should update the url and remove the file entry
 elasticsearch_download_directory: /tmp
 elasticsearch_package_name: "elasticsearch-{{ elasticsearch_version }}"
 elasticsearch_prebuilt_file: "{{elasticsearch_package_name}}.tar.gz"
