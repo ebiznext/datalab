@@ -13,7 +13,7 @@ This is an [Ansible](http://www.ansibleworks.com/) playbook for [Elasticsearch](
 
 ## Some role variables for custom installation
 
-- `elasticsearch_version` - Elasticsearch version to install (default: "1.5.2")
+- `elasticsearch_version` - Elasticsearch version to install (default: "1.7.3")
 - `elasticsearch_install_prebuilt` - If set, ansible will install elasticsearch from a pre-built package (default: 'yes')
 - `elasticsearch_install_directory` - The installion directory (default: '/usr/local')
 - `elasticsearch_prebuit_package_url` - Url to download Elasticsearch pre-built package. The archive file name should match the pattern **elasticsearch-{elasticsearch_version}.tgz**
