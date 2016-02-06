@@ -1,0 +1,7 @@
+---
+
+- set_fact: java_opts=""
+  when: not proxy_enabled|bool
+
+- set_fact: java_opts="-Dhttp.proxyHost={{proxy_host}} -Dhttp.proxyPort={{proxy_port}} -Dhttp.proxyUser={{proxy_username}} -Dhttp.proxyPassword={{proxy_password}}"
+  when: proxy_enabled|bool

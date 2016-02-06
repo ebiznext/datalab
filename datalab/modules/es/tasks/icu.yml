@@ -1,0 +1,78 @@
+---
+
+# Remove analysis-icu plugin if exists already
+- name: remove analysis-icu plugin
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin --remove analysis-icu"
+  ignore_errors: yes
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+
+- name: Elasticsearch versions not supported
+  debug: msg="ICU plugin didn't support ES {{ elasticsearch.version }}"
+  when: elasticsearch.version | version_compare('1.7', '>')
+
+- name: install analysis-icu for ES versions 0.9.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install elasticsearch/elasticsearch-analysis-icu/1.13.0"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('0.9', '>=') and elasticsearch.version | version_compare('1.0', '<')
+
+- name: install analysis-icu for ES versions 1.0.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install elasticsearch/elasticsearch-analysis-icu/2.0.0"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('1.0', '>=') and elasticsearch.version | version_compare('1.1', '<')
+
+- name: install analysis-icu for ES versions 1.1.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install elasticsearch/elasticsearch-analysis-icu/2.1.0"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('1.1', '>=') and elasticsearch.version | version_compare('1.2', '<')
+
+- name: install analysis-icu for ES versions 1.2.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install elasticsearch/elasticsearch-analysis-icu/2.2.0"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('1.2', '>=') and elasticsearch.version | version_compare('1.3', '<')
+
+- name: install analysis-icu for ES versions 1.3.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install elasticsearch/elasticsearch-analysis-icu/2.3.0"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('1.3', '>=') and elasticsearch.version | version_compare('1.4', '<')
+
+- name: install analysis-icu for ES versions 1.4.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install elasticsearch/elasticsearch-analysis-icu/2.4.1"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('1.4', '>=') and elasticsearch.version | version_compare('1.4.3', '<')
+
+- name: install analysis-icu for ES versions 1.4.3+
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install elasticsearch/elasticsearch-analysis-icu/2.4.2"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('1.4.3', '>=') and elasticsearch.version | version_compare('1.4.5', '<')
+
+- name: install analysis-icu for ES versions 1.4.5+
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install elasticsearch/elasticsearch-analysis-icu/2.4.3"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('1.4.5', '>=') and elasticsearch.version | version_compare('1.5', '<')
+
+- name: install analysis-icu for ES versions 1.5.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install elasticsearch/elasticsearch-analysis-icu/2.5.0"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('1.5', '>=') and elasticsearch.version | version_compare('1.6', '<')
+
+- name: install analysis-icu for ES versions 1.6.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install elasticsearch/elasticsearch-analysis-icu/2.6.0"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('1.6', '>=') and elasticsearch.version | version_compare('1.7', '<')
+
+- name: install analysis-icu for ES versions 1.7.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install elasticsearch/elasticsearch-analysis-icu/2.7.0"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('1.7', '>=') and elasticsearch.version | version_compare('1.8', '<')

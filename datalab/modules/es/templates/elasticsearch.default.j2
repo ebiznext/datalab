@@ -1,18 +1,12 @@
 # Run ElasticSearch as this user ID and group ID
 #ES_USER=elasticsearch
-{% if elasticsearch.user is defined %}
 ES_USER={{ elasticsearch.user }}
-{% endif %}
 #ES_GROUP=elasticsearch
-{% if elasticsearch.group is defined %}
 ES_GROUP={{ elasticsearch.group }}
-{% endif %}
 
 # Heap Size (defaults to 256m min, 1g max)
 #ES_HEAP_SIZE=2g
-{% if elasticsearch.config.heap_size is defined %}
-ES_HEAP_SIZE={{ elasticsearch.config.heap_size }}
-{% endif %}
+ES_HEAP_SIZE={{ elasticsearch.config.memory.heap_size }}
 
 # Heap new generation
 #ES_HEAP_NEWSIZE=
@@ -22,9 +16,7 @@ ES_HEAP_SIZE={{ elasticsearch.config.heap_size }}
 
 # Maximum number of open files, defaults to 65535.
 #MAX_OPEN_FILES=65535
-{% if elasticsearch.config.max_open_files is defined %}
 MAX_OPEN_FILES={{ elasticsearch.config.max_open_files }}
-{% endif %}
 
 # Maximum locked memory size. Set to "unlimited" if you use the
 # bootstrap.mlockall option in elasticsearch.yml. You must also set
@@ -35,16 +27,16 @@ MAX_LOCKED_MEMORY={{ elasticsearch_config_max_locked_memory }}
 {% endif %}
 
 # ElasticSearch log directory
-#LOG_DIR=/var/log/elasticsearch
+LOG_DIR={{elasticsearch.log_dir}}
 
 # ElasticSearch data directory
-#DATA_DIR=/var/lib/elasticsearch
+DATA_DIR={{elasticsearch.data_dir}}
 
 # ElasticSearch work directory
-#WORK_DIR=/tmp/elasticsearch
+WORK_DIR={{elasticsearch.work_dir}}
 
 # ElasticSearch configuration directory
-#CONF_DIR=/etc/elasticsearch
+CONF_DIR={{elasticsearch.config.dirname}}
 
 # ElasticSearch configuration file (elasticsearch.yml)
 #CONF_FILE=/etc/elasticsearch/elasticsearch.yml
