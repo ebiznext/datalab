@@ -2,19 +2,19 @@
 
 elasticsearch:
   version: "{{ elasticsearch_version }}"
-  user: "{{elasticsearch_user}}"
-  group: "{{elasticsearch_group}}"
-  gid: "{{elasticsearch_gid}}"
-  uid: "{{elasticsearch_uid}}"
+  user: "{{elasticsearch_user | default('elasticsearch')}}"
+  group: "{{elasticsearch_group | default('elasticsearch')}}"
+  gid: "{{elasticsearch_gid | default(2001)}}"
+  uid: "{{elasticsearch_uid | default(2001)}}"
   package_name: "{{elasticsearch_package_name}}"
-  download_url: https://download.elasticsearch.org/elasticsearch/elasticsearch
-  download_dir: "{{elasticsearch_download_directory}}"
-  home_dir: "{{elasticsearch_home_directory}}"
-  log_dir: "{{elasticsearch_log_directory}}"
-  data_dir: "{{elasticsearch_data_directory}}"
-  work_dir: "{{elasticsearch_work_directory}}"
+  download_url: "{{elasticsearch_download_url | default('https://download.elasticsearch.org/elasticsearch/elasticsearch')}}"
+  download_dir: "{{elasticsearch_download_directory | default('/tmp')}}"
+  home_dir: "{{elasticsearch_home_directory | default('/usr/share/elasticsearch')}}"
+  log_dir: "{{elasticsearch_log_directory | default('/var/log/elasticsearch')}}"
+  data_dir: "{{elasticsearch_data_directory | default('/var/lib/elasticsearch')}}"
+  work_dir: "{{elasticsearch_work_directory | default('/tmp/elasticsearch')}}"
 
-  dependencies: "{{elasticsearch_dependencies}}"
+  dependencies: "{{elasticsearch_dependencies | default('yes')}}"
 
   depends:
     apt:
@@ -27,34 +27,47 @@ elasticsearch:
       - wget
 
   prebuilt:
-    install: "{{ elasticsearch_install_prebuilt }}"
-    file: "{{elasticsearch_download_directory}}/{{elasticsearch_prebuilt_file}}"
+    install: "{{ elasticsearch_install_prebuilt | default('yes') }}"
+    file: "{{elasticsearch_download_directory | default('/tmp')}}/{{elasticsearch_prebuilt_file}}"
     url: "{{ elasticsearch_prebuit_package_url }}"
     sha1: "{{ elasticsearch_prebuit_package_url }}.sha1.txt"
 
   service:
-    startonboot: "{{ elasticsearch_service_startonboot }}"
-    state: "{{ elasticsearch_service_state }}"
+    startonboot: "{{ elasticsearch_service_startonboot | default('no') }}"
+    state: "{{ elasticsearch_service_state | default('stopped') }}"
 
   config:
-    dirname: "{{elasticsearch_config_directory}}"
-    max_open_files: 65535
-    network_http_port: "{{ elasticsearch_config_http_server_port }}"
-    network_transport_tcp_port: "{{elasticsearch_config_tcp_transport_port}}"
-    network_bind_host: "{{ elasticsearch_config_network_bind_host }}"
-    cluster_name: "{{ elasticsearch_config_cluster_name }}"
-    heap_size: "{{ elasticsearch_config_heap_size }}"
-    node_max_local_storage_nodes: 1
-    memory_bootstrap_mlockall: "true"
+    dirname: "{{elasticsearch_config_directory | default('/etc/elasticsearch')}}"
+    max_open_files: "{{elasticsearch_config_max_open_files | default(65535)}}"
+    network:
+      http_port: "{{ elasticsearch_config_http_server_port | default(9200) }}"
+      transport_tcp_port: "{{elasticsearch_config_tcp_transport_port | default(9300) }}"
+      bind_host: "{{ elasticsearch_config_network_bind_host | default('0.0.0.0') }}"
+    cluster_name: "{{ elasticsearch_config_cluster_name | default('elasticsearch') }}"
+    memory:
+      heap_size: "{{ elasticsearch_config_memory_heap_size | default('512m') }}"
+      bootstrap:
+        mlockall: "{{ elasticsearch_config_memory_bootstrap_mlockall | default('yes') }}"
+
+    node:
+      master: "{{elasticsearch_config_node_master | default('yes')}}"
+      data: "{{elasticsearch_config_node_data | default('yes')}}"
+      max_local_storage_nodes: "{{elasticsearch_config_node_max_local_storage_nodes | default(1) }}"
+      local: "{{elasticsearch_config_node_local | default('no')}}"
+
+    index:
+      number_of_shards: "{{elasticsearch_config_index_number_of_shards | default(5)}}"
+      number_of_replicas: "{{elasticsearch_config_index_number_of_replicas | default(1)}}"
 
   plugins:
-    list: "{{ elasticsearch_plugins }}"
-    dirname: "{{elasticsearch_plugins_directory}}"
+    list: "{{ elasticsearch_plugins | default([]) }}"
+    dirname: "{{elasticsearch_plugins_directory | default((elasticsearch_home_directory | default('/usr/share/elasticsearch'))+'/plugins')}}"
     searchguard:
-      install: "{{ elasticsearch_install_searchguard }}"
-      url: "https://github.com/floragunncom/search-guard"
-      default_plugin: "com.floragunn/search-guard/0.5"
-      build_dir: "/usr/local/src"
-      keypath: "/home/elasticsearch"
+      install: "{{ elasticsearch_plugins_searchguard_install | default('no') }}"
+      keypath: "{{elasticsearch_plugins_searchguard_keypath | default('/home/'+(elasticsearch_user | default('elasticsearch')))}}"
     marvel:
-      install: "{{ elasticsearch_install_marvel }}"
+      install: "{{ elasticsearch_plugins_marvel_install | default('no') }}"
+    head:
+      install: "{{ elasticsearch_plugins_head_install | default('yes') }}"
+    icu:
+      install: "{{ elasticsearch_plugins_icu_install | default('yes') }}"

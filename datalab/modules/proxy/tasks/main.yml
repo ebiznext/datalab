@@ -31,6 +31,9 @@
   - name: add proxy Settings for pip
     include: pip.yml
 
+  - name: add proxy Settings for java
+    include: java.yml
+
   - set_fact: proxy_env={}
     when: not proxy_enabled|bool
 
