@@ -9,7 +9,7 @@
 - stat: path={{elasticsearch.prebuilt.file}} get_checksum=yes
   register: elasticsearch_file
 
-- shell: curl {{curl_proxy_args}} --stderr /dev/null {{elasticsearch.prebuilt.sha1}}
+- shell: "curl {{curl_proxy_args}} --stderr /dev/null {{elasticsearch.prebuilt.url}}.sha1.txt"
   register: elasticsearch_sha1
   when: elasticsearch_file.stat.exists
 
