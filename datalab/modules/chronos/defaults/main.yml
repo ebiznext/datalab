@@ -1,7 +1,2 @@
 ---
 
-apache_mirror: "{{__apache_mirror}}"
-
-chronos_port: 4400
-chronos_user: root
-chronos_group: "{{chronos_user}}"

@@ -1,6 +1,6 @@
 ---
 
 chronos:
-  port: "{{chronos_port}}"
-  user: "{{chronos_user}}"
-  group: "{{chronos_group}}"
+  port: "{{chronos_port | default(4400)}}"
+#  user: "{{chronos_user | default('chronos')}}"
+#  group: "{{chronos_group | default(chronos_user | default('chronos'))}}"

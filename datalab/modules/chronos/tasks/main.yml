@@ -7,6 +7,14 @@
 - file: path=/etc/chronos/conf state=directory
   sudo: yes
 
+#- name: Create Chronos group
+#  group: name={{ chronos.group }}
+#  sudo: yes
+#
+#- name: Create Chronos user
+#  user: name={{ chronos.user }} group={{ chronos.group }} createhome=no
+#  sudo: yes
+
 # Install Debian dependencies
 - name: Install Debian dependencies
   apt: pkg=chronos state=present update_cache=yes cache_valid_time=3600
@@ -19,26 +27,26 @@
   sudo: yes
   when: ansible_os_family == 'RedHat'
 
-# Gather Zookeeper facts
-- name: gather facts from zookeeper servers
-  setup:
-    filter: ansible_local
-  delegate_to: "{{item}}"
-  with_items: "{{groups['zookeeper']|list}}"
-  register: zookeeper_facts
-  sudo: yes
-  when: groups.zookeeper is defined and (not chronos_zookeepers is defined)
-
-- set_fact: mesos_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}"
-  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+## Gather Zookeeper facts
+#- name: gather facts from zookeeper servers
+#  setup:
+#    filter: ansible_local
+#  delegate_to: "{{item}}"
+#  with_items: "{{groups['zookeeper']|list}}"
+#  register: zookeeper_facts
+#  sudo: yes
+#  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+#
+#- set_fact: mesos_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}"
+#  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
 
 # Configure
 
 - name: Create Chronos configuration
   template: src=http_port
             dest=/etc/chronos/conf/
-            owner={{ chronos.user }}
-            group={{ chronos.group }}
+#            owner={{ chronos.user }}
+#            group={{ chronos.group }}
   sudo: yes
 
 - name: enable and stop chronos service
