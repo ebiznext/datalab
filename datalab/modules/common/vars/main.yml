@@ -8,12 +8,12 @@ maven:
   install_dir: "{{maven_install_directory | default ('/usr/share/maven')}}"
   lib_dir: "{{maven_lib_directory | default ('/var/lib/maven')}}"
   user: "{{maven_user | default('maven')}}"
-  package_name: "{{ maven_package_name | default('apache-maven-'+(maven_version | default('3.3.3'))+'-bin')}}"
-  file: "{{maven_download_directory | default('/tmp')}}/{{maven_package_file | default(maven_package_name | default('apache-maven-'+(maven_version | default('3.3.3'))+'-bin')+'.tar.gz')}}"
-  url: "{{maven_url | default(apache_mirror+'maven/maven-'+((maven_version | default('3.3.3'))|regex_replace('\\..*', ''))+'/'+(maven_version | default('3.3.3'))+'/binaries/'+(maven_package_file | default(maven_package_name | default('apache-maven-'+(maven_version | default('3.3.3'))+'-bin')+'.tar.gz')))}}"
+  package_name: "{{ maven_package_name | default('apache-maven-'+((maven_version | string) | default('3.3.3'))+'-bin')}}"
+  file: "{{maven_download_directory | default('/tmp')}}/{{maven_package_file | default(maven_package_name | default('apache-maven-'+((maven_version | string) | default('3.3.3'))+'-bin')+'.tar.gz')}}"
+  url: "{{maven_url | default(apache_mirror+'maven/maven-'+(((maven_version | string) | default('3.3.3'))|regex_replace('\\..*', ''))+'/'+((maven_version | string) | default('3.3.3'))+'/binaries/'+(maven_package_file | default(maven_package_name | default('apache-maven-'+((maven_version | string) | default('3.3.3'))+'-bin')+'.tar.gz')))}}"
 
 ## SBT
 sbt:
   version: "{{ sbt_version | default('0.13.9') }}"
-  jar: "https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/{{ sbt_version | default('0.13.9') }}/sbt-launch.jar"
+  jar: "https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/{{ (sbt_version | string) | default('0.13.9') }}/sbt-launch.jar"
   install_dir: "{{sbt_install_dir | default('/opt')}}"
