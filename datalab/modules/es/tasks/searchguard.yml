@@ -7,7 +7,7 @@
 
 - name: Elasticsearch versions not supported
   debug: msg="Search Guard plugin didn't support ES {{ elasticsearch.version }}"
-  when: elasticsearch.version | version_compare('1.5', '<') and elasticsearch.version | version_compare('1.7', '>')
+  when: elasticsearch.version | version_compare('1.5', '<') and elasticsearch.version | version_compare('1.8', '>=')
 
 - name: install search-guard for ES versions 1.5.x, 1.6.x
   shell: "{{ elasticsearch.home_dir }}/bin/plugin --install com.floragunn/search-guard/0.5"
