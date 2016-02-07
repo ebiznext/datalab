@@ -1,5 +1,5 @@
 {
-  "zk": "{{mesos_zookeepers}}",
+  "zk": "{{mesos_zookeepers | default('zk://localhost:'+(zookeeper_config_clientPort | default('2181'))|string+'/mesos')}}",
   "zkDetectionTimeout": 30,
   "refreshSeconds": 60,
   "ttl": 60,

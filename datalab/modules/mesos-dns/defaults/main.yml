@@ -1,12 +1,2 @@
 ---
 
-mesos_dns_version: 0.5.1
-mesos_dns_download_directory: /tmp
-mesos_dns_home_directory: /usr/local/mesos-dns
-mesos_dns_prebuilt_package_name: "mesos-dns-v{{mesos_dns_version}}-linux-amd64"
-mesos_dns_prebuilt_url: "https://github.com/mesosphere/mesos-dns/releases/download/v{{mesos_dns_version}}/{{mesos_dns_prebuilt_package_name}}"
-mesos_dns_config_resolvers: 8.8.8.8
-mesos_dns_config_domain: mesos
-mesos_dns_config_listener: 0.0.0.0
-mesos_dns_config_port: 53
-mesos_dns_config_http_port: 8123
