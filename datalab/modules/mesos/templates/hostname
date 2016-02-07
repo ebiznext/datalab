@@ -1,1 +1,1 @@
-{{mesos_hostname}}
+{{mesos.hostname}}

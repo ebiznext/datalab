@@ -40,11 +40,11 @@
 # Quorum
 - name: calculate quorum
   set_fact: mesos_quorum={{((groups['master']|length)/2)|int + 1}}
-  when: (mesos.master|bool or mesos.standalone|bool) and (groups['master']|length > 1)
+  when: (mesos.master|bool or mesos.standalone|bool) and groups.master is defined and groups['master']|length > 1
 
 - name: fix quorum
   set_fact: mesos_quorum=1
-  when: (mesos.master|bool or mesos.standalone|bool) and (groups['master']|length <= 1)
+  when: (mesos.master|bool or mesos.standalone|bool) and (not groups.master is defined or groups['master']|length <= 1)
 
 - name: update quorum configuration for mesos
   template: src=quorum dest=/etc/mesos-master/quorum
