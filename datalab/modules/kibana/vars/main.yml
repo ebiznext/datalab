@@ -1,30 +1,30 @@
 ---
 
 kibana:
-  version: "{{ kibana_version }}"
-  package_name: "{{ kibana_package_name }}"
-  download_dir: "{{kibana_download_dir}}"
-  file: "{{kibana_download_dir}}/{{kibana_download_file}}"
-  url: "{{ kibana_download_package_url }}"
-  sha1: "{{ kibana_download_package_url }}.sha1.txt"
-  home_dir: "{{ kibana_home_dir }}"
-  user: "{{kibana_user}}"
-  group: "{{kibana_group}}"
-  uid: "{{kibana_uid}}"
-  gid: "{{kibana_gid}}"
+  version: "{{ kibana_version | default('4.1.2') }}"
+  package_name: "{{ kibana_package_name | default('kibana-'+(kibana_version | default('4.1.2')) | string+'-'+(kibana_os | default('linux'))+'-'+(kibana_arch | default('x64'))) }}"
+  download_dir: "{{kibana_download_dir | default('/tmp')}}"
+  file: "{{kibana_download_dir | default('/tmp')}}/{{kibana_download_file | default(kibana_package_name | default('kibana-'+(kibana_version | default('4.1.2')) | string+'-'+(kibana_os | default('linux'))+'-'+(kibana_arch | default('x64')))+'.zip')}}"
+  url: "{{ kibana_download_package_url | default('https://download.elastic.co/kibana/kibana/'+kibana_download_file | default(kibana_package_name | default('kibana-'+(kibana_version | default('4.1.2')) | string+'-'+(kibana_os | default('linux'))+'-'+(kibana_arch | default('x64')))+'.zip')) }}"
+  home_dir: "{{ kibana_home_dir | default('/usr/local/kibana') }}"
+  user: "{{kibana_user | default('kibana')}}"
+  group: "{{kibana_group | default(kibana_user | default('kibana'))}}"
+  uid: "{{kibana_uid | default(3001)}}"
+  gid: "{{kibana_gid | default(3001)}}"
 
   config:
-    server_addr: "{{ kibana_config_server_addr }}"
-    server_port: "{{ kibana_config_server_port }}"
-    elasticsearch_addr: "{{ kibana_elasticsearch_addr }}"
-    elasticsearch_index: "{{kibana_elasticsearch_index}}"
+    server_addr: "{{ kibana_config_server_addr | default('0.0.0.0') }}"
+    server_port: "{{ kibana_config_server_port | default('5601') }}"
+    elasticsearch_addr: "{{ kibana_elasticsearch_addr | default('http://'+(elasticsearch_config_http_server_host | default('localhost'))+((elasticsearch_config_http_server_port | string) | default('9200'))) }}"
+    elasticsearch_index: "{{kibana_elasticsearch_index | default('.kibana')}}"
 
   log:
-    dirname: "{{ kibana_log_dir }}"
-    file: "{{ kibana_log_file }}"
-    rotate_count: 5
-    rotate_interval: daily
+    dirname: "{{ kibana_log_dir | default((kibana_home_dir | default('/usr/local/kibana'))+'/log') }}"
+    file: "{{ kibana_log_file | default((kibana_log_dir | default((kibana_home_dir | default('/usr/local/kibana'))+'/log'))+'/kibana.log') }}"
+    rotate:
+      count: "{{kibana_log_rotate_count | default(5)}}"
+      interval: "{{kibana_log_rotate_interval | default('daily')}}"
 
   service:
-    enabled: "{{ kibana_service_enabled }}"
-    state: "{{ kibana_service_state }}"
+    enabled: "{{ kibana_service_enabled | default('no') }}"
+    state: "{{ kibana_service_state | default('stopped') }}"

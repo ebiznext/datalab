@@ -1,6 +1,6 @@
 {{ kibana.log.file }} {
-  rotate {{ kibana.log.rotate_count }}
-  {{ kibana.log.rotate_interval }}
+  rotate {{ kibana.log.rotate.count }}
+  {{ kibana.log.rotate.interval }}
   compress
   missingok
   notifempty

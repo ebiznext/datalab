@@ -38,7 +38,7 @@
 - stat: path={{kibana.file}} get_checksum=yes
   register: kibana_file
 
-- shell: curl {{curl_proxy_args}} --stderr /dev/null {{kibana.sha1}}
+- shell: curl {{curl_proxy_args}} --stderr /dev/null {{kibana.url}}.sha1.txt
   register: kibana_sha1
   when: kibana_file.stat.exists
 
@@ -88,3 +88,4 @@
 - name: Ensure Kibana is {{ kibana.service.state }} after boot
   service: name=kibana enabled={{ kibana.service.enabled }} state={{ kibana.service.state }}
   sudo: yes
+  when: kibana.service.enabled|bool
