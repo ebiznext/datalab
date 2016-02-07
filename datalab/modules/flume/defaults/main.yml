@@ -1,14 +1,3 @@
 ---
 
 apache_mirror: "{{__apache_mirror}}"
-
-flume_version: 1.6.0
-flume_download_dir: /tmp
-flume_home_dir: /usr/local/flume
-flume_package_name: "apache-flume-{{ flume_version }}-bin"
-flume_download_file: "{{flume_package_name}}.tar.gz"
-flume_download_package_url: "{{apache_mirror}}flume/{{flume_version}}/{{flume_download_file}}"
-flume_config_dir: "{{flume_home_dir}}/conf"
-flume_log_dir: /var/log/flume
-flume_log_file: flume.log
-flume_ext_dir: "{{ flume_home_dir }}/ext"

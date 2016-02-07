@@ -1,0 +1,42 @@
+---
+
+# Install dependencies for maven
+- name: Install dependencies for RedHat
+  yum:
+    pkg: "{{ item }}"
+    state: latest
+  sudo: yes
+  with_items:
+    - gcc
+    - openssl
+    - python-devel
+    - libxml2-devel
+    - libxslt-devel
+  when: ansible_os_family == "RedHat"
+
+- name: Install dependencies for Debian
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+    update_cache: yes
+    cache_valid_time: 3600
+  sudo: yes
+  with_items:
+    - gcc
+    - openssl
+    - python-devel
+    - python-setuptools #easy_install
+    - libxml2-devel
+    - libxslt-devel
+  when: ansible_os_family == "Debian"
+
+- easy_install: name=pip state=latest #required ansible 2.x
+  environment: "{{proxy_env}}"
+  sudo: yes
+
+- pip:
+    name: lxml
+    state: latest
+    extra_args: "{{ pip_extra_args }}"
+  sudo: yes
+
