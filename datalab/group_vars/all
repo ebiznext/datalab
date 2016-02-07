@@ -75,7 +75,7 @@ kibana_node_type: batch_node
 #
 # zookeeper
 #
-zookeeper_version: 3.4.7
+zookeeper_version: 3.4.6
 zookeeper_download_dir: /tmp
 zookeeper_home_dir: /usr/local/zookeeper
 zookeeper_package_name: "zookeeper-{{ zookeeper_version }}"

@@ -22,6 +22,7 @@
 
 - name: stop zookeeper service
   service: name=zookeeper state=stopped
+  ignore_errors: yes
   sudo: yes
 
 
@@ -32,13 +33,14 @@
   sudo: yes
 
 - file: path="{{ zookeeper.config.dataDir }}" state=directory
+  sudo: yes
 
 - file: path="{{ zookeeper.download_dir }}" state=directory
 
 - stat: path={{zookeeper.file}} get_checksum=yes
   register: zookeeper_file
 
-- shell: curl {{curl_proxy_args}} --stderr /dev/null {{zookeeper.sha1}}
+- shell: curl {{curl_proxy_args}} --stderr /dev/null {{zookeeper.url}}.sha1
   register: zookeeper_sha1
   when: zookeeper_file.stat.exists
 

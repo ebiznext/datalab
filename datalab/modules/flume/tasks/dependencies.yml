@@ -36,9 +36,9 @@
   maven_artifact:
     group_id: org.apache.zookeeper
     artifact_id: zookeeper
-    version: "{{zookeeper_version}}"
+    version: "{{(zookeeper_version | default('3.4.6'))|string}}"
     extension: jar
-    dest: "{{flume.ext.dir}}/zookeeper-{{zookeeper_version}}.jar"
+    dest: "{{flume.ext.dir}}/zookeeper-{{(zookeeper_version | default('3.4.6'))|string}}.jar"
   environment: "{{proxy_env}}"
 #  shell: wget -q -O {{flume.ext.dir}}/zookeeper-{{zookeeper_version}}.jar https://repo1.maven.org/maven2/org/apache/zookeeper/zookeeper/{{zookeeper_version}}/zookeeper-{{zookeeper_version}}.jar
   sudo: yes
