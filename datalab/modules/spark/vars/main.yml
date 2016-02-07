@@ -1,16 +1,16 @@
 ---
 
 spark:
-  user: "{{spark_user}}"
-  group: "{{spark_group}}"
-  version: "{{ spark_version }}"
-  download_dir: "{{ spark_download_directory }}"
-  install_dir: "{{ spark_download_directory }}/spark"
-  base_dir: "{{ spark_home_directory }}"
-  conf_dir: "{{ spark_home_directory }}/conf"
-  log_dir: "{{ spark_home_directory }}/log"
-  run_dir: "{{ spark_home_directory }}/run"
-  bin_dir: "{{ spark_home_directory }}/bin"
+  user: "{{spark_user | default('spark')}}"
+  group: "{{spark_group | default(spark_user | default('spark'))}}"
+  version: "{{ spark_version | default('1.4.1') }}"
+  download_dir: "{{ spark_download_directory | default('/tmp') }}"
+  install_dir: "{{ spark_download_directory | default('/tmp') }}/spark"
+  base_dir: "{{ spark_home_directory | default('/usr/local/spark') }}"
+  conf_dir: "{{ spark_home_directory | default('/usr/local/spark') }}/conf"
+  log_dir: "{{ spark_home_directory | default('/usr/local/spark') }}/log"
+  run_dir: "{{ spark_home_directory | default('/usr/local/spark') }}/run"
+  bin_dir: "{{ spark_home_directory | default('/usr/local/spark') }}/bin"
 
   depends:
     apt:
@@ -19,30 +19,30 @@ spark:
       - git
 
   prebuilt:
-    package_name: "{{ spark_prebuilt_package_name }}"
-    file: "{{spark_download_directory}}/{{spark_prebuilt_file}}"
-    url: "{{spark_prebuilt_url}}"
+    package_name: "{{ spark_prebuilt_package_name | default('spark-'+(spark_version | default('1.4.1'))|string+'-bin-hadoop'+(hadoop_version | default('2.6.0'))|string|group(\"(.*\\..*)\\..*\", 1)) }}"
+    file: "{{spark_download_directory | default('/tmp')}}/{{spark_prebuilt_file | default((spark_prebuilt_package_name | default('spark-'+(spark_version | default('1.4.1'))|string+'-bin-hadoop'+(hadoop_version | default('2.6.0'))|string|group(\"(.*\\..*)\\..*\", 1)))+'.tgz')}}"
+    url: "{{spark_prebuilt_url | default(apache_mirror+'spark/spark-'+(spark_version | default('1.4.1'))|string+'/'+(spark_prebuilt_file | default((spark_prebuilt_package_name | default('spark-'+(spark_version | default('1.4.1'))|string+'-bin-hadoop'+(hadoop_version | default('2.6.0'))|string|group(\"(.*\\..*)\\..*\", 1)))+'.tgz')))}}"
 
   build:
-    do: "{{ spark_do_build }}"
-    options: "{{ spark_build_options }}"
-    checkout: "{{ spark_build_checkout }}"
+    do: "{{ spark_do_build | default('no') }}"
+    options: "{{ spark_build_options | default('') }}"
+    checkout: "{{ spark_build_checkout | default('tarball') }}"
     sbt_launch:
-      version: "{{spark_build_sbt_launch_version}}"
-      url: "{{spark_build_sbt_launch_url}}"
+      version: "{{spark_build_sbt_launch_version | default('0.13.7')}}"
+      url: "{{spark_build_sbt_launch_url | default('https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/'+(spark_build_sbt_launch_version | default('0.13.7'))|string+'/sbt-launch.jar')}}"
     tarball:
-      package_name: "{{ spark_tarball_package_name }}"
-      file: "{{spark_download_directory}}/{{spark_tarball_file}}"
-      url: "{{spark_tarball_url}}"
+      package_name: "{{ spark_tarball_package_name | default('spark-'+(spark_version | default('1.4.1'))|string) }}"
+      file: "{{spark_download_directory | default('/tmp')}}/{{spark_tarball_file | default((spark_tarball_package_name | default('spark-'+(spark_version | default('1.4.1'))|string))+'.tgz')}}"
+      url: "{{spark_tarball_url | default(apache_mirror+'spark/spark-'+(spark_version | default('1.4.1'))|string+'/'+(spark_tarball_file | default((spark_tarball_package_name | default('spark-'+(spark_version | default('1.4.1'))|string))+'.tgz')))}}"
     git:
-      url: "{{spark_git_url}}"
-      branch: "{{spark_git_branch}}"
+      url: "{{spark_git_url | default('https://github.com/apache/spark.git')}}"
+      branch: "{{spark_git_branch | default('v'+(spark_version | default('1.4.1'))|string)}}"
     environment: {}
 
   config:
-    dirname: "{{ spark_home_directory }}/etc"
+    dirname: "{{ spark_home_directory | default('/usr/local/spark') }}/etc"
     defaults: {}
     env_vars: {}
 
   mesos:
-    native_java_library: "{{spark_mesos_native_java_library}}"
+    native_java_library: "{{spark_mesos_native_java_library | default('/usr/local/lib/libmesos.so')}}"
