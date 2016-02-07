@@ -6,7 +6,7 @@ elasticsearch:
   group: "{{elasticsearch_group | default(elasticsearch_user | default('elasticsearch'))}}"
   gid: "{{elasticsearch_gid | default(2001)}}"
   uid: "{{elasticsearch_uid | default(2001)}}"
-  package_name: "{{ elasticsearch_package_name | default('elasticsearch-'+((elasticsearch_version | string) | default('1.7.3')))}}"
+  package_name: "{{ elasticsearch_package_name | default('elasticsearch-'+(elasticsearch_version | default('1.7.3'))|string)}}"
   download_url: "{{elasticsearch_download_url | default('https://download.elasticsearch.org/elasticsearch/elasticsearch')}}"
   download_dir: "{{elasticsearch_download_directory | default('/tmp')}}"
   home_dir: "{{elasticsearch_home_directory | default('/usr/share/elasticsearch')}}"
@@ -28,8 +28,8 @@ elasticsearch:
 
   prebuilt:
     install: "{{ elasticsearch_install_prebuilt | default('yes') }}"
-    file: "{{elasticsearch_download_directory | default('/tmp')}}/{{elasticsearch_prebuilt_file | default(elasticsearch_package_name | default('elasticsearch-'+((elasticsearch_version | string) | default('1.7.3')))+'.tar.gz')}}"
-    url: "{{ elasticsearch_prebuit_package_url | default('https://download.elastic.co/elasticsearch/elasticsearch/'+elasticsearch_prebuilt_file | default(elasticsearch_package_name | default('elasticsearch-'+((elasticsearch_version | string) | default('1.7.3')))+'.tar.gz')) }}"
+    file: "{{elasticsearch_download_directory | default('/tmp')}}/{{elasticsearch_prebuilt_file | default(elasticsearch_package_name | default('elasticsearch-'+(elasticsearch_version | default('1.7.3'))|string)+'.tar.gz')}}"
+    url: "{{ elasticsearch_prebuit_package_url | default('https://download.elastic.co/elasticsearch/elasticsearch/'+elasticsearch_prebuilt_file | default(elasticsearch_package_name | default('elasticsearch-'+(elasticsearch_version | default('1.7.3'))|string)+'.tar.gz')) }}"
 
   service:
     startonboot: "{{ elasticsearch_service_startonboot | default('no') }}"
