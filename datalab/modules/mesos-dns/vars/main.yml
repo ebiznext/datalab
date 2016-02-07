@@ -1,19 +1,19 @@
 ---
 
 mesos_dns:
-  version: "{{mesos_dns_version}}"
-  download_dir: "{{mesos_dns_download_directory}}"
-  install_dir: "{{mesos_dns_download_directory}}/mesos-dns"
-  base_dir: "{{mesos_dns_home_directory}}"
+  version: "{{mesos_dns_version | default('0.5.1')}}"
+  download_dir: "{{mesos_dns_download_directory | default('/tmp')}}"
+  install_dir: "{{mesos_dns_download_directory | default('/tmp')}}/mesos-dns"
+  base_dir: "{{mesos_dns_home_directory | default('/usr/local/mesos-dns') }}"
 
   prebuilt:
-    package_name: "{{mesos_dns_prebuilt_package_name}}"
-    file: "{{mesos_dns_download_directory}}/{{mesos_dns_prebuilt_package_name}}"
-    url: "{{mesos_dns_prebuilt_url}}"
+    package_name: "{{mesos_dns_prebuilt_package_name | default('mesos-dns-v'+(mesos_dns_version | default('0.5.1'))|string+'-'+(mesos_dns_os | default('linux'))+'-'+(mesos_dns_arch | default('amd64')))}}"
+    file: "{{mesos_dns_download_directory | default('/tmp')}}/{{mesos_dns_prebuilt_package_name | default('mesos-dns-v'+(mesos_dns_version | default('0.5.1'))|string+'-'+(mesos_dns_os | default('linux'))+'-'+(mesos_dns_arch | default('amd64')))}}"
+    url: "{{mesos_dns_prebuilt_url | default('https://github.com/mesosphere/mesos-dns/releases/download/v'+(mesos_dns_version | default('0.5.1'))|string+'/'+(mesos_dns_prebuilt_package_name | default('mesos-dns-v'+(mesos_dns_version | default('0.5.1'))|string+'-'+(mesos_dns_os | default('linux'))+'-'+(mesos_dns_arch | default('amd64')))))}}"
 
   config:
-    resolvers: "{{mesos_dns_config_resolvers}}"
-    domain: "{{mesos_dns_config_domain}}"
-    listener: "{{mesos_dns_config_listener}}"
-    port: "{{mesos_dns_config_port}}"
-    http_port: "{{mesos_dns_config_http_port}}"
+    resolvers: "{{mesos_dns_config_resolvers | default('8.8.8.8')}}"
+    domain: "{{mesos_dns_config_domain | default('mesos')}}"
+    listener: "{{mesos_dns_config_listener | default('0.0.0.0')}}"
+    port: "{{mesos_dns_config_port | default('53')}}"
+    http_port: "{{mesos_dns_config_http_port | default('8123')}}"
