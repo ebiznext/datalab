@@ -9,7 +9,7 @@
 
 - name: Elasticsearch versions not supported
   debug: msg="ICU plugin didn't support ES {{ elasticsearch.version }}"
-  when: elasticsearch.version | version_compare('1.7', '>')
+  when: elasticsearch.version | version_compare('1.8', '>=')
 
 - name: install analysis-icu for ES versions 0.9.x
   shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install elasticsearch/elasticsearch-analysis-icu/1.13.0"

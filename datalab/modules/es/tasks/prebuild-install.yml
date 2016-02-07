@@ -1,10 +1,12 @@
 ---
 
-- name: Check if ES exists already
-  stat: path="{{ elasticsearch.home_dir }}/bin/elasticsearch"
-  register: es_bin
+- file: path={{ elasticsearch.home_dir}} state=absent
+  sudo: yes
 
 - file: path="{{ elasticsearch.download_dir }}" state=directory
+
+- file: path="{{ elasticsearch.download_dir }}/{{ elasticsearch.package_name }}" state=absent
+  sudo: yes
 
 - stat: path={{elasticsearch.prebuilt.file}} get_checksum=yes
   register: elasticsearch_file
@@ -21,12 +23,11 @@
   unarchive: src="{{ elasticsearch.prebuilt.file }}"
              dest="{{ elasticsearch.download_dir }}"
              copy=no
-  when: not es_bin.stat.exists
+  sudo: yes
 
 - name: rename ES dir
   shell: "mv {{ elasticsearch.download_dir }}/{{ elasticsearch.package_name }} {{ elasticsearch.home_dir }}"
   sudo: yes
-  when: not es_bin.stat.exists
 
 - file: path="{{ elasticsearch.home_dir }}" state=directory owner="{{ elasticsearch.user }}" group="{{ elasticsearch.group }}" recurse=yes
   sudo: yes

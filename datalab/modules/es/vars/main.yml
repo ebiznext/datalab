@@ -1,7 +1,7 @@
 ---
 
 elasticsearch:
-  version: "{{ elasticsearch_version | default(1.7.3) }}"
+  version: "{{ elasticsearch_version | default('1.7.3') }}"
   user: "{{elasticsearch_user | default('elasticsearch')}}"
   group: "{{elasticsearch_group | default(elasticsearch_user | default('elasticsearch'))}}"
   gid: "{{elasticsearch_gid | default(2001)}}"
