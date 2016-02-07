@@ -1,1 +1,1 @@
-{{marathon_zookeepers}}
+{{marathon_zookeepers | default('zk://localhost:'+(zookeeper_config_clientPort | default('2181'))|string+'/marathon')}}
