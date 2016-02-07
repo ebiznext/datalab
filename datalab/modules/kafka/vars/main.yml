@@ -2,23 +2,22 @@
 
 kafka:
   user: "{{kafka_user | default('kafka')}}"
-  partitions: "{{kafka_partitions}}"
-  version: "{{ kafka_version }}"
-  package_name: "{{ kafka_package_name }}"
-  download_dir: "{{ kafka_download_dir }}"
-  file: "{{kafka_download_dir}}/{{kafka_download_file}}"
-  url: "{{kafka_download_package_url}}"
-#  sha1: "{{kafka_download_package_url}}.sha1"
-  home_dir: "{{ kafka_home_dir }}"
+  partitions: "{{kafka_partitions | default('1')}}"
+  version: "{{ kafka_version | default('0.9.0.0') }}"
+  package_name: "{{ kafka_package_name | default('kafka_'+((scala_version | string) | default('2.11'))+'-'+((kafka_version | string) | default('0.9.0.0'))) }}"
+  download_dir: "{{ kafka_download_dir | default('/tmp') }}"
+  file: "{{kafka_download_dir | default('/tmp')}}/{{kafka_download_file | default(kafka_package_name | default('kafka_'+((scala_version | string) | default('2.11'))+'-'+((kafka_version | string) | default('0.9.0.0')))+'.tgz') }}"
+  url: "{{kafka_download_package_url | default(apache_mirror+'kafka/'+((kafka_version | string) | default('0.9.0.0'))+'/'+(kafka_download_file | default(kafka_package_name | default('kafka_'+((scala_version | string) | default('2.11'))+'-'+((kafka_version | string) | default('0.9.0.0')))+'.tgz'))) }}"
+  home_dir: "{{ kafka_home_dir | default('/usr/local/kafka') }}"
 
   config:
-    port: "{{kafka_config_port}}"
-    hostname: "{{kafka_config_hostname}}"
+    port: "{{kafka_config_port | default('9092')}}"
+    hostname: "{{kafka_config_hostname | default('localhost')}}"
     broker:
-      id: "{{kafka_config_broker_id}}"
+      id: "{{kafka_config_broker_id | default('0')}}"
     advertised:
-      hostname: "{{kafka_config_advertised_hostname}}"
-      port: "{{kafka_config_advertised_port}}"
+      hostname: "{{kafka_config_advertised_hostname | default(kafka_config_hostname | default('localhost'))}}"
+      port: "{{kafka_config_advertised_port | default(kafka_config_port | default('9092'))}}"
 
   log:
-    dirs: "{{ kafka_log_dirs }}"
+    dirs: "{{ kafka_log_dirs | default('/var/lib/kafka') }}"
