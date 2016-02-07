@@ -1,1 +1,1 @@
-{{mesos_zookeepers}}
+{{mesos_zookeepers | default('zk://localhost:'+(zookeeper_config_clientPort | default('2181'))|string+'/mesos')}}

@@ -1,27 +1,27 @@
 ---
 
 mesos:
-  version: "{{ mesos_version }}"
-  master: "{{ mesos_master }}"
-  standalone: "{{ mesos_standalone }}"
+  version: "{{ mesos_version | default('0.26.0') }}"
+  master: "{{ mesos_master | default('master' in group_names or (mesos_standalone | default('yes'))|bool) }}"
+  standalone: "{{ mesos_standalone | default('yes') }}"
   node:
-    type: "{{ mesos_node_type }}"
-    dns: "{{ mesos_node_dns | default('False') }}"
-  download_dir: "{{ mesos_download_directory }}"
-  install_dir: "{{ mesos_download_directory }}/mesos"
-  base_dir: "{{ mesos_home_directory }}"
+    type: "{{ mesos_node_type | default('mesos_node') }}"
+    dns: "{{ mesos_node_dns | default('no') }}"
+  download_dir: "{{ mesos_download_directory | default('/tmp') }}"
+  install_dir: "{{ mesos_download_directory | default('/tmp') }}/mesos"
+  base_dir: "{{ mesos_home_directory | default('/usr/local/mesos') }}"
 
   build:
-    do: "{{ mesos_do_build }}"
-    checkout: "{{ mesos_build_checkout }}"
-    opts: "{{ mesos_build_opts }}"
+    do: "{{ mesos_do_build | default('no') }}"
+    checkout: "{{ mesos_build_checkout | default('tarball') }}"
+    opts: "{{ mesos_build_opts | default('') }}"
     tarball:
-      package_name: "{{ mesos_tarball_package_name }}"
-      file: "{{mesos_download_directory}}/{{mesos_tarball_file}}"
-      url: "{{mesos_tarball_url}}"
+      package_name: "{{ mesos_tarball_package_name | default('mesos-'+(mesos_version | default('0.26.0'))|string) }}"
+      file: "{{mesos_download_directory | default('/tmp')}}/{{mesos_tarball_file | default(mesos_tarball_package_name | default('mesos-'+(mesos_version | default('0.26.0'))|string)+'.tar.gz')}}"
+      url: "{{mesos_tarball_url | default(apache_mirror+'/mesos/'+(mesos_version | default('0.26.0'))|string+'/'+(mesos_tarball_file | default(mesos_tarball_package_name | default('mesos-'+(mesos_version | default('0.26.0'))|string)+'.tar.gz')))}}"
     git:
-      url: "{{mesos_git_url}}"
-      branch: "{{mesos_git_branch}}"
+      url: "{{mesos_git_url | default('https://git-wip-us.apache.org/repos/asf/mesos.git')}}"
+      branch: "{{mesos_git_branch | default(mesos_version | default('0.26.0'))}}"
     apt:
       - wget
       - git
