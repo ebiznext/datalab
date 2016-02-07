@@ -10,6 +10,7 @@ mesos:
   download_dir: "{{ mesos_download_directory | default('/tmp') }}"
   install_dir: "{{ mesos_download_directory | default('/tmp') }}/mesos"
   base_dir: "{{ mesos_home_directory | default('/usr/local/mesos') }}"
+  cluster: "{{mesos_cluster | default('datalab')}}"
 
   build:
     do: "{{ mesos_do_build | default('no') }}"
