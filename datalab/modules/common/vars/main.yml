@@ -2,7 +2,7 @@
 
 ## Maven
 maven:
-  version: "{{ maven_version | default(3.3.3) }}"
+  version: "{{ maven_version | default('3.3.3') }}"
   bin_path: "{{maven_bin_path | default('/usr/bin')}}"
   download_dir: "{{maven_download_directory | default('/tmp')}}"
   install_dir: "{{maven_install_directory | default ('/usr/share/maven')}}"
@@ -14,6 +14,6 @@ maven:
 
 ## SBT
 sbt:
-  version: "{{ sbt_version | default(0.13.9) }}"
+  version: "{{ sbt_version | default('0.13.9') }}"
   jar: "https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/{{ sbt_version | default('0.13.9') }}/sbt-launch.jar"
   install_dir: "{{sbt_install_dir | default('/opt')}}"
