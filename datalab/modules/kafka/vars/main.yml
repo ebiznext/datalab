@@ -4,10 +4,10 @@ kafka:
   user: "{{kafka_user | default('kafka')}}"
   partitions: "{{kafka_partitions | default('1')}}"
   version: "{{ kafka_version | default('0.9.0.0') }}"
-  package_name: "{{ kafka_package_name | default('kafka_'+((scala_version | string) | default('2.11'))+'-'+((kafka_version | string) | default('0.9.0.0'))) }}"
+  package_name: "{{ kafka_package_name | default('kafka_'+(scala_version | default('2.11'))|string+'-'+(kafka_version | default('0.9.0.0'))|string) }}"
   download_dir: "{{ kafka_download_dir | default('/tmp') }}"
-  file: "{{kafka_download_dir | default('/tmp')}}/{{kafka_download_file | default(kafka_package_name | default('kafka_'+((scala_version | string) | default('2.11'))+'-'+((kafka_version | string) | default('0.9.0.0')))+'.tgz') }}"
-  url: "{{kafka_download_package_url | default(apache_mirror+'kafka/'+((kafka_version | string) | default('0.9.0.0'))+'/'+(kafka_download_file | default(kafka_package_name | default('kafka_'+((scala_version | string) | default('2.11'))+'-'+((kafka_version | string) | default('0.9.0.0')))+'.tgz'))) }}"
+  file: "{{kafka_download_dir | default('/tmp')}}/{{kafka_download_file | default(kafka_package_name | default('kafka_'+(scala_version | default('2.11'))|string+'-'+(kafka_version | default('0.9.0.0'))|string)+'.tgz') }}"
+  url: "{{kafka_download_package_url | default(apache_mirror+'kafka/'+(kafka_version | default('0.9.0.0'))|string+'/'+(kafka_download_file | default(kafka_package_name | default('kafka_'+(scala_version | default('2.11'))|string+'-'+(kafka_version | default('0.9.0.0'))|string)+'.tgz'))) }}"
   home_dir: "{{ kafka_home_dir | default('/usr/local/kafka') }}"
 
   config:
