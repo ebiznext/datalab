@@ -2,10 +2,10 @@
 
 flume:
   version: "{{ flume_version | default('1.6.0') }}"
-  package_name: "{{ flume_package_name | default('apache-flume-'+(flume_version | default('1.6.0'))+'-bin') }}"
+  package_name: "{{ flume_package_name | default('apache-flume-'+(flume_version | default('1.6.0'))|string+'-bin') }}"
   download_dir: "{{ flume_download_dir | default('/tmp') }}"
-  file: "{{flume_download_dir | default('/tmp')}}/{{flume_download_file | default(flume_package_name | default('apache-flume-'+(flume_version | default('1.6.0'))+'-bin')+'.tar.gz')}}"
-  url: "{{ flume_download_package_url | default(apache_mirror+'flume/'+(flume_version | default('1.6.0'))+'/'+(flume_download_file | default(flume_package_name | default('apache-flume-'+(flume_version | default('1.6.0'))+'-bin')+'.tar.gz'))) }}"
+  file: "{{flume_download_dir | default('/tmp')}}/{{flume_download_file | default(flume_package_name | default('apache-flume-'+(flume_version | default('1.6.0'))|string+'-bin')+'.tar.gz')}}"
+  url: "{{ flume_download_package_url | default(apache_mirror+'flume/'+(flume_version | default('1.6.0'))|string+'/'+(flume_download_file | default(flume_package_name | default('apache-flume-'+(flume_version | default('1.6.0'))|string+'-bin')+'.tar.gz'))) }}"
   home_dir: "{{ flume_home_dir | default('/usr/local/flume') }}"
 
   config:
@@ -20,8 +20,8 @@ flume:
 
 elasticsearch:
   version: "{{ elasticsearch_version | default('1.7.3') }}"
-  package_name: "{{ elasticsearch_package_name | default('elasticsearch-'+(elasticsearch_version | default('1.7.3')))}}"
+  package_name: "{{ elasticsearch_package_name | default('elasticsearch-'+(elasticsearch_version | default('1.7.3'))|string)}}"
   download_url: "{{elasticsearch_download_url | default('https://download.elasticsearch.org/elasticsearch/elasticsearch')}}"
   download_dir: "{{elasticsearch_download_directory | default('/tmp')}}"
-  file: "{{elasticsearch_download_directory | default('/tmp')}}/{{elasticsearch_prebuilt_file | default(elasticsearch_package_name | default('elasticsearch-'+(elasticsearch_version | default('1.7.3')))+'.tar.gz')}}"
-  url: "{{ elasticsearch_prebuit_package_url | default('https://download.elastic.co/elasticsearch/elasticsearch/'+elasticsearch_prebuilt_file | default(elasticsearch_package_name | default('elasticsearch-'+(elasticsearch_version | default('1.7.3')))+'.tar.gz')) }}"
+  file: "{{elasticsearch_download_directory | default('/tmp')}}/{{elasticsearch_prebuilt_file | default(elasticsearch_package_name | default('elasticsearch-'+(elasticsearch_version | default('1.7.3'))|string)+'.tar.gz')}}"
+  url: "{{ elasticsearch_prebuit_package_url | default('https://download.elastic.co/elasticsearch/elasticsearch/'+elasticsearch_prebuilt_file | default(elasticsearch_package_name | default('elasticsearch-'+(elasticsearch_version | default('1.7.3'))|string)+'.tar.gz')) }}"
