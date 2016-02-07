@@ -1,40 +1,40 @@
 ---
 
 zeppelin:
-  version: "{{ zeppelin_version }}"
-  download_dir: "{{ zeppelin_download_directory }}"
-  install_dir: "{{ zeppelin_download_directory }}/incubator-zeppelin"
-  base_dir: "{{ zeppelin_home_directory }}"
-  local_dir: "{{ zeppelin_local_directory }}"
-  user: '{{zeppelin_user}}'
-  group: '{{zeppelin_group}}'
+  version: "{{ zeppelin_version | default('0.5.5') }}"
+  download_dir: "{{ zeppelin_download_directory | default('/tmp') }}"
+  install_dir: "{{ zeppelin_download_directory | default('/tmp') }}/incubator-zeppelin"
+  base_dir: "{{ zeppelin_home_directory | default('/usr/local/incubator-zeppelin') }}"
+  local_dir: "{{ zeppelin_local_directory | default('~/incubator-zeppelin') }}"
+  user: "{{zeppelin_user | default('zeppelin')}}"
+  group: "{{zeppelin_group | default(zeppelin_user | default('zeppelin'))}}"
 
   prebuilt:
-    package_name: "{{ zeppelin_prebuilt_package_name }}"
-    file: "{{zeppelin_download_directory}}/{{zeppelin_prebuilt_file}}"
-    url: "{{zeppelin_prebuilt_url}}"
-    local_file: "{{ zeppelin_local_directory }}/zeppelin-{{ zeppelin_version }}-incubating.tar.gz"
+    package_name: "{{ zeppelin_prebuilt_package_name | default('zeppelin-'+(zeppelin_version | default('0.5.5'))|string+'-incubating-bin-all') }}"
+    file: "{{zeppelin_download_directory | default('/tmp')}}/{{zeppelin_prebuilt_file | default((zeppelin_prebuilt_package_name | default('zeppelin-'+(zeppelin_version | default('0.5.5'))|string+'-incubating-bin-all'))+'.tgz')}}"
+    url: "{{zeppelin_prebuilt_url | default(apache_mirror+'incubator/zeppelin/'+(zeppelin_version | default('0.5.5'))|string+'-incubating/'+(zeppelin_prebuilt_file | default((zeppelin_prebuilt_package_name | default('zeppelin-'+(zeppelin_version | default('0.5.5'))|string+'-incubating-bin-all'))+'.tgz')))}}"
+    local_file: "{{ zeppelin_local_directory | default('~/incubator-zeppelin') }}/zeppelin-{{ (zeppelin_version | default('0.5.5'))|string }}-incubating.tar.gz"
 
   build:
-    do: "{{ zeppelin_do_build }}"
-    checkout: "{{ zeppelin_build_checkout }}"
-    opts: "{{ zeppelin_build_opts }}"
+    do: "{{ zeppelin_do_build | default('yes') }}"
+    checkout: "{{ zeppelin_build_checkout | default('tarball') }}"
+    opts: "{{ zeppelin_build_opts | default('-P build-distr -Pspark-'+(spark_version | default('1.4.1'))|string|group(\"(.*\\..*)\\..*\", 1)+' -Dspark.version='+(spark_version | default('1.4.1'))|string+' -Phadoop-'+(hadoop_version | default('2.6.0'))|string|group(\"(.*\\..*)\\..*\", 1)+' -Dhadoop.version='+(hadoop_version | default('2.6.0'))|string+' -DskipTests') }}"
     tarball:
-      package_name: "{{ zeppelin_tarball_package_name }}"
-      file: "{{zeppelin_download_directory}}/{{zeppelin_tarball_file}}"
-      url: "{{zeppelin_tarball_url}}"
+      package_name: "{{ zeppelin_tarball_package_name | default('zeppelin-'+(zeppelin_version | default('0.5.5'))|string+'-incubating') }}"
+      file: "{{zeppelin_download_directory | default('/tmp')}}/{{zeppelin_tarball_file | default((zeppelin_tarball_package_name | default('zeppelin-'+(zeppelin_version | default('0.5.5'))|string+'-incubating'))+'.tgz')}}"
+      url: "{{zeppelin_tarball_url | default(apache_mirror+'incubator/zeppelin/'+(zeppelin_version | default('0.5.5'))|string+'-incubating/'+(zeppelin_tarball_file | default((zeppelin_tarball_package_name | default('zeppelin-'+(zeppelin_version | default('0.5.5'))|string+'-incubating'))+'.tgz')))}}"
     git:
-      url: "{{zeppelin_git_url}}"
-      branch: "{{zeppelin_git_branch}}"
+      url: "{{zeppelin_git_url | default('https://github.com/apache/incubator-zeppelin')}}"
+      branch: "{{zeppelin_git_branch | default('v'+(zeppelin_version | default('0.5.5'))|string)}}"
     distrib:
-      file: "{{ zeppelin_home_directory }}/zeppelin-distribution/target/zeppelin-{{ zeppelin_version }}-incubating.tar.gz"
+      file: "{{ zeppelin_home_directory | default('/usr/local/incubator-zeppelin') }}/zeppelin-distribution/target/zeppelin-{{ zeppelin_version }}-incubating.tar.gz"
 
   service:
-    server_port: "{{ zeppelin_service_server_port }}"
-    server_addr: "{{ zeppelin_service_server_addr }}"
-    action: "{{ zeppelin_service_action }}"
+    server_port: "{{ zeppelin_service_server_port | default('8080') }}"
+    server_addr: "{{ zeppelin_service_server_addr | default('0.0.0.0') }}"
+    action: "{{ zeppelin_service_action | default('stop') }}"
 
-  dependencies: "{{zeppelin_dependencies}}"
+  dependencies: "{{zeppelin_dependencies | default('yes')}}"
 
   depends:
     apt:
