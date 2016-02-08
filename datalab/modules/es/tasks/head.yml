@@ -7,7 +7,20 @@
   sudo: yes
   sudo_user: "{{ elasticsearch.user }}"
 
-- name: install head plugin
+- name: install head for ES versions 0.9.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install mobz/elasticsearch-head/0.9"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('0.9', '>=') and elasticsearch.version | version_compare('1.0', '<')
+
+- name: install head for ES versions 1.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install mobz/elasticsearch-head/1.x"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('1.0', '>=') and elasticsearch.version | version_compare('2.0', '<')
+
+- name: install head for ES versions 2.x
   shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install mobz/elasticsearch-head"
   sudo: yes
   sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('2.0', '>=')
