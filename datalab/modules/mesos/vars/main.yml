@@ -6,7 +6,7 @@ mesos:
   standalone: "{{ mesos_standalone | default('yes') }}"
   node:
     type: "{{ mesos_node_type | default('mesos_node') }}"
-    dns: "{{ mesos_node_dns | default('no') }}"
+    dns: "{{ mesos_node_dns | default('dns_node' in group_names) }}"
   download_dir: "{{ mesos_download_directory | default('/tmp') }}"
   install_dir: "{{ mesos_download_directory | default('/tmp') }}/mesos"
   base_dir: "{{ mesos_home_directory | default('/usr/local/mesos') }}"
