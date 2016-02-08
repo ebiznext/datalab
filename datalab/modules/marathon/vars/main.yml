@@ -21,6 +21,7 @@ elasticsearch:
     heap_size: "{{(elasticsearch_config_heap_size | default(elasticsearch_mem | default('256')))|string+'m'}}"
     java_opts: "{{elasticsearch_config_java_opts | default('') }}"
     network:
+      http_host: "{{ elasticsearch_config_http_server_host | default('localhost') }}"
       http_port: "{{ elasticsearch_config_http_server_port | default(9200) }}"
       transport_tcp_port: "{{elasticsearch_config_tcp_transport_port | default(9300) }}"
   user: "{{elasticsearch_user | default('elasticsearch')}}"
