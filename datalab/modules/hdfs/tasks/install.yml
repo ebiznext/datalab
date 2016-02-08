@@ -1,0 +1,93 @@
+---
+
+# Install Debian dependencies
+- name: Install Debian dependencies
+  apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - tar
+    - wget
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+# Install Redhat dependencies
+- name: Install Redhat dependencies
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+    - tar
+    - wget
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
+
+# Prepare
+- file: path="{{ hdfs.home_dir }}" state=absent
+  sudo: yes
+
+- file: path="{{ hdfs.download_dir }}" state=directory
+
+- stat: path={{hdfs.file}}
+  register: hdfs_file
+
+- file: path="/etc/profile.d" mode=0755 state=directory
+  sudo: yes
+
+- name: copy hadoop file
+  template: src=hadoop.sh dest=/etc/profile.d/hadoop.sh mode=0755
+  sudo: yes
+
+- name: Create user {{hdfs.user}}
+  user: name={{hdfs.user}} home="/home/{{hdfs.user}}"
+  sudo: yes
+
+- file: path="/home/{{ hdfs.user }}/.ssh/" state=directory mode=0700 owner={{hdfs.user}} group={{hdfs.group}}
+  sudo: yes
+
+- name: ensure private key and public one are present
+  copy: src=ssh/id_rsa dest="/home/{{ hdfs.user }}/.ssh/id_rsa" mode=0600 owner={{hdfs.user}} group={{hdfs.group}}
+  sudo: yes
+
+- name: deploy ssh key
+  authorized_key: user={{ hdfs.user }} key="{{ lookup('file', 'ssh/id_rsa.pub') }}" state=present
+  sudo: yes
+
+- name: restart sshd service
+  service: name=sshd state=restarted
+  sudo: yes
+
+# Get hdfs
+- name: get hdfs
+  shell: "wget -q -O {{hdfs.file}} {{hdfs.url}}"
+  when: not hdfs_file.stat.exists
+
+# Install hdfs
+- name: Extract and install hdfs
+  unarchive: src="{{ hdfs.file }}"
+             dest={{ hdfs.download_dir }}
+             copy=no
+             owner={{hdfs.user}}
+             group={{hdfs.group}}
+  sudo: yes
+
+- name: rename install dir
+  shell: "mv {{ hdfs.download_dir}}/{{hdfs.package_name}} {{hdfs.home_dir}}"
+  sudo: yes
+
+- file: path="{{hdfs.data_dir}}" mode=0755 state=directory owner={{hdfs.user}} group={{hdfs.group}}
+  sudo: yes
+  when: hdfs.data_node|bool
+
+- file: path="{{hdfs.name_dir}}" mode=0755 state=directory owner={{hdfs.user}} group={{hdfs.group}}
+  sudo: yes
+  when: hdfs.name_node|bool
+
+- file: path="{{hdfs.jn_dir}}" mode=0755 state=directory owner={{hdfs.user}} group={{hdfs.group}}
+  sudo: yes
+  when: hdfs.journal_node|bool
+
+# Update local ansible facts
+- file: path=/etc/ansible/facts.d state=directory
+  sudo: yes
+  when: hdfs.name_node|bool
+
+- template: src=hdfs.fact dest="/etc/ansible/facts.d/hdfs.fact"
+  sudo: yes
+  when: hdfs.name_node|bool

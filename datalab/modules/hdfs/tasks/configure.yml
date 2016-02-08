@@ -1,0 +1,137 @@
+---
+
+# Configure hdfs
+
+- set_fact:
+    hdfs_env="export HADOOP_HOME=\"{{hdfs.home_dir}}\" && export HADOOP_COMMON_HOME=\"$HADOOP_HOME\" && export HADOOP_HDFS_HOME=\"$HADOOP_HOME\" && export HADOOP_CONF_DIR=\"$HADOOP_HOME/etc/hadoop\" && export JAVA_HOME=\"{{java_home | default('/usr/lib/jvm/default')}}\" && export PATH=\"$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin\""
+
+- name: copy core file
+  template: src=core-site.xml dest="{{hdfs.config_dir}}/core-site.xml" mode=0644 owner={{hdfs.user}} group={{hdfs.group}}
+  sudo: yes
+
+- name: gather facts from zookeeper servers
+  setup:
+    filter: ansible_local
+  delegate_to: "{{item}}"
+  with_items: "{{groups['zookeeper']|list}}"
+  register: zookeeper_facts
+  sudo: yes
+  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+
+- set_fact: mesos_zookeepers="{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list }}"
+  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+
+- name: gather facts from name node servers
+  setup:
+    filter: ansible_local
+  delegate_to: "{{item}}"
+  with_items: "{{groups['name_node']|list}}"
+  register: name_node_facts
+  sudo: yes
+  when: groups.name_node is defined
+
+- set_fact: name_node_ids="{{ name_node_facts.results | map(attribute='ansible_facts.ansible_local.hdfs.name_node.id') | list }}"
+  when: groups.name_node is defined
+
+- set_fact: name_nodes="{{ name_node_facts.results | map(attribute='ansible_facts.ansible_local.hdfs.name_node') | list }}"
+  when: groups.name_node is defined
+
+- debug: msg="{{name_nodes}}"
+
+- name: gather facts from journal node servers
+  setup:
+    filter: ansible_local
+  delegate_to: "{{item}}"
+  with_items: "{{groups['journal_node']|list}}"
+  register: journal_node_facts
+  sudo: yes
+  when: groups.journal_node is defined
+
+- set_fact: journal_nodes="{{ (name_node_facts.results | map(attribute='ansible_facts.ansible_local.hdfs.journal_node.address')) | list }}"
+  when: groups.name_node is defined
+
+- debug: msg="{{journal_nodes}}"
+
+- name: copy hdfs file
+  template: src=hdfs-site.xml dest="{{hdfs.config_dir}}/hdfs-site.xml" mode=0644 owner={{hdfs.user}} group={{hdfs.group}}
+  sudo: yes
+
+- name: create marker file for name node
+  file: path={{hdfs.config_dir}}/{{hdfs.name_node_id}} state=touch mode=0644 owner={{hdfs.user}} group={{hdfs.group}}
+  sudo: yes
+  when: hdfs.name_node|bool
+
+- name: create marker file for journal node
+  file: path={{hdfs.config_dir}}/jn state=touch mode=0644 owner={{hdfs.user}} group={{hdfs.group}}
+  sudo: yes
+  when: hdfs.journal_node|bool
+
+- name: stop journal node
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop journalnode"
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.journal_node|bool
+
+- name: start journal node
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start journalnode"
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.journal_node|bool
+
+- stat: path={{hdfs.name_dir}}/current
+  register: nn_dir
+#  when: hdfs.name_node|bool
+
+- name: format name node
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/bin/hdfs namenode -format -force"
+  ignore_errors: yes
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.name_node|bool and (nn_dir.stat.isdir is not defined or not nn_dir.stat.isdir)
+
+- name: format ZK
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/bin/hdfs zkfc -formatZK -force"
+  ignore_errors: yes
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.name_node|bool and (nn_dir.stat.isdir is not defined or not nn_dir.stat.isdir) and name_nodes|length > 1
+
+- name: stop name node
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop namenode"
+  become: yes
+  become_user: "{{hdfs.user}}"
+  ignore_errors: yes
+  when: hdfs.name_node|bool
+
+- name: start name node
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start namenode"
+  ignore_errors: yes
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.name_node|bool
+
+- name: stop zkfs
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop zkfc && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start zkfc"
+  ignore_errors: yes
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.name_node|bool and name_nodes|length > 1
+
+- name: start zkfs
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start zkfc"
+  ignore_errors: yes
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.name_node|bool and name_nodes|length > 1
+
+- name: stop data node
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop datanode"
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.data_node|bool
+
+- name: start data node
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start datanode"
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.data_node|bool

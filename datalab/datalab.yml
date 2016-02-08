@@ -46,14 +46,14 @@
         sudo: no
 
       - name: Generating RSA key for {{hdfs_user}}
-        user: name={{hdfs_user}} group={{hdfs_group}} home="/home/{{hdfs_user}}" generate_ssh_key=yes
+        user: name={{hdfs_user | default('hdfs')}} group={{hdfs_group | default(hdfs_user | default('hdfs'))}} home="/home/{{hdfs_user}}" generate_ssh_key=yes
         run_once: true
         delegate_to: "{{play_hosts[0]}}"
         sudo: yes
         when: not local_certificate.stat.exists
 
       - name: Downloading RSA public and private keys for {{hdfs_user}}
-        fetch: src=/home/{{hdfs_user}}/.ssh/{{item}} dest=./ssh/ flat=yes
+        fetch: src=/home/{{hdfs_user | default('hdfs')}}/.ssh/{{item}} dest=./ssh/ flat=yes
         with_items:
           - id_rsa.pub
           - id_rsa
@@ -63,7 +63,8 @@
         when: not local_certificate.stat.exists
 
     roles:
-      - {role: hdfs}
+      - {role: hdfs, hdfs_configure: no}
+      - {role: hdfs, hdfs_configure: yes}
 
   - name: Install Middleware
     hosts: middleware

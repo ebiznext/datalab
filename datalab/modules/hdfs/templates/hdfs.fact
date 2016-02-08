@@ -1,0 +1,15 @@
+{% if hdfs.name_node|bool %}
+[name_node]
+id={{hdfs.name_node_id}}
+rpc_address={{hdfs.name_node_ip+':'+hdfs.name_node_rpc_port|string}}
+http_address={{hdfs.name_node_ip+':'+hdfs.name_node_http_port|string}}
+{% endif %}
+
+{% if hdfs.journal_node|bool %}
+[journal_node]
+address={{hdfs.journal_node_ip+':'+hdfs.journal_node_port}}
+{% endif %}
+
+{% if hdfs.data_node|bool %}
+[data_node]
+{% endif %}
