@@ -47,7 +47,7 @@ kibana:
     server_port: "{{ kibana_config_server_port | default('5601') }}"
 
 mesos_dns:
-  id: "{{mesos_dns_id | default('mesos_dns')}}"
+  id: "{{mesos_dns_id | default('mesos-dns')}}"
   mem: "{{mesos_dns_mem | default('256')}}"
   nb_cpus: "{{mesos_dns_nb_cpus | default('0.2')}}"
   node_type: "{{mesos_dns_node_type | default('batch_node')}}"
