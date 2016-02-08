@@ -1,1 +1,1 @@
-# HDFS / Spark / Flume / Kafka / Mesos / Elasticsearch / Kibana / Zeppelin BigDataLab with Ansible
+# HDFS / Spark / Mesos / Flume / Kafka / Elasticsearch / Kibana / Zeppelin BigDataLab with Ansible
