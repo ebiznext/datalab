@@ -12,7 +12,7 @@ mesos:
   base_dir: "{{ mesos_home_directory | default('/usr/local/mesos') }}"
   cluster: "{{mesos_cluster | default('datalab')}}"
   hostname: "{{mesos_hostname | default(ansible_fqdn)}}" #localhost
-  ip: "{{mesos_ip | default(ansible_eth1['ipv4']['address'])}}" #127.0.0.1
+  ip: "{{mesos_ip | default(interface|default(ansible_default_ipv4['address']))}}" #127.0.0.1
   log_dir: "{{mesos_log_dir | default('/var/log/mesos')}}"
 
   build:
