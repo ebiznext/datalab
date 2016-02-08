@@ -1,10 +1,10 @@
 {
-    "id": "{{kafka_id}}",
+    "id": "{{kafka.id}}",
     "instances": 1,
-    "cpus": {{ kafka_nb_cpus | default(1) }},
-    "mem": {{ kafka_mem }},
+    "cpus": {{ kafka.nb_cpus }},
+    "mem": {{ kafka.mem }},
     "requirePorts": false,
-    "cmd": "mkdir -p {{ kafka_home_dir }}/mesos && cp {{ kafka_home_dir }}/config/* {{ kafka_home_dir }}/mesos/ && cd {{ kafka_home_dir }} && sed \"s/{{ kafka_config_port }}/$PORT/g\" < ./config/server.properties > ./mesos/server.properties && chown -R {{kafka_user}} {{ kafka_home_dir }}/mesos && su - {{kafka_user}} -c \"{{ kafka_home_dir }}/bin/kafka-server-start.sh {{ kafka_home_dir }}/mesos/server.properties\"",
-    "constraints": [["hostname", "UNIQUE"], ["node_type", "CLUSTER", "slave_node"]]
+    "cmd": "mkdir -p {{ kafka.home_dir }}/mesos && cp {{ kafka.home_dir }}/config/* {{ kafka.home_dir }}/mesos/ && cd {{ kafka.home_dir }} && sed \"s/{{ kafka.config_port }}/$PORT/g\" < ./config/server.properties > ./mesos/server.properties && chown -R {{kafka.user}} {{ kafka.home_dir }}/mesos && su - {{kafka.user}} -c \"{{ kafka.home_dir }}/bin/kafka-server-start.sh {{ kafka.home_dir }}/mesos/server.properties\"",
+    "constraints": [["hostname", "UNIQUE"], ["node_type", "CLUSTER", "{{kafka.node_type}}"]]
 }
 

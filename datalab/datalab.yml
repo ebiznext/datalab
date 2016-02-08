@@ -30,6 +30,14 @@
   - name: Install and launch Mesos
     hosts: mesos
     remote_user: $user
+
+    pre_tasks:
+
+    - replace: dest=/etc/hosts regexp='^(127\\.0\\.0\\.1\\s+)({{ansible_fqdn|split('.')|join('\\.')}}\\s+)?({{ansible_hostname|split('.')|join('\\.')}}\\s+)?(.*)' replace='\1\4' owner=root group=root mode=0644
+      sudo: yes
+    - lineinfile: dest=/etc/hosts line='{{(interface|default(ansible_default_ipv4['address']))}} {{ansible_fqdn}} {{ansible_hostname}}' state=present owner=root group=root mode=0644
+      sudo: yes
+
     roles:
       - {role: mesos}
 

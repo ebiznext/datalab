@@ -1,8 +1,8 @@
 {
-  "id": "{{ mesos_dns_id }}",
-  "cmd": "sudo {{ mesos_dns_home_directory }}/mesos-dns -config={{ mesos_dns_home_directory }}/config.json",
+  "id": "{{ mesos_dns.id }}",
+  "cmd": "sudo {{ mesos_dns.home_directory }}/mesos-dns -config={{ mesos_dns.home_directory }}/config.json",
   "instances": 1,
-  "cpus": {{ mesos_dns_nb_cpus | default(0.5) }},
-  "mem": {{ mesos_dns_mem }},
+  "cpus": {{ mesos_dns.nb_cpus }},
+  "mem": {{ mesos_dns.mem }},
   "constraints": [["hostname", "UNIQUE"], ["node_dns", "CLUSTER", "True"]]
 }

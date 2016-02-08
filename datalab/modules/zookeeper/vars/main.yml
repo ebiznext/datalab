@@ -2,7 +2,7 @@
 
 zookeeper:
   id: "{{zookeeper_id | default('0')}}"
-  ip: "{{ zookeeper_ip | default(ansible_eth1['ipv4']['address']) }}" #127.0.0.1
+  ip: "{{ zookeeper_ip | default(interface|default(ansible_default_ipv4['address'])) }}" #127.0.0.1
   version: "{{ zookeeper_version | default('3.4.6') }}"
   package_name: "{{ zookeeper_package_name | default('zookeeper-'+(zookeeper_version | default('3.4.6'))|string) }}"
   download_dir: "{{ zookeeper_download_dir | default('/tmp') }}"

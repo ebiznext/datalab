@@ -1,12 +1,12 @@
 {
-    "id": "{{kibana_id}}",
+    "id": "{{kibana.id}}",
     "instances": 1,
-    "cpus": {{ kibana_nb_cpus | default(1) }},
-    "mem": {{ kibana_mem }},
+    "cpus": {{ kibana.nb_cpus }},
+    "mem": {{ kibana.mem }},
     "requirePorts": false,
-    "cmd": "port_es=$(curl {{marathon_api}}/{{elasticsearch_id}}/tasks | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[\"tasks\"][0][\"ports\"][0]') && cd {{ kibana_home_directory }}/config && sed \"s/{{elasticsearch_config_http_server_host|replace(".", "\\\\.")}}/{{elasticsearch_id}}\\.{{mesos_dns_fqdn|replace(".", "\\\\.")}}/g;s/{{elasticsearch_config_http_server_port}}/$port_es/g;s/{{kibana_config_server_port}}/$PORT/g\" < ./kibana.yml > ./kibana-mesos.yml && chown {{kibana_user}} ./kibana-mesos.yml && cd {{ kibana_home_directory }}/bin && sed \"s/kibana\\.yml/kibana-mesos\\.yml/g;s/{{kibana_config_server_port}}/$PORT/g\" < ./kibana > ./kibana-mesos && chmod u+x ./kibana-mesos && chown {{kibana_user}} ./kibana-mesos && su - {{kibana_user}} -c \"{{ kibana_home_directory }}/bin/kibana-mesos\"",
-    "constraints": [["hostname", "UNIQUE"], ["node_type", "CLUSTER", "{{kibana_node_type}}"]],
-    "dependencies": ["/{{ elasticsearch_id }}"],
+    "cmd": "port_es=$(curl {{marathon.api}}/{{elasticsearch.id}}/tasks | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[\"tasks\"][0][\"ports\"][0]') && cd {{ kibana.home_directory }}/config && sed \"s/{{elasticsearch.config.network.http_host|replace(".", "\\\\.")}}/{{elasticsearch.id}}\\.{{mesos_dns_fqdn|replace(".", "\\\\.")}}/g;s/{{elasticsearch.config.network.http_host}}/$port_es/g;s/{{kibana.config.server_port}}/$PORT/g\" < ./kibana.yml > ./kibana-mesos.yml && chown {{kibana.user}} ./kibana-mesos.yml && cd {{ kibana.home_directory }}/bin && sed \"s/kibana\\.yml/kibana-mesos\\.yml/g;s/{{kibana.config.server_port}}/$PORT/g\" < ./kibana > ./kibana-mesos && chmod u+x ./kibana-mesos && chown {{kibana.user}} ./kibana-mesos && su - {{kibana.user}} -c \"{{ kibana.home_directory }}/bin/kibana-mesos\"",
+    "constraints": [["hostname", "UNIQUE"], ["node_type", "CLUSTER", "{{kibana.node_type}}"]],
+    "dependencies": ["/{{ elasticsearch.id }}"],
     "healthChecks": [
       {
         "protocol": "COMMAND",
