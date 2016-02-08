@@ -59,14 +59,14 @@
         register: local_certificate
         sudo: no
 
-      - name: Generating RSA key for {{hdfs_user}}
+      - name: Generating RSA key for {{hdfs_user | default('hdfs')}}
         user: name={{hdfs_user | default('hdfs')}} group={{hdfs_group | default(hdfs_user | default('hdfs'))}} home="/home/{{hdfs_user}}" generate_ssh_key=yes
         run_once: true
         delegate_to: "{{play_hosts[0]}}"
         sudo: yes
         when: not local_certificate.stat.exists
 
-      - name: Downloading RSA public and private keys for {{hdfs_user}}
+      - name: Downloading RSA public and private keys for {{hdfs_user | default('hdfs')}}
         fetch: src=/home/{{hdfs_user | default('hdfs')}}/.ssh/{{item}} dest=./ssh/ flat=yes
         with_items:
           - id_rsa.pub
@@ -99,7 +99,7 @@
       - {role: es}
       - {role: kibana}
       - {role: flume}
-      - {role: zeppelin}
+#      - {role: zeppelin}
 
 #  - name: Build datalab docker images
 #    hosts: docker
