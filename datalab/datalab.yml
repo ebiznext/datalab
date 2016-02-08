@@ -63,7 +63,8 @@
         when: not local_certificate.stat.exists
 
     roles:
-      - {role: hdfs}
+      - {role: hdfs, hdfs_configure: no}
+      - {role: hdfs, hdfs_configure: yes}
 
   - name: Install Middleware
     hosts: middleware
