@@ -33,6 +33,12 @@
     roles:
       - {role: mesos}
 
+  - name: Install mesos-dns
+    hosts: dns_node
+    remote_user: $user
+    roles:
+      - {role: mesos-dns}
+
   - name: Install HDFS
     hosts: hdfs
     remote_user: $user
@@ -82,7 +88,6 @@
     hosts: slave
     remote_user: $user
     roles:
-      - {role: mesos-dns}
       - {role: es}
       - {role: kibana}
       - {role: flume}
