@@ -6,7 +6,7 @@ kibana:
   download_dir: "{{kibana_download_dir | default('/tmp')}}"
   file: "{{kibana_download_dir | default('/tmp')}}/{{kibana_download_file | default(kibana_package_name | default('kibana-'+(kibana_version | default('4.1.2')) | string+'-'+(kibana_os | default('linux'))+'-'+(kibana_arch | default('x64')))+'.zip')}}"
   url: "{{ kibana_download_package_url | default('https://download.elastic.co/kibana/kibana/'+kibana_download_file | default(kibana_package_name | default('kibana-'+(kibana_version | default('4.1.2')) | string+'-'+(kibana_os | default('linux'))+'-'+(kibana_arch | default('x64')))+'.zip')) }}"
-  home_dir: "{{ kibana_home_dir | default('/usr/local/kibana') }}"
+  home_dir: "{{ kibana_home_directory | default('/usr/local/kibana') }}"
   user: "{{kibana_user | default('kibana')}}"
   group: "{{kibana_group | default(kibana_user | default('kibana'))}}"
   uid: "{{kibana_uid | default(3001)}}"
