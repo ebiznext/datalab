@@ -1,25 +1,25 @@
 ---
 
 - name: Retrieve chronos app
-  uri: url={{marathon_api}}/{{chronos_id}} HEADER_Content-Type="application/json" method=GET return_content=yes status_code=200,404
+  uri: url={{marathon.api}}/{{chronos.id}} HEADER_Content-Type="application/json" method=GET return_content=yes status_code=200,404
   register: chronos_app_response
 
 - name: remove chronos app
-  uri: url={{marathon_api}}/{{chronos_id}} HEADER_Content-Type="application/json" method=DELETE return_content=yes status_code=200,204
+  uri: url={{marathon.api}}/{{chronos.id}} HEADER_Content-Type="application/json" method=DELETE return_content=yes status_code=200,204
   when: "'message' not in {{chronos_app_response.content}}"
 
 - name: copy chronos marathon json file
   template: src=chronos.json dest=/tmp/chronos.json
 
 - name: Install chronos application
-  shell: 'curl -X POST -H "Content-Type: application/json" {{marathon_api}}?force=true -d@/tmp/chronos.json'
+  shell: 'curl -X POST -H "Content-Type: application/json" {{marathon.api}}?force=true -d@/tmp/chronos.json'
   register: install_chronos_response
 
 - debug: var=install_chronos_response
   when: install_chronos_response is defined
 
 - name: Wait until chronos app is available
-  shell: curl --head --silent {{marathon_api}}/{{chronos_id}}/tasks
+  shell: curl --head --silent {{marathon.api}}/{{chronos.id}}/tasks
   register: result
   until: result.stdout.find("200 OK") != -1
   retries: 12

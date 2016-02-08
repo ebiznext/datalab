@@ -1,10 +1,10 @@
 {
-    "id": "{{chronos_id}}",
+    "id": "{{chronos.id}}",
     "instances": 1,
-    "cpus": {{ chronos_nb_cpus | default(1) }},
-    "mem": {{ chronos_mem }},
+    "cpus": {{ chronos.nb_cpus }},
+    "mem": {{ chronos.mem }},
     "requirePorts": false,
     "cmd": "echo $PORT > /etc/chronos/conf/http_port && su - root -c \"/usr/bin/chronos\"",
-    "constraints": [["hostname", "UNIQUE"], ["node_type", "CLUSTER", "{{chronos_node_type}}"]]
+    "constraints": [["hostname", "UNIQUE"], ["node_type", "CLUSTER", "{{chronos.node_type}}"]]
 }
 

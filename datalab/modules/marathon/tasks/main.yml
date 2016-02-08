@@ -1,6 +1,6 @@
 ---
 
-- debug: msg="{{marathon_api}}"
+- debug: msg="{{marathon.api}}"
 
 - name: install dependencies
   include: dependencies.yml
