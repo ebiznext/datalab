@@ -45,10 +45,12 @@
     <value>{{node.http_address}}</value>
   </property>
   {% endfor %}
+  {% if name_nodes|length > 1 %}
   <property>
     <name>dfs.namenode.shared.edits.dir</name>
     <value>qjournal://{{(journal_nodes | default([]))|join(';')}}/{{hdfs.fs}}</value>
   </property>
+  {% endif %}
   <property>
     <name>dfs.client.failover.proxy.provider.{{hdfs.fs}}</name>
     <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>

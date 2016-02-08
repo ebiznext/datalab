@@ -83,11 +83,18 @@
 #  when: hdfs.name_node|bool
 
 - name: format name node
-  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/bin/hdfs namenode -format -force && {{hdfs.home_dir}}/bin/hdfs zkfc -formatZK -force"
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/bin/hdfs namenode -format -force"
   ignore_errors: yes
   become: yes
   become_user: "{{hdfs.user}}"
   when: hdfs.name_node|bool and (nn_dir.stat.isdir is not defined or not nn_dir.stat.isdir)
+
+- name: format ZK
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/bin/hdfs zkfc -formatZK -force"
+  ignore_errors: yes
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.name_node|bool and (nn_dir.stat.isdir is not defined or not nn_dir.stat.isdir) and name_nodes|length > 1
 
 - name: stop name node
   shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop namenode"
@@ -97,11 +104,25 @@
   when: hdfs.name_node|bool
 
 - name: start name node
-  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start namenode && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop zkfc && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start zkfc"
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start namenode"
   ignore_errors: yes
   become: yes
   become_user: "{{hdfs.user}}"
   when: hdfs.name_node|bool
+
+- name: stop zkfs
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop zkfc && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start zkfc"
+  ignore_errors: yes
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.name_node|bool and name_nodes|length > 1
+
+- name: start zkfs
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start zkfc"
+  ignore_errors: yes
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.name_node|bool and name_nodes|length > 1
 
 - name: stop data node
   shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop datanode"
