@@ -99,7 +99,6 @@
       - {role: es}
       - {role: kibana}
       - {role: flume}
-      - {role: spark}
       - {role: zeppelin}
 
 #  - name: Build datalab docker images
