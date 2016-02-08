@@ -52,15 +52,15 @@
     remote_user: $user
     pre_tasks:
 
-      - local_action: file path=./ssl state=directory
+      - local_action: file path=./ssh state=directory
         sudo: no
 
-      - local_action: stat path=./ssl/id_rsa
+      - local_action: stat path=./ssh/id_rsa
         register: local_certificate
         sudo: no
 
       - name: Generating RSA key for {{hdfs_user | default('hdfs')}}
-        user: name={{hdfs_user | default('hdfs')}} group={{hdfs_group | default(hdfs_user | default('hdfs'))}} home="/home/{{hdfs_user}}" generate_ssh_key=yes
+        user: name={{hdfs_user | default('hdfs')}} group={{hdfs_group | default(hdfs_user | default('hdfs'))}} home="/home/{{hdfs_user | default('hdfs')}}" generate_ssh_key=yes
         run_once: true
         delegate_to: "{{play_hosts[0]}}"
         sudo: yes
