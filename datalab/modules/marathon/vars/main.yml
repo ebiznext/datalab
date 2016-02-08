@@ -34,8 +34,7 @@ kafka:
   node_type: "{{kafka_node_type | default('batch_node')}}"
   user: "{{kafka_user | default('kafka')}}"
   home_dir: "{{ kafka_home_dir | default('/usr/local/kafka') }}"
-  config:
-    port: "{{kafka_config_port | default('9092')}}"
+  config_port: "{{kafka_config_port | default('9092')}}"
 
 kibana:
   id: "{{kibana_id | default('kibana')}}"
