@@ -15,10 +15,10 @@
   register: zookeeper_facts
   sudo: yes
   ignore_errors: yes
-  when: groups.zookeeper is defined and (not mesos_zookeepers is defined or not marathon_zookeepers is defined)
+  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not mesos_zookeepers is defined or not marathon_zookeepers is defined)
 
 - set_fact: mesos_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/mesos"
-  when: groups.zookeeper is defined and (not mesos_zookeepers is defined) and zookeeper_facts|success
+  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not mesos_zookeepers is defined) and zookeeper_facts|success
 
 - name: update master zookeeper configuration for mesos
   template: src=master_zk dest=/etc/mesos/zk
@@ -30,7 +30,7 @@
   when: (mesos.master|bool or mesos.standalone|bool)
 
 - set_fact: marathon_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/marathon"
-  when: groups.zookeeper is defined and (not marathon_zookeepers is defined) and zookeeper_facts|success
+  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not marathon_zookeepers is defined) and zookeeper_facts|success
 
 - name: update marathon zookeeper configuration
   template: src=marathon_zk dest=/etc/marathon/conf/zk

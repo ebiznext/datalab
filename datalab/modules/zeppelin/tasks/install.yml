@@ -15,10 +15,10 @@
   with_items: "{{groups['zookeeper']|list}}"
   register: zookeeper_facts
   sudo: yes
-  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not mesos_zookeepers is defined)
 
 - set_fact: mesos_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/mesos"
-  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not mesos_zookeepers is defined)
 
 - name: Copy zeppelin-env.sh file
   template: src=zeppelin-env.sh.j2 dest="{{ zeppelin.base_dir }}/conf/zeppelin-env.sh" owner={{ zeppelin.user }} group={{ zeppelin.group }} mode=0744

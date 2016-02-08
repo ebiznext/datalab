@@ -55,10 +55,10 @@
   delegate_to: "{{item}}"
   with_items: "{{groups['zookeeper']|list}}"
   register: zookeeper_facts
-  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not mesos_zookeepers is defined)
 
 - set_fact: mesos_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/mesos"
-  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not mesos_zookeepers is defined)
 
 - name: configure mesos-dns
   template:

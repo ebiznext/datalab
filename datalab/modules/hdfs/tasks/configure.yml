@@ -16,10 +16,10 @@
   with_items: "{{groups['zookeeper']|list}}"
   register: zookeeper_facts
   sudo: yes
-  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not mesos_zookeepers is defined)
 
 - set_fact: mesos_zookeepers="{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list }}"
-  when: groups.zookeeper is defined and (not mesos_zookeepers is defined)
+  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not mesos_zookeepers is defined)
 
 - name: gather facts from name node servers
   setup:
