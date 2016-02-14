@@ -7,4 +7,4 @@ proxy_login: "{{__proxy_login}}"
 proxy_password: "{{__proxy_password}}"
 no_proxy: "{{__no_proxy}}"
 
-apache_mirror: "{{__apache_mirror}}"
+apache_mirror: "{{default_apache_mirror | default('http://www.us.apache.org/dist/')}}"

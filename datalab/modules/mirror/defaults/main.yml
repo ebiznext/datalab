@@ -1,4 +1,1 @@
 ---
-
-default_apache_mirror: "{{__apache_mirror}}"
-use_default_apache_mirror: "{{__use_default_apache_mirror}}"

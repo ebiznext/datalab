@@ -1,0 +1,6 @@
+---
+
+apache:
+  mirror:
+    default: "{{default_apache_mirror | default('http://www.us.apache.org/dist/')}}"
+    use_default: "{{use_default_apache_mirror | default('no')}}"

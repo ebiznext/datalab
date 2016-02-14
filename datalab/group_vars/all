@@ -16,8 +16,8 @@ __proxy_server: "http://{{__proxy_host}}:{{__proxy_port}}"
 #
 # mirror
 #
-__apache_mirror: http://www.us.apache.org/dist/
-__use_default_apache_mirror: yes
+default_apache_mirror: http://www.us.apache.org/dist/
+use_default_apache_mirror: yes
 
 #
 # python
@@ -195,6 +195,3 @@ chronos_nb_cpus: 0.2
 #
 # Hdfs
 #
-hdfs_nn1: 192.168.33.60
-hdfs_nn2: 192.168.33.70
-hdfs_jn: 192.168.33.60:8485;192.168.33.70:8485;192.168.33.80:8485
