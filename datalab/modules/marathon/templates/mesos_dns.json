@@ -4,5 +4,15 @@
   "instances": 1,
   "cpus": {{ mesos_dns.nb_cpus }},
   "mem": {{ mesos_dns.mem }},
-  "constraints": [["hostname", "UNIQUE"], ["node_dns", "CLUSTER", "True"]]
+  "constraints": [["hostname", "UNIQUE"], ["node_dns", "CLUSTER", "True"]],
+  "healthChecks": [
+    {
+      "protocol":"COMMAND",
+      "command": { "value":"ps ax | grep mesos-dns | grep -v grep" },
+      "gracePeriodSeconds":30,
+      "intervalSeconds":20,
+      "timeoutSeconds":5,
+      "maxConsecutiveFailures":3
+    }
+  ]
 }
