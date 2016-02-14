@@ -1,5 +1,5 @@
 ---
 
-apache_mirror: "{{__apache_mirror}}"
+apache_mirror: "{{default_apache_mirror | default('http://www.us.apache.org/dist/')}}"
 
 hdfs_configure: no
