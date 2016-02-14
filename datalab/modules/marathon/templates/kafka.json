@@ -1,10 +1,20 @@
 {
-    "id": "{{kafka.id}}",
-    "instances": 1,
-    "cpus": {{ kafka.nb_cpus }},
-    "mem": {{ kafka.mem }},
-    "requirePorts": false,
-    "cmd": "mkdir -p {{ kafka.home_dir }}/mesos && cp {{ kafka.home_dir }}/config/* {{ kafka.home_dir }}/mesos/ && cd {{ kafka.home_dir }} && sed \"s/{{ kafka.config_port }}/$PORT/g\" < ./config/server.properties > ./mesos/server.properties && chown -R {{kafka.user}} {{ kafka.home_dir }}/mesos && su - {{kafka.user}} -c \"{{ kafka.home_dir }}/bin/kafka-server-start.sh {{ kafka.home_dir }}/mesos/server.properties\"",
-    "constraints": [["hostname", "UNIQUE"], ["node_type", "CLUSTER", "{{kafka.node_type}}"]]
+  "id": "{{kafka.id}}",
+  "instances": 1,
+  "cpus": {{ kafka.nb_cpus }},
+  "mem": {{ kafka.mem }},
+  "requirePorts": false,
+  "cmd": "mkdir -p {{ kafka.home_dir }}/mesos && cp {{ kafka.home_dir }}/config/* {{ kafka.home_dir }}/mesos/ && cd {{ kafka.home_dir }} && sed \"s/{{ kafka.config_port }}/$PORT/g\" < ./config/server.properties > ./mesos/server.properties && chown -R {{kafka.user}} {{ kafka.home_dir }}/mesos && su - {{kafka.user}} -c \"{{ kafka.home_dir }}/bin/kafka-server-start.sh {{ kafka.home_dir }}/mesos/server.properties\"",
+  "constraints": [["hostname", "UNIQUE"], ["node_type", "CLUSTER", "{{kafka.node_type}}"]],
+  "healthChecks": [
+    {
+      "protocol":"COMMAND",
+      "command": { "value":"ps ax | grep kafka | grep -v grep" },
+      "gracePeriodSeconds":30,
+      "intervalSeconds":20,
+      "timeoutSeconds":5,
+      "maxConsecutiveFailures":3
+    }
+  ]
 }
 

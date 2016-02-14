@@ -3,7 +3,7 @@
 spark:
   user: "{{spark_user | default('spark')}}"
   group: "{{spark_group | default(spark_user | default('spark'))}}"
-  version: "{{ spark_version | default('1.4.1') }}"
+  version: "{{ spark_version | default('1.6.0') }}"
   download_dir: "{{ spark_download_directory | default('/tmp') }}"
   install_dir: "{{ spark_download_directory | default('/tmp') }}/spark"
   base_dir: "{{ spark_home_directory | default('/usr/local/spark') }}"

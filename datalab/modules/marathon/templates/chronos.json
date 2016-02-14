@@ -1,10 +1,19 @@
 {
-    "id": "{{chronos.id}}",
-    "instances": 1,
-    "cpus": {{ chronos.nb_cpus }},
-    "mem": {{ chronos.mem }},
-    "requirePorts": false,
-    "cmd": "echo $PORT > /etc/chronos/conf/http_port && su - root -c \"/usr/bin/chronos\"",
-    "constraints": [["hostname", "UNIQUE"], ["node_type", "CLUSTER", "{{chronos.node_type}}"]]
+  "id": "{{chronos.id}}",
+  "instances": 1,
+  "cpus": {{ chronos.nb_cpus }},
+  "mem": {{ chronos.mem }},
+  "requirePorts": false,
+  "cmd": "echo $PORT > /etc/chronos/conf/http_port && su - root -c \"/usr/bin/chronos\"",
+  "constraints": [["hostname", "UNIQUE"], ["node_type", "CLUSTER", "{{chronos.node_type}}"]],
+  "healthChecks": [
+    {
+      "protocol": "COMMAND",
+      "command": { "value": "curl -f -X GET http://$HOST:4400" },
+      "gracePeriodSeconds": 5,
+      "intervalSeconds": 20,
+      "maxConsecutiveFailures": 3
+    }
+  ]
 }
 
