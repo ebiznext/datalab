@@ -9,6 +9,9 @@ zeppelin:
   user: "{{zeppelin_user | default('zeppelin')}}"
   group: "{{zeppelin_group | default(zeppelin_user | default('zeppelin'))}}"
 
+  spark:
+    submit_options: "{{zeppelin_spark_submit_options | default('--conf spark.mesos.constraints=node_type:'+(zeppelin_node_type | default('batch_node'))+' --conf spark.mesos.coarse=false')}}"
+
   prebuilt:
     package_name: "{{ zeppelin_prebuilt_package_name | default('zeppelin-'+(zeppelin_version | default('0.5.5'))|string+'-incubating-bin-all') }}"
     file: "{{zeppelin_download_directory | default('/tmp')}}/{{zeppelin_prebuilt_file | default((zeppelin_prebuilt_package_name | default('zeppelin-'+(zeppelin_version | default('0.5.5'))|string+'-incubating-bin-all'))+'.tgz')}}"

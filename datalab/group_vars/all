@@ -159,6 +159,7 @@ zeppelin_service_server_addr: "0.0.0.0"
 zeppelin_service_action: stop
 zeppelin_dependencies: yes
 zeppelin_node_type: batch_node
+zeppelin_spark_submit_options: "--conf spark.mesos.constraints=node_type:{{zeppelin_node_type}} --conf spark.mesos.coarse=false"
 
 #
 # mesos
