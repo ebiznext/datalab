@@ -5,7 +5,7 @@ This Ansible project allows you to deploy instantly a datalab with the following
 
 - A Middleware area : Handle incoming events. All incoming events are stored in Kafka before being pushed by Flume to HDFS and /or Flume/Spark Streaming to the realtime nodes.
 - A Batch area : Deal with batch processing. Work area for the Datascientits who may use Zeppelin and run queries using Spark Core
-- A realtime area : Deal with realtime insight rendering with Elasticsearch and Kibana
+- A Realtime area : Deal with realtime insight rendering with Elasticsearch and Kibana
 
 ## Cluster Design
 The Datalab is managed by Mesos. All services are configured in a way that make them highly available with no sngle point of failure.
@@ -15,7 +15,7 @@ The following services are installed as native services :
 - Mesos master : Three or more master mesos nodes
 - Mesos slaves : One slave per physical node
 - Marathon : 3 marathon services to manage long running services
-- Haddop Cluster : Hadoop services are running on the batch area only and are configured as follow for high availability :
+- Hadoop Cluster : Hadoop services are running on the batch area only and are configured as follow for high availability :
   - One primary and one secondary name node
   - 2 Zookeeper failover controller
   - 3 journal nodes
