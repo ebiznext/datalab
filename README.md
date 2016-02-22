@@ -7,7 +7,7 @@ This Ansible project allows you to deploy instantly a datalab with the following
 - A Batch area : Deal with batch processing. Work area for the Datascientits who may use Zeppelin and run queries using Spark Core
 - A realtime area : Deal with realtime insight rendering with Elasticsearch and Kibana
 
-## How is the cluster managed
+## Cluster Design
 The Datalab is managed by Mesos. All services are configured in a way that make them highly available with no sngle point of failure.
 
 The following services are installed as native services :
@@ -31,4 +31,6 @@ The following roles are run on top of mesos and launched through Marathon :
 - Elasticsearch cluster is run on the realtime nodes with one instance per physical realtime node
 - Kibana est also run on realtime node. A single instance is launched, Marathon will take care of realucnhing it if required.
 
+## Cluster Sample
 
+![](Analytics.png)
