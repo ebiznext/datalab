@@ -34,3 +34,9 @@ The following roles are run on top of mesos and launched through Marathon :
 ## Cluster Sample
 
 ![](Analytics.png)
+
+
+## Future Work
+- Add Kerberos Security
+- Monitoring with Ganglia
+- Pushbutton custom app deployment with Jenkins / Artefact repository / Ansible
