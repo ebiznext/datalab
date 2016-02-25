@@ -76,16 +76,19 @@
 - name: Configure Kibana log rotation
   template: src=logrotate_kibana.j2 dest=/etc/logrotate.d/kibana
   sudo: yes
+  when: ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'
 
 - file: path=/etc/init state=directory
   sudo: yes
+  when: ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'
 
 - name: Configure Kibana service definition
   template: src=kibana.conf.j2 dest=/etc/init/kibana.conf
   sudo: yes
+  when: ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'
 
 # Register kibana service on boot
 - name: Ensure Kibana is {{ kibana.service.state }} after boot
   service: name=kibana enabled={{ kibana.service.enabled }} state={{ kibana.service.state }}
   sudo: yes
-  when: kibana.service.enabled|bool
+  when: (ansible_os_family == 'Debian' or ansible_os_family == 'RedHat') and kibana.service.enabled|bool
