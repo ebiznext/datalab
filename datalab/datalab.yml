@@ -102,6 +102,12 @@
       - {role: es}
       - {role: kibana}
 
+  - name: Install chronos
+    hosts: chronos
+    remote_user: $user
+    roles:
+      - {role: chronos}
+
 #  - name: Build datalab docker images
 #    hosts: docker
 #    remote_user: $user
