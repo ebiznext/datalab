@@ -8,4 +8,4 @@ zookeepers: #"{% for host in groups['zookeeper'] %}{% endfor %}"
   - id: 3
     ip: 192.168.33.80
 
-zookeeper_ip: {{ansible_ssh_host}}
+zookeeper_ip: "{{ansible_ssh_host}}"
