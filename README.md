@@ -25,11 +25,11 @@ The following services are installed as native services :
 The following roles are run on top of mesos and launched through Marathon :
 - Apache Kafka : One instance per physical node in the middleware area
 - Apache Flume : As many agents as required, make sure you use a reliable channel (Aka Kafka) so that you don't loose messages
-- Apache Zeppelin : Used as a Spark notebook and installed on a single batch. Marathon will take care to relaunch it if it required.
+- Apache Zeppelin : Used as a Spark notebook and installed on a single batch. Marathon will take care to relaunch it if required.
 - Apache Spark is installed on middle and batch nodes for realtime and batch processing.
 - Apache Chronos is run on one of the batch nodes and in charge of managing periodic batchs.
 - Elasticsearch cluster is run on the realtime nodes with one instance per physical realtime node
-- Kibana est also run on realtime node. A single instance is launched, Marathon will take care of realucnhing it if required.
+- Kibana is also run on realtime node. A single instance is launched, Marathon will take care of relaunching it if required.
 
 ## Cluster Sample
 
