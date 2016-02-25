@@ -33,7 +33,7 @@ Vagrant.configure(2) do |config|
 
   config.vm.define "mesos-master3" do |datalab|
     datalab.vm.box = "centos/7"
-    datalab.vm.hostname = "datalab-mesos-master.vm"
+    datalab.vm.hostname = "datalab-mesos-master3.vm"
     datalab.vm.network "private_network", ip:"192.168.33.80"
     datalab.vm.provider "virtualbox" do |vb|
       vb.name = "datalab-mesos-master3"
