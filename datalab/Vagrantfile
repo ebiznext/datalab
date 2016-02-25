@@ -93,37 +93,37 @@ Vagrant.configure(2) do |config|
     end
   end
 
-  config.vm.define "mesos-slave1" do |datalab|
+  config.vm.define "mesos-batch1" do |datalab|
     datalab.vm.box = "centos/7"
-    datalab.vm.hostname = "datalab-mesos-slave1.vm"
+    datalab.vm.hostname = "datalab-mesos-batch1.vm"
     datalab.vm.network "private_network", ip:"192.168.33.81"
     datalab.vm.synced_folder "./", "/vagrant", disabled:true
     datalab.vm.provider "virtualbox" do |vb|
-      vb.name = "datalab-mesos-slave1"
+      vb.name = "datalab-mesos-batch1"
       vb.cpus = 1
       vb.memory = 1024
     end
   end
 
-  config.vm.define "mesos-slave2" do |datalab|
+  config.vm.define "mesos-batch2" do |datalab|
     datalab.vm.box = "centos/7"
-    datalab.vm.hostname = "datalab-mesos-slave2.vm"
+    datalab.vm.hostname = "datalab-mesos-batch2.vm"
     datalab.vm.network "private_network", ip:"192.168.33.82"
     datalab.vm.synced_folder "./", "/vagrant", disabled:true
     datalab.vm.provider "virtualbox" do |vb|
-      vb.name = "datalab-mesos-slave2"
+      vb.name = "datalab-mesos-batch2"
       vb.cpus = 1
       vb.memory = 1024
     end
   end
 
-  config.vm.define "mesos-slave3" do |datalab|
+  config.vm.define "mesos-batch3" do |datalab|
     datalab.vm.box = "centos/7"
-    datalab.vm.hostname = "datalab-mesos-slave3.vm"
+    datalab.vm.hostname = "datalab-mesos-batch3.vm"
     datalab.vm.network "private_network", ip:"192.168.33.83"
     datalab.vm.synced_folder "./", "/vagrant", disabled:true
     datalab.vm.provider "virtualbox" do |vb|
-      vb.name = "datalab-mesos-slave3"
+      vb.name = "datalab-mesos-batch3"
       vb.cpus = 1
       vb.memory = 1024
     end
