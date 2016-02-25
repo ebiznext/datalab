@@ -8,5 +8,3 @@ mesos_hostname: "{{ansible_fqdn}}"
 mesos_ip: 192.168.33.83
 
 mesos_node_type: batch_node
-
-hdfs_isjn: true
