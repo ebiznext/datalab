@@ -5,11 +5,3 @@ ansible_ssh_user: vagrant
 ansible_ssh_pass: vagrant
 
 zookeeper_id: 3
-zookeeper_ip: 192.168.33.80
-
-mesos_hostname: "{{ansible_fqdn}}"
-mesos_ip: 192.168.33.80
-mesos_node_type: batch_node
-
-marathon_api: "http://192.168.33.80:8080/v2/apps"
-

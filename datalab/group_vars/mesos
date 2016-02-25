@@ -1,0 +1,4 @@
+---
+
+mesos_hostname: "{{ansible_fqdn}}"
+mesos_ip: {{ansible_ssh_host}}

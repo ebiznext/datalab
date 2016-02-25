@@ -27,7 +27,7 @@
     roles:
       - {role: zookeeper}
 
-  - name: Install and launch Mesos
+  - name: Install and launch Mesos cluster
     hosts: mesos
     remote_user: $user
 
@@ -47,7 +47,7 @@
     roles:
       - {role: mesos-dns}
 
-  - name: Install HDFS
+  - name: Install Hadoop cluster
     hosts: hdfs
     remote_user: $user
     pre_tasks:
@@ -80,26 +80,27 @@
       - {role: hdfs, hdfs_configure: no}
       - {role: hdfs, hdfs_configure: yes}
 
-  - name: Install Middleware
+  - name: Install mesos middleware node(s)
     hosts: middleware
     remote_user: $user
     roles:
       - {role: kafka}
+      - {role: flume}
+      - {role: spark}
 
-  - name: Install Batch
+  - name: Install mesos batch node(s)
     hosts: batch
     remote_user: $user
     roles:
       - {role: spark}
+      - {role: zeppelin}
 
-  - name: Build datalab
-    hosts: slave
+  - name: Install mesos realtime node(s)
+    hosts: realtime
     remote_user: $user
     roles:
       - {role: es}
       - {role: kibana}
-      - {role: flume}
-#      - {role: zeppelin}
 
 #  - name: Build datalab docker images
 #    hosts: docker

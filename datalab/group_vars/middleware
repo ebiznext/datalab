@@ -1,0 +1,7 @@
+---
+
+kafkas:
+  - id: 1
+  - id: 2
+
+mesos_node_type: middleware_node

@@ -1,9 +1,11 @@
 ---
 
-zookeepers:
+zookeepers: #"{% for host in groups['zookeeper'] %}{% endfor %}"
   - id: 1
     ip: 192.168.33.60
   - id: 2
     ip: 192.168.33.70
   - id: 3
     ip: 192.168.33.80
+
+zookeeper_ip: {{ansible_ssh_host}}
