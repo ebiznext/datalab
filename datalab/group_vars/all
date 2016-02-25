@@ -1,5 +1,7 @@
 ---
 
+default_download_dir: /tmp
+
 #
 # proxy
 #
@@ -50,7 +52,7 @@ elasticsearch_config_cluster_name: elasticsearch
 elasticsearch_plugins: []
 #  - { name: 'head', url: 'mobz/elasticsearch-head', file: 'head.zip' }
 #  - { name: 'analysis-icu', url: 'https://github.com/elastic/elasticsearch-analysis-icu/archive/v2.7.0.tar.gz', file: 'analysis-icu-2.7.0.zip' } # when using another version of es, you should update the url and remove the file entry
-elasticsearch_download_directory: /tmp
+elasticsearch_download_directory: "{{default_download_dir}}"
 elasticsearch_package_name: "elasticsearch-{{ elasticsearch_version }}"
 elasticsearch_prebuilt_file: "{{elasticsearch_package_name}}.tar.gz"
 elasticsearch_prebuit_package_url: "https://download.elastic.co/elasticsearch/elasticsearch/{{elasticsearch_prebuilt_file}}"
@@ -71,12 +73,13 @@ kibana_home_directory: /usr/local/kibana
 kibana_log_dir: /var/log/kibana
 kibana_log_file: "{{ kibana_log_dir }}/kibana.log"
 kibana_node_type: batch_node
+kibana_download_dir: "{{default_download_dir}}"
 
 #
 # zookeeper
 #
 zookeeper_version: 3.4.6
-zookeeper_download_dir: /tmp
+zookeeper_download_dir: "{{default_download_dir}}"
 zookeeper_home_dir: /usr/local/zookeeper
 zookeeper_package_name: "zookeeper-{{ zookeeper_version }}"
 zookeeper_config_ticktime: 2000
@@ -113,7 +116,7 @@ kafka_config_zookeepers:
 # Flume
 #
 flume_version: 1.6.0
-flume_download_dir: /tmp
+flume_download_dir: "{{default_download_dir}}"
 flume_home_dir: /usr/local/flume
 flume_package_name: "apache-flume-{{ flume_version }}-bin"
 flume_config_dir: "{{flume_home_dir}}/conf"
@@ -133,7 +136,7 @@ spark_user: spark
 spark_group: spark
 spark_version: 1.4.1
 spark_home_directory: /usr/local/spark
-spark_download_directory: /tmp
+spark_download_directory: "{{default_download_dir}}"
 spark_do_build: no
 spark_build_checkout: tarball
 spark_build_sbt_launch_version: 0.13.7
@@ -151,7 +154,7 @@ zeppelin_do_build: yes
 zeppelin_build_checkout: tarball
 zeppelin_build_opts: '-P build-distr -Pspark-{{spark_version|group("(.*\..*)\..*", 1)}} -Dspark.version={{spark_version}} -Phadoop-{{hadoop_version|group("(.*\..*)\..*", 1)}} -Dhadoop.version={{hadoop_version}} -DskipTests'
 zeppelin_git_branch: "v{{ zeppelin_version }}"
-zeppelin_download_directory: /tmp
+zeppelin_download_directory: "{{default_download_dir}}"
 zeppelin_home_directory: /usr/local/incubator-zeppelin
 zeppelin_local_directory: ~/incubator-zeppelin
 zeppelin_service_server_port: 8080
@@ -175,7 +178,7 @@ mesos_cluster: datalab
 # mesos-dns
 #
 mesos_dns_version: 0.5.1
-mesos_dns_download_directory: /tmp
+mesos_dns_download_directory: "{{default_download_dir}}"
 mesos_dns_home_directory: /usr/local/mesos-dns
 mesos_dns_config_resolvers: 8.8.8.8
 mesos_dns_config_domain: mesos
