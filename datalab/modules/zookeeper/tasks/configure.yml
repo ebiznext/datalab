@@ -1,0 +1,50 @@
+---
+
+- name: gather facts from zookeeper servers
+  setup:
+    filter: ansible_local
+  delegate_to: "{{item}}"
+  with_items: groups.zookeeper
+  register: zookeeper_facts
+  sudo: yes
+  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not zookeepers is defined)
+
+- set_fact: zookeepers="{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper') | list }}"
+  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not zookeepers is defined)
+
+# Configure
+- name: Create zookeeper configuration
+  template: src=zoo.cfg
+            dest={{ zookeeper.home_dir }}/conf/
+            owner={{ zookeeper.user }}
+            group={{ zookeeper.group }}
+  sudo: yes
+
+- name: Create zookeeper environment
+  template: src=zookeeper-env.sh
+            dest={{ zookeeper.home_dir }}/conf/
+            owner={{ zookeeper.user }}
+            group={{ zookeeper.group }}
+  sudo: yes
+
+- name: Configure Zk id
+  template: src=myid
+            dest={{ zookeeper.config.dataDir }}/
+        owner={{ zookeeper.user }}
+        group={{ zookeeper.group }}
+  sudo: yes
+  when: zookeeper.id|int > 0
+
+# (Re)Start Zookeeper
+- template: src=zookeeper-redhat dest=/etc/init.d/zookeeper mode=0750
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
+
+- template: src=zookeeper-debian dest=/etc/init.d/zookeeper mode=0750
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+- name: enable and restart zookeeper service
+  service: name=zookeeper state=restarted enabled=yes
+  sudo: yes
+

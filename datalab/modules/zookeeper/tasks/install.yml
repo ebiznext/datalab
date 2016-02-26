@@ -1,0 +1,95 @@
+---
+
+# Install Debian dependencies
+- name: Install Debian dependencies
+  apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - tar
+    - curl
+    - wget
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+# Install Redhat dependencies
+- name: Install Redhat dependencies
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+    - tar
+    - curl
+    - wget
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
+
+- name: stop zookeeper service
+  service: name=zookeeper state=stopped
+  ignore_errors: yes
+  sudo: yes
+
+- file: path="{{ zookeeper.home_dir }}" state=absent
+  sudo: yes
+
+- file: path="{{ zookeeper.config.dataDir }}" state=absent
+  sudo: yes
+
+- file: path="{{ zookeeper.config.dataDir }}" state=directory
+  sudo: yes
+
+- file: path="{{ zookeeper.download_dir }}" state=directory
+
+- stat: path={{zookeeper.file}} get_checksum=yes
+  register: zookeeper_file
+
+- shell: curl {{curl_proxy_args}} --stderr /dev/null {{zookeeper.url}}.sha1
+  register: zookeeper_sha1
+  when: zookeeper_file.stat.exists
+
+- name: get zookeeper
+  shell: "wget -q -O {{zookeeper.file}} {{zookeeper.url}}"
+  when: not zookeeper_file.stat.exists or (zookeeper_file.stat.checksum != (zookeeper_sha1.stdout|split(' '))[0])
+
+- name: Extract and install Zk
+  unarchive: src="{{ zookeeper.file }}"
+             dest={{ zookeeper.download_dir }}
+             copy=no
+
+- name: rename install dir
+  shell: "mv {{ zookeeper.download_dir}}/{{zookeeper.package_name}} {{zookeeper.home_dir}}"
+  sudo: yes
+
+- name: Create zookeeper group
+  group: name={{ zookeeper.group }}
+  sudo: yes
+
+- name: Create zookeeper user
+  user: name={{ zookeeper.user }} group={{ zookeeper.group }} createhome=no system=yes shell=/bin/bash
+  sudo: yes
+
+- file: path={{ zookeeper.home_dir }} owner={{ zookeeper.user }} group={{ zookeeper.group }} recurse=yes state=directory
+  sudo: yes
+
+- name: Create zookeeper log dir if it does not exist
+  file: path={{ zookeeper.log.dir }}
+        state=directory
+        owner={{ zookeeper.user }}
+        group={{ zookeeper.group }}
+  sudo: yes
+
+- name: Create zookeeper data dir if it does not exist
+  file: path={{ zookeeper.config.dataDir }}
+        state=directory
+        owner={{ zookeeper.user }}
+        group={{ zookeeper.group }}
+        recurse=yes
+  sudo: yes
+
+# Update local ansible facts
+- file: path=/etc/ansible/facts.d state=directory
+  sudo: yes
+  when: zookeeper.id|int > 0
+
+- file: path=/etc/ansible/facts.d/datalab.fact state=absent
+  sudo: yes
+
+- template: src=datalab.fact dest="/etc/ansible/facts.d/datalab.fact"
+  sudo: yes
+  when: zookeeper.id|int > 0

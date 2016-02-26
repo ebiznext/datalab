@@ -25,7 +25,8 @@
     hosts: zookeeper
     remote_user: $user
     roles:
-      - {role: zookeeper}
+      - {role: zookeeper, zk_configure: no}
+      - {role: zookeeper, zk_configure: yes}
 
   - name: Install and launch Mesos cluster
     hosts: mesos
