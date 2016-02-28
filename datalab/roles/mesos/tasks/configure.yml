@@ -51,6 +51,13 @@
   sudo: yes
   when: (mesos.master|bool or mesos.standalone|bool)
 
+# /etc/hosts
+- replace: dest=/etc/hosts regexp='^(127\\.0\\.0\\.1\\s+)({{ansible_fqdn|split('.')|join('\\.')}}\\s+)?({{ansible_hostname|split('.')|join('\\.')}}\\s+)?(.*)' replace='\1\4' owner=root group=root mode=0644
+  sudo: yes
+
+- lineinfile: dest=/etc/hosts line='{{mesos.ip}} {{ansible_fqdn}} {{ansible_hostname}}' state=present owner=root group=root mode=0644
+  sudo: yes
+
 # Hostname
 - name: update hostname configuration for mesos master
   template: src=hostname dest=/etc/mesos-master/hostname
