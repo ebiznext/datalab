@@ -2,6 +2,3 @@
 
 mesos_hostname: "{{ansible_fqdn}}"
 mesos_ip: "{{ansible_ssh_host}}"
-
-#FIXME delegation bug within mesos role
-mesos_zookeepers: zk://192.168.33.60:2181,192.168.33.70:2181,192.168.33.80:2181/mesos
