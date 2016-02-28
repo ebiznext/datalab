@@ -1,6 +1,7 @@
 ---
 
-zookeepers: #FIXME delegation bug within zookeeper role
+#FIXME delegation bug within zookeeper role
+zookeepers:
   - id: 1
     ip: 192.168.33.60
   - id: 2
