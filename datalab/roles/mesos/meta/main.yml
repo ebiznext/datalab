@@ -1,7 +1,6 @@
 ---
 
 dependencies:
-#  - { role: zookeeper, when: "ansible_os_family == 'RedHat' and mesos.master|bool" }
   - { role: common, install_maven, when: "mesos.build.do|bool" }
 
 galaxy_info:
