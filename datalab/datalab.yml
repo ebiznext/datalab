@@ -52,6 +52,13 @@
         register: local_certificate
         sudo: no
 
+      - name: add group {{hdfs_group | default(hdfs_user | default('hdfs'))}}
+        group: name={{hdfs_group | default(hdfs_user | default('hdfs'))}} state=present
+        run_once: true
+        delegate_to: "{{play_hosts[0]}}"
+        sudo: yes
+        when: not local_certificate.stat.exists
+
       - name: Generating RSA key for {{hdfs_user | default('hdfs')}}
         user: name={{hdfs_user | default('hdfs')}} group={{hdfs_group | default(hdfs_user | default('hdfs'))}} home="/home/{{hdfs_user | default('hdfs')}}" generate_ssh_key=yes
         run_once: true
