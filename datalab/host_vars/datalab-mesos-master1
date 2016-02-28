@@ -5,3 +5,5 @@ ansible_ssh_user: vagrant
 ansible_ssh_pass: vagrant
 
 zookeeper_id: 1
+
+mesos_standalone: yes
