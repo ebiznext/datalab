@@ -1,3 +1,6 @@
 ---
 
 marathon_api: "http://{{ansible_ssh_host}}:8080/v2/apps"
+
+#FIXME delegation bug within mesos role
+marathon_zookeepers: zk://192.168.33.60:2181,192.168.33.70:2181,192.168.33.80:2181/marathon
