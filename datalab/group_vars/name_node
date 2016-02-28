@@ -1,0 +1,3 @@
+---
+
+hdfs_name_node_ip: "{{ansible_ssh_host}}"

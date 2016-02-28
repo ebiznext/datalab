@@ -1,0 +1,3 @@
+---
+
+hdfs_journal_node_ip: "{{ansible_ssh_host}}"

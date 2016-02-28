@@ -9,5 +9,3 @@ zookeeper_id: 1
 mesos_standalone: yes
 
 hdfs_name_node_id: nn1
-hdfs_name_node_ip: "{{ansible_ssh_host}}"
-hdfs_journal_node_ip: "{{ansible_ssh_host}}"

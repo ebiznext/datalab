@@ -7,5 +7,3 @@ ansible_ssh_pass: vagrant
 zookeeper_id: 3
 
 mesos_standalone: yes
-
-hdfs_journal_node_ip: "{{ansible_ssh_host}}"
