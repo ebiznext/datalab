@@ -86,8 +86,8 @@
 # Update local ansible facts
 - file: path=/etc/ansible/facts.d state=directory
   sudo: yes
-  when: hdfs.name_node|bool
+  when: hdfs.name_node|bool or hdfs.journal_node|bool or hdfs.data_node|bool
 
 - template: src=hdfs.fact dest="/etc/ansible/facts.d/hdfs.fact"
   sudo: yes
-  when: hdfs.name_node|bool
+  when: hdfs.name_node|bool or hdfs.journal_node|bool or hdfs.data_node|bool
