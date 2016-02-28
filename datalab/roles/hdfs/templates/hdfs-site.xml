@@ -61,7 +61,7 @@
   </property>
   <property>
     <name>ha.zookeeper.quorum</name>
-    <value>{{mesos_zookeepers | default('zk://localhost:'+(zookeeper_config_clientPort | default('2181'))|string+'/mesos')}}</value>
+    <value>{{hdfs_zookeepers | default('localhost:'+(zookeeper_config_clientPort | default('2181'))|string)}}</value>
   </property>
   <property>
     <name>dfs.ha.fencing.methods</name>
