@@ -6,39 +6,12 @@
 #    roles:
 #      - {role: proxy}
 #
-#  - name: Build and launch docker registry
-#    hosts: registry
-#    remote_user: $user
-#    sudo: yes
-#    roles:
-#      - {role: docker}
-#      - {role: docker.registry}
-#
-#  - name: Install Docker
-#    hosts: docker
-#    remote_user: $user
-#    roles:
-#      - {role: docker}
-#      - {role: docker.registry.login}
-#
   - name: Install and launch Zookeeper
     hosts: zookeeper
     remote_user: $user
     roles:
       - {role: zookeeper, zk_configure: no}
       - {role: zookeeper, zk_configure: yes}
-
-  - name: Install and launch Mesos cluster
-    hosts: mesos
-    remote_user: $user
-    roles:
-      - {role: mesos}
-
-  - name: Install mesos-dns
-    hosts: dns_node
-    remote_user: $user
-    roles:
-      - {role: mesos-dns}
 
   - name: Install Hadoop cluster
     hosts: hdfs
@@ -80,6 +53,18 @@
       - {role: hdfs, hdfs_configure: no}
       - {role: hdfs, hdfs_configure: yes}
 
+  - name: Install and launch Mesos cluster
+    hosts: mesos
+    remote_user: $user
+    roles:
+      - {role: mesos}
+
+  - name: Install mesos-dns
+    hosts: dns_node
+    remote_user: $user
+    roles:
+      - {role: mesos-dns}
+
   - name: Install mesos middleware node(s)
     hosts: middleware
     remote_user: $user
@@ -106,16 +91,31 @@
     hosts: chronos
     remote_user: $user
     roles:
-      - {role: chronos}
-
-#  - name: Build datalab docker images
-#    hosts: docker
-#    remote_user: $user
-#    roles:
-#      - {role: docker.flume}
+      - {role: es}
 
   - name: Launch datalab
     hosts: marathon
     remote_user: $user
     roles:
       - {role: marathon}
+
+#  - name: Build and launch docker registry
+#    hosts: registry
+#    remote_user: $user
+#    sudo: yes
+#    roles:
+#      - {role: docker}
+#      - {role: docker.registry}
+#
+#  - name: Install Docker
+#    hosts: docker
+#    remote_user: $user
+#    roles:
+#      - {role: docker}
+#      - {role: docker.registry.login}
+#
+#  - name: Build datalab docker images
+#    hosts: docker
+#    remote_user: $user
+#    roles:
+#      - {role: docker.flume}
