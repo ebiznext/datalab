@@ -30,7 +30,7 @@
   when: (mesos.master|bool or mesos.standalone|bool)
 
 - set_fact: marathon_zookeepers="zk://{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}/marathon"
-  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not marathon_zookeepers is defined) and zookeeper_facts|success
+  when: (mesos.master|bool or mesos.standalone|bool) and groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not marathon_zookeepers is defined) and zookeeper_facts|success
 
 - name: update marathon zookeeper configuration
   template: src=marathon_zk dest=/etc/marathon/conf/zk
