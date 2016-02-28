@@ -85,13 +85,13 @@
   shell: stop marathon
   sudo: yes
   ignore_errors: yes
-  when: ansible_distribution_version|version_compare(7, '<')
+  when: (mesos.master|bool or mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '<')
 
 - name: stop marathon service on RedHat / CentOS 7
   service: name=marathon state=stopped
   sudo: yes
   ignore_errors: yes
-  when: ansible_distribution_version|version_compare(7, '>=')
+  when: (mesos.master|bool or mesos.standalone|bool) and ansible_distribution_version|version_compare(7, '>=')
 
 - file: path=/tmp/mesos/meta/slaves/latest state=absent
   sudo: yes
