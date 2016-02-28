@@ -111,14 +111,14 @@
   when: hdfs.name_node|bool
 
 - name: stop zkfs
-  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop zkfc && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start zkfc"
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop zkfc"
   ignore_errors: yes
   become: yes
   become_user: "{{hdfs.user}}"
   when: hdfs.name_node|bool and name_nodes|length > 1
 
 - name: start zkfs
-  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start zkfc"
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start zkfc -formatZK"
   ignore_errors: yes
   become: yes
   become_user: "{{hdfs.user}}"
