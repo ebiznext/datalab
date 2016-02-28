@@ -13,7 +13,7 @@
       - {role: zookeeper, zk_configure: no}
       - {role: zookeeper, zk_configure: yes}
 
-  - name: Install Hadoop cluster
+  - name: Install and launch Hadoop cluster
     hosts: hdfs
     remote_user: $user
     pre_tasks:
