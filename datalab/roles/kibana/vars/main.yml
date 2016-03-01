@@ -15,7 +15,7 @@ kibana:
   config:
     server_addr: "{{ kibana_config_server_addr | default('0.0.0.0') }}"
     server_port: "{{ kibana_config_server_port | default('5601') }}"
-    elasticsearch_addr: "{{ kibana_elasticsearch_addr | default('http://'+(elasticsearch_config_http_server_host | default('localhost'))+((elasticsearch_config_http_server_port | string) | default('9200'))) }}"
+    elasticsearch_addr: "{{ kibana_elasticsearch_addr | default('http://'+(elasticsearch_config_http_server_host | default('localhost'))+':'+((elasticsearch_config_http_server_port | string) | default('9200'))) }}"
     elasticsearch_index: "{{kibana_elasticsearch_index | default('.kibana')}}"
 
   log:
