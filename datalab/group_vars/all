@@ -56,7 +56,7 @@ kibana_user: kibana
 kibana_group: kibana
 kibana_gid: 3000
 kibana_uid: 3000
-kibana_version: 4.1.2
+kibana_version: 4.1.5
 kibana_config_server_addr: "0.0.0.0"
 kibana_config_server_port: 5601
 kibana_elasticsearch_addr: "http://{{elasticsearch_config_http_server_host}}:{{elasticsearch_config_http_server_port}}"
