@@ -3,6 +3,11 @@
 default_download_dir: /tmp
 
 #
+# proxy
+#
+proxy_enabled: no
+
+#
 # mirror
 #
 default_apache_mirror: http://www.us.apache.org/dist/
