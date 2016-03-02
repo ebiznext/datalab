@@ -65,6 +65,9 @@
   when: install_kibana|bool
 
 # Configure Kibana
+- file: path={{ kibana.home_dir }} state=directory owner={{ kibana.user }} group={{ kibana.group }} recurse=yes
+  sudo: yes
+
 - name: Configure Kibana
   template: src=kibana.yml.j2
             dest={{ kibana.home_dir }}/config/kibana.yml
