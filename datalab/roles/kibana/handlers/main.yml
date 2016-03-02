@@ -1,0 +1,8 @@
+---
+# Kibana Ansible Handlers
+
+# Restart Kibana
+- name: Restart Kibana
+  service: name=kibana4 state=restarted
+  sudo: yes
+  when: ansible_os_family == 'Debian' and kibana.service.enabled|bool

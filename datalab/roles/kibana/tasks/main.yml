@@ -1,19 +1,18 @@
 ---
 
-# Install Debian dependencies
+# Install dependencies
 - name: Install Debian dependencies
   apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
   with_items:
-    - unzip
+    - tar
     - wget
   sudo: yes
   when: ansible_os_family == 'Debian'
 
-# Install Redhat dependencies
 - name: Install Redhat dependencies
   yum: name={{item}} state=present update_cache=yes
   with_items:
-    - unzip
+    - tar
     - wget
   sudo: yes
   when: ansible_os_family == 'RedHat'
@@ -27,39 +26,51 @@
   user: name={{ kibana.user }} group={{ kibana.group }} createhome=no uid={{kibana.uid}} system=yes shell=/bin/bash
   sudo: yes
 
-#- name: ensure base dir exists
-#  file: path="{{ kibana.home_dir }}" state=directory owner="{{ kibana.user }}" group="{{ kibana.group }}"
+# Install Kibana
+- set_fact: previous_kibana_version="{% if ansible_local is defined and ansible_local['kibana'] is defined %}{{ansible_local['kibana']['kibana']['version']}}{% else %}''{% endif %}"
+
+- debug: msg="the previous version of kibana was '{{ previous_kibana_version }}'"
+
+- debug: msg="the expected version of kibana is '{{ kibana.version }}'"
+
+- set_fact: install_kibana="{{previous_kibana_version != kibana.version}}"
 
 - file: path="{{ kibana.home_dir }}" state=absent
   sudo: yes
+  when: install_kibana|bool
 
 - file: path="{{ kibana.download_dir }}" state=directory
+  when: install_kibana|bool
 
 - stat: path={{kibana.file}} get_checksum=yes
   register: kibana_file
 
 - shell: curl {{curl_proxy_args}} --stderr /dev/null {{kibana.url}}.sha1.txt
   register: kibana_sha1
-  when: kibana_file.stat.exists
+  when: install_kibana|bool and kibana_file.stat.exists
 
 - name: Download Kibana
   shell: wget -q -O {{ kibana.file }} {{ kibana.url }}
-  when: not kibana_file.stat.exists or (kibana_file.stat.checksum != (kibana_sha1.stdout|split(' '))[0])
+  when: install_kibana|bool and (not kibana_file.stat.exists or (kibana_file.stat.checksum != (kibana_sha1.stdout|split(' '))[0]))
 
 - name: Extract and install Kibana
   unarchive: src="{{ kibana.file }}"
              dest={{ kibana.download_dir }}
              copy=no
+  when: install_kibana|bool
 
 - name: rename install dir
   shell: "mv {{ kibana.download_dir}}/{{kibana.package_name}} {{kibana.home_dir}}"
   sudo: yes
+  when: install_kibana|bool
 
+# Configure Kibana
 - name: Configure Kibana
   template: src=kibana.yml.j2
             dest={{ kibana.home_dir }}/config/kibana.yml
             owner="{{ kibana.user }}"
             group="{{ kibana.group }}"
+  notify: Restart Kibana
   sudo: yes
 
 - name: Create kibana log dir if it does not exist
@@ -76,19 +87,27 @@
 - name: Configure Kibana log rotation
   template: src=logrotate_kibana.j2 dest=/etc/logrotate.d/kibana
   sudo: yes
-  when: ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'
+  notify: Restart Kibana
+  when: ansible_os_family == 'Debian' and kibana.log.rotate.enabled|bool
 
-- file: path=/etc/init state=directory
+- file: path=/etc/init.d state=directory
   sudo: yes
-  when: ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'
+  when: ansible_os_family == 'Debian' and kibana.service.enabled|bool
 
 - name: Configure Kibana service definition
-  template: src=kibana.conf.j2 dest=/etc/init/kibana.conf
+  template: src=kibana dest=/etc/init.d/kibana4 mode=0750
   sudo: yes
-  when: ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'
+  notify: Restart Kibana
+  when: ansible_os_family == 'Debian' and kibana.service.enabled|bool
 
 # Register kibana service on boot
 - name: Ensure Kibana is {{ kibana.service.state }} after boot
-  service: name=kibana enabled={{ kibana.service.enabled }} state={{ kibana.service.state }}
+  service: name=kibana4 enabled={{ kibana.service.enabled }} state={{ kibana.service.state }}
   sudo: yes
-  when: (ansible_os_family == 'Debian' or ansible_os_family == 'RedHat') and kibana.service.enabled|bool
+  when: ansible_os_family == 'Debian' and kibana.service.enabled|bool
+
+- file: path=/etc/ansible/facts.d state=directory
+  sudo: yes
+
+- template: src=kibana.fact dest="/etc/ansible/facts.d/kibana.fact"
+  sudo: yes

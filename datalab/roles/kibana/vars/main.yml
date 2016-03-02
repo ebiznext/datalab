@@ -1,11 +1,11 @@
 ---
 
 kibana:
-  version: "{{ kibana_version | default('4.1.2') }}"
-  package_name: "{{ kibana_package_name | default('kibana-'+(kibana_version | default('4.1.2')) | string+'-'+(kibana_os | default('linux'))+'-'+(kibana_arch | default('x64'))) }}"
+  version: "{{ kibana_version | default('4.1.5') }}"
+  package_name: "{{ kibana_package_name | default('kibana-'+(kibana_version | default('4.1.5')) | string+'-'+(kibana_os | default('linux'))+'-'+(kibana_arch | default('x64'))) }}"
   download_dir: "{{kibana_download_dir | default('/tmp')}}"
-  file: "{{kibana_download_dir | default('/tmp')}}/{{kibana_download_file | default(kibana_package_name | default('kibana-'+(kibana_version | default('4.1.2')) | string+'-'+(kibana_os | default('linux'))+'-'+(kibana_arch | default('x64')))+'.zip')}}"
-  url: "{{ kibana_download_package_url | default('https://download.elastic.co/kibana/kibana/'+kibana_download_file | default(kibana_package_name | default('kibana-'+(kibana_version | default('4.1.2')) | string+'-'+(kibana_os | default('linux'))+'-'+(kibana_arch | default('x64')))+'.zip')) }}"
+  file: "{{kibana_download_dir | default('/tmp')}}/{{kibana_download_file | default(kibana_package_name | default('kibana-'+(kibana_version | default('4.1.5')) | string+'-'+(kibana_os | default('linux'))+'-'+(kibana_arch | default('x64')))+'.tar.gz')}}"
+  url: "{{ kibana_download_package_url | default('https://download.elastic.co/kibana/kibana/'+kibana_download_file | default(kibana_package_name | default('kibana-'+(kibana_version | default('4.1.5')) | string+'-'+(kibana_os | default('linux'))+'-'+(kibana_arch | default('x64')))+'.tar.gz')) }}"
   home_dir: "{{ kibana_home_directory | default('/usr/local/kibana') }}"
   user: "{{kibana_user | default('kibana')}}"
   group: "{{kibana_group | default(kibana_user | default('kibana'))}}"
@@ -22,6 +22,7 @@ kibana:
     dirname: "{{ kibana_log_dir | default((kibana_home_dir | default('/usr/local/kibana'))+'/log') }}"
     file: "{{ kibana_log_file | default((kibana_log_dir | default((kibana_home_dir | default('/usr/local/kibana'))+'/log'))+'/kibana.log') }}"
     rotate:
+      enabled: "{{kibana_log_rotate_enabled | default('yes')}}"
       count: "{{kibana_log_rotate_count | default(5)}}"
       interval: "{{kibana_log_rotate_interval | default('daily')}}"
 
