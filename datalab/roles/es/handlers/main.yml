@@ -4,3 +4,5 @@
 # Restart Elasticsearch
 - name: Restart Elasticsearch
   service: name=elasticsearch state=restarted
+  sudo: yes
+  when: ansible_os_family == "Debian" and (not elasticsearch.prebuilt.install|bool)
