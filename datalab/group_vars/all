@@ -30,8 +30,8 @@ __java_major_version: "8" # 6, 7 or 8
 elasticsearch_version: 1.7.3
 elasticsearch_user: elasticsearch
 elasticsearch_group: elasticsearch
-elasticsearch_gid: 2001
-elasticsearch_uid: 2001
+elasticsearch_gid: 1001
+elasticsearch_uid: 1001
 elasticsearch_home_directory: /usr/share/elasticsearch
 elasticsearch_config_directory: "{{elasticsearch_home_directory}}/config"
 elasticsearch_log_directory: /var/log/elasticsearch
