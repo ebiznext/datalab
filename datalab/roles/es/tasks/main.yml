@@ -10,12 +10,21 @@
 
 # Configure user and group
 - name: Create ES group
-  group: name={{ elasticsearch.group }} gid={{elasticsearch.gid}}
+  group: name={{ elasticsearch.group }} gid={{elasticsearch.gid}} state=present
   sudo: yes
 
 - name: Create ES user
   user: name={{ elasticsearch.user }} group={{ elasticsearch.group }} createhome=no uid={{elasticsearch.uid}}
   sudo: yes
+
+# Check whether we have aleady installed the same version
+- set_fact: previous_elasticsearch_version="{% if ansible_local is defined and ansible_local['elasticsearch'] is defined %}{{ansible_local['elasticsearch']['elasticsearch']['version']}}{% else %}''{% endif %}"
+
+- debug: msg="the previous version of elasticsearch was '{{ previous_elasticsearch_version }}'"
+
+- debug: msg="the expected version of elasticsearch is '{{ elasticsearch.version }}'"
+
+- set_fact: install_elasticsearch="{{previous_elasticsearch_version != elasticsearch.version}}"
 
 - name: Install from pre-built package
   include: prebuild-install.yml
@@ -25,3 +34,8 @@
   include: deb-install.yml
   when: ansible_os_family == "Debian" and (not elasticsearch.prebuilt.install|bool)
 
+- file: path=/etc/ansible/facts.d state=directory
+  sudo: yes
+
+- template: src=elasticsearch.fact dest="/etc/ansible/facts.d/elasticsearch.fact"
+  sudo: yes
