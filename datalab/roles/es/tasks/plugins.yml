@@ -10,6 +10,7 @@
   sudo: yes
   sudo_user: "{{ elasticsearch.user }}"
   ignore_errors: yes
+  when: elasticsearch.plugins.list is defined
 
 - name: Installing Plugins by Name
   shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install {{ item.name }}"
@@ -20,6 +21,7 @@
   sudo: yes
   sudo_user: "{{ elasticsearch.user }}"
   ignore_errors: yes
+  when: elasticsearch.plugins.list is defined
 
 - name: Installing Plugins by URL
   shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install {{ item.name }} -url {{ item.url }}"
@@ -30,6 +32,7 @@
   sudo: yes
   sudo_user: "{{ elasticsearch.user }}"
   ignore_errors: yes
+  when: elasticsearch.plugins.list is defined
 
 - name: Upload local plugins
   copy: src={{item}} dest={{elasticsearch.download_dir}}/
@@ -47,6 +50,7 @@
   sudo: yes
   sudo_user: "{{ elasticsearch.user }}"
   ignore_errors: yes
+  when: elasticsearch.plugins.list is defined
 
 - name: Install head plugin
   include: head.yml

@@ -2,56 +2,36 @@
 
 - file: path={{ elasticsearch.home_dir}} state=absent
   sudo: yes
+  when: install_elasticsearch|bool
 
 - file: path="{{ elasticsearch.download_dir }}" state=directory
+  when: install_elasticsearch|bool
 
 - file: path="{{ elasticsearch.download_dir }}/{{ elasticsearch.package_name }}" state=absent
   sudo: yes
+  when: install_elasticsearch|bool
 
 - stat: path={{elasticsearch.prebuilt.file}} get_checksum=yes
   register: elasticsearch_file
 
 - shell: "curl {{curl_proxy_args}} --stderr /dev/null {{elasticsearch.prebuilt.url}}.sha1.txt"
   register: elasticsearch_sha1
-  when: elasticsearch_file.stat.exists
+  when: install_elasticsearch|bool and elasticsearch_file.stat.exists
 
 - name: download package
   shell: wget -q -O {{ elasticsearch.prebuilt.file }} {{ elasticsearch.prebuilt.url }}
-  when: not elasticsearch_file.stat.exists or (elasticsearch_file.stat.checksum != (elasticsearch_sha1.stdout|split(' '))[0])
+  when: install_elasticsearch|bool and (not elasticsearch_file.stat.exists or (elasticsearch_file.stat.checksum != (elasticsearch_sha1.stdout|split(' '))[0]))
 
 - name: untar package
   unarchive: src="{{ elasticsearch.prebuilt.file }}"
              dest="{{ elasticsearch.download_dir }}"
              copy=no
   sudo: yes
+  when: install_elasticsearch|bool
 
 - name: rename ES dir
   shell: "mv {{ elasticsearch.download_dir }}/{{ elasticsearch.package_name }} {{ elasticsearch.home_dir }}"
   sudo: yes
+  when: install_elasticsearch|bool
 
-- file: path="{{ elasticsearch.home_dir }}" state=directory owner="{{ elasticsearch.user }}" group="{{ elasticsearch.group }}" recurse=yes
-  sudo: yes
-
-- name: create needed directories
-  file: path={{ item }} state=directory owner={{ elasticsearch.user }} group={{ elasticsearch.group }} recurse=yes
-  with_items:
-    - "{{ elasticsearch.log_dir }}"
-    - "{{ elasticsearch.data_dir }}"
-    - "{{ elasticsearch.work_dir }}"
-    - "{{ elasticsearch.config.dirname }}"
-    - "{{ elasticsearch.plugins.dirname }}"
-  sudo: yes
-
-# Install Other Generic Plugins
-- include: plugins.yml
-  when: (elasticsearch.plugins.list is defined)
-
-# Install custom JARs
-- include: custom-jars.yml
-  when: (elasticsearch_custom_jars is defined)
-
-# Configure Elasticsearch Node
-- name: Configuring Elasticsearch Node
-  template: src=elasticsearch.yml.j2 dest={{ elasticsearch.config.dirname }}/elasticsearch.yml owner={{ elasticsearch.user }} group={{ elasticsearch.group }} mode=0644
-  sudo: yes
-  when: elasticsearch.config.dirname is defined
+- include: postinstall.yml

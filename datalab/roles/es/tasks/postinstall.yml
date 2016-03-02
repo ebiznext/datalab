@@ -1,0 +1,38 @@
+---
+
+- file: path={{ elasticsearch.home_dir }} state=directory owner={{ elasticsearch.user }} group={{ elasticsearch.group }} recurse=yes
+  sudo: yes
+
+# Configure Elasticsearch directories
+- name: Configure Elasticsearch directories
+  file: path={{ item }} state=directory owner={{ elasticsearch.user }} group={{ elasticsearch.group }} recurse=yes
+  with_items:
+    - "{{ elasticsearch.log_dir }}"
+    - "{{ elasticsearch.data_dir }}"
+    - "{{ elasticsearch.work_dir }}"
+    - "{{ elasticsearch.config.dirname }}"
+    - "{{ elasticsearch.plugins.dirname }}"
+  sudo: yes
+
+# Install Elasticsearch Plugins
+- name: Install Elasticsearch Plugins
+  include: plugins.yml
+
+# Install Elasticsearch custom JARs
+- name: Install Elasticsearch custom JARs
+  include: custom-jars.yml
+  when: (elasticsearch_custom_jars is defined)
+
+# Configure Elasticsearch log
+- name: Configure Elasticsearch log
+  copy: src=logging.yml dest={{ elasticsearch.config.dirname }}/logging.yml owner={{ elasticsearch.user }} group={{ elasticsearch.group }} mode=0644
+  sudo: yes
+  when: elasticsearch.config.dirname is defined
+  notify: Restart Elasticsearch
+
+# Configure Elasticsearch Node
+- name: Configuring Elasticsearch Node
+  template: src=elasticsearch.yml.j2 dest={{ elasticsearch.config.dirname }}/elasticsearch.yml owner={{ elasticsearch.user }} group={{ elasticsearch.group }} mode=0644
+  sudo: yes
+  notify: Restart Elasticsearch
+  when: elasticsearch.config.dirname is defined

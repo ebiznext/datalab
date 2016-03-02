@@ -13,5 +13,8 @@ galaxy_info:
      versions:
       - trusty
       - precise
+   - name: Debian
+     versions:
+      - wheezy
   categories:
    - database:nosql
