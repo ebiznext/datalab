@@ -6,6 +6,6 @@
   register: registry_facts
 
 - set_fact:
-    proxy_host: "{{registry_facts.ansible_facts.ansible_eth1.ipv4.address}}"
-    __proxy_url: "http://{{proxy_login}}:{{proxy_password}}@{{registry_facts.ansible_facts.ansible_eth1.ipv4.address}}:{{proxy_port}}"
-    __proxy_server: "http://{{registry_facts.ansible_facts.ansible_eth1.ipv4.address}}:{{proxy_port}}"
+    proxy_host: "{{registry_facts.ansible_facts.ansible_default_ipv4['address']}}"
+    proxy_url: "http://{{ {% if (proxy_login is defined) and (proxy_password is defined) %}(proxy_login|string) + ':' + (proxy_password|string) + '@' {% endif %}}}{{registry_facts.ansible_facts.ansible_default_ipv4['address']}}:{{proxy_port}}"
+    proxy_server: "http://{{registry_facts.ansible_facts.ansible_default_ipv4['address']}}:{{proxy_port}}"

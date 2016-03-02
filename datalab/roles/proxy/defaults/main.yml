@@ -1,12 +1,6 @@
 ---
 
-proxy_enabled: "{{__proxy_enabled}}"
-
-proxy_mock: "{{__proxy_mock}}"
-
-proxy_login: "{{__proxy_login}}"
-proxy_password: "{{__proxy_password}}"
-proxy_port: "{{__proxy_port}}"
-proxy_url: "{{__proxy_url}}"
-proxy_server: "{{__proxy_server}}"
-no_proxy: "{{__no_proxy}}"
+proxy_enabled: yes
+proxy_mock: no
+proxy_port: 3128
+no_proxy: "localhost,127.0.0.1,{{ansible_default_ipv4['address']}}"

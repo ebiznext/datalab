@@ -3,19 +3,6 @@
 default_download_dir: /tmp
 
 #
-# proxy
-#
-__proxy_enabled: no
-__proxy_mock: no
-__proxy_host: localhost
-__proxy_port: 3128
-__proxy_login: proxy
-__proxy_password: changeit
-__no_proxy: "localhost,127.0.0.1"
-__proxy_url: "http://{{__proxy_login}}:{{__proxy_password}}@{{__proxy_host}}:{{__proxy_port}}"
-__proxy_server: "http://{{__proxy_host}}:{{__proxy_port}}"
-
-#
 # mirror
 #
 default_apache_mirror: http://www.us.apache.org/dist/

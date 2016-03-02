@@ -4,10 +4,16 @@
     when: proxy_enabled|bool and not proxy_host is defined and groups.proxy is defined and groups.proxy | length > 0
 
   - set_fact:
-      proxy_host: "{{__proxy_host}}"
-      __proxy_url: "http://{{proxy_login}}:{{proxy_password}}@{{__proxy_host}}:{{proxy_port}}"
-      __proxy_server: "http://{{__proxy_host}}:{{proxy_port}}"
+      proxy_host: "{{ansible_default_ipv4['address']}}"
     when: proxy_enabled|bool and not proxy_host is defined and not groups.proxy is defined or groups.proxy|length == 0
+
+  - set_fact:
+      proxy_url: "http://{% if (proxy_login is defined) and (proxy_password is defined) %}(proxy_login|string) + ':' + (proxy_password|string) + '@' {% endif %}{{proxy_host}}:{{proxy_port}}"
+    when: proxy_enabled|bool and not proxy_url is defined and not groups.proxy is defined or groups.proxy|length == 0
+
+  - set_fact:
+      proxy_server: "http://{{proxy_host}}:{{proxy_port}}"
+    when: proxy_enabled|bool and not proxy_server is defined and not groups.proxy is defined or groups.proxy|length == 0
 
   - name: add squid
     include: squid.yml
@@ -23,7 +29,6 @@
 
   - name: add proxy Settings for wget
     include: wget.yml
-    when: proxy_enabled|bool
 
   - name: add proxy Settings for curl
     include: curl.yml

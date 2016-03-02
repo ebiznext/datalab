@@ -23,15 +23,22 @@
 
   - lineinfile: dest=/etc/wgetrc line='https_proxy = {{proxy_server}}' state=present
     sudo: yes
+    when: proxy_enabled|bool
   - lineinfile: dest=/etc/wgetrc line='http_proxy = {{proxy_server}}' state=present
     sudo: yes
+    when: proxy_enabled|bool
   - lineinfile: dest=/etc/wgetrc line='ftp_proxy = {{proxy_server}}' state=present
     sudo: yes
+    when: proxy_enabled|bool
   - lineinfile: dest=/etc/wgetrc line='use_proxy = on' state=present
     sudo: yes
+    when: proxy_enabled|bool
   - lineinfile: dest=/etc/wgetrc line='no_proxy = {{no_proxy}}' state=present
     sudo: yes
+    when: proxy_enabled|bool
   - lineinfile: dest=/etc/wgetrc line='proxy_user = {{proxy_login}}' state=present
     sudo: yes
+    when: proxy_enabled|bool and proxy_login is defined
   - lineinfile: dest=/etc/wgetrc line='proxy_password = {{proxy_password}}' state=present
     sudo: yes
+    when: proxy_enabled|bool and proxy_password is defined
