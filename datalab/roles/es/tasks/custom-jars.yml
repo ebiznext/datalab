@@ -14,8 +14,10 @@
   get_url: url={{ item.uri }} url_username={{ item.user }} url_password={{ item.passwd }}
            dest="{{ elasticsearch.home_dir }}/lib/{{ item.filename }}"
   with_items: elasticsearch_custom_jars
+  sudo: yes
 
 # Fix permissions
 - file: path="{{ elasticsearch.home_dir }}/lib" state=directory
     owner={{ elasticsearch.user }} group={{ elasticsearch.group }}
     recurse=yes
+  sudo: yes
