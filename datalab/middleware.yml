@@ -1,0 +1,9 @@
+---
+
+  - name: Install mesos middleware node(s)
+    hosts: middleware
+    remote_user: $user
+    roles:
+      - {role: kafka}
+      - {role: flume}
+      - {role: spark}

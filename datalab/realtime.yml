@@ -1,0 +1,8 @@
+---
+
+  - name: Install mesos realtime node(s)
+    hosts: realtime
+    remote_user: $user
+    roles:
+      - {role: es}
+      - {role: kibana}

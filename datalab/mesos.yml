@@ -1,0 +1,7 @@
+---
+
+  - name: Install and launch Mesos cluster
+    hosts: mesos
+    remote_user: $user
+    roles:
+      - {role: mesos}

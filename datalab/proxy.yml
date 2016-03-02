@@ -1,0 +1,8 @@
+---
+
+  - name: Install proxy
+    hosts: proxy
+    remote_user: $user
+    sudo: yes
+    roles:
+      - {role: proxy}

@@ -1,0 +1,14 @@
+---
+
+- include: proxy.yml       # proxy
+- include: zookeeper.yml   # cluster zookeeper
+- include: hadoop.yml      # cluster hadoop
+- include: mesos.yml       # cluster mesos
+- include: mesos-dns.yml   # mesos-dns
+- include: middleware.yml  # middleware
+- include: batch.yml       # batch node(s)
+- include: realtime.yml    # realtime node(s)
+- include: chronos.yml     # chronos
+- include: datalab.yml     # marathon
+- include: registry.yml    # docker registry
+- include: docker.yml      # docker

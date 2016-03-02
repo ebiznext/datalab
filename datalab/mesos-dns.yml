@@ -1,0 +1,7 @@
+---
+
+  - name: Install mesos-dns
+    hosts: dns_node
+    remote_user: $user
+    roles:
+      - {role: mesos-dns}

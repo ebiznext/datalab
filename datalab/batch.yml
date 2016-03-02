@@ -1,0 +1,8 @@
+---
+
+  - name: Install mesos batch node(s)
+    hosts: batch
+    remote_user: $user
+    roles:
+      - {role: spark}
+      - {role: zeppelin}

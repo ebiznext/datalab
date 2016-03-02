@@ -1,0 +1,41 @@
+---
+
+  - name: Install and launch Hadoop cluster
+    hosts: hdfs
+    remote_user: $user
+    pre_tasks:
+
+      - local_action: file path=./ssh state=directory
+        sudo: no
+
+      - local_action: stat path=./ssh/id_rsa
+        register: local_certificate
+        sudo: no
+
+      - name: add group {{hdfs_group | default(hdfs_user | default('hdfs'))}}
+        group: name={{hdfs_group | default(hdfs_user | default('hdfs'))}} state=present
+        run_once: true
+        delegate_to: "{{play_hosts[0]}}"
+        sudo: yes
+        when: not local_certificate.stat.exists
+
+      - name: Generating RSA key for {{hdfs_user | default('hdfs')}}
+        user: name={{hdfs_user | default('hdfs')}} group={{hdfs_group | default(hdfs_user | default('hdfs'))}} home="/home/{{hdfs_user | default('hdfs')}}" generate_ssh_key=yes
+        run_once: true
+        delegate_to: "{{play_hosts[0]}}"
+        sudo: yes
+        when: not local_certificate.stat.exists
+
+      - name: Downloading RSA public and private keys for {{hdfs_user | default('hdfs')}}
+        fetch: src=/home/{{hdfs_user | default('hdfs')}}/.ssh/{{item}} dest=./ssh/ flat=yes
+        with_items:
+          - id_rsa.pub
+          - id_rsa
+        run_once: true
+        delegate_to: "{{play_hosts[0]}}"
+        sudo: yes
+        when: not local_certificate.stat.exists
+
+    roles:
+      - {role: hdfs, hdfs_configure: no}
+      - {role: hdfs, hdfs_configure: yes}

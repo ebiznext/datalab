@@ -1,0 +1,8 @@
+---
+
+  - name: Install and launch Zookeeper
+    hosts: zookeeper
+    remote_user: $user
+    roles:
+      - {role: zookeeper, zk_configure: no}
+      - {role: zookeeper, zk_configure: yes}

@@ -1,0 +1,8 @@
+---
+
+  - name: Install Docker
+    hosts: docker
+    remote_user: $user
+    roles:
+      - {role: docker}
+      - {role: docker.registry.login}
