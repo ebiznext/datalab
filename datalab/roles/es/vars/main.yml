@@ -4,8 +4,8 @@ elasticsearch:
   version: "{{ elasticsearch_version | default('1.7.3') }}"
   user: "{{elasticsearch_user | default('elasticsearch')}}"
   group: "{{elasticsearch_group | default(elasticsearch_user | default('elasticsearch'))}}"
-  gid: "{{elasticsearch_gid | default(2001)}}"
-  uid: "{{elasticsearch_uid | default(2001)}}"
+  gid: "{{elasticsearch_gid | default(1001)}}"
+  uid: "{{elasticsearch_uid | default(1001)}}"
   package_name: "{{ elasticsearch_package_name | default('elasticsearch-'+(elasticsearch_version | default('1.7.3'))|string)}}"
   download_url: "{{elasticsearch_download_url | default('https://download.elasticsearch.org/elasticsearch/elasticsearch')}}"
   download_dir: "{{elasticsearch_download_directory | default('/tmp')}}"
@@ -49,6 +49,7 @@ elasticsearch:
         mlockall: "{{ elasticsearch_config_memory_bootstrap_mlockall | default('yes') }}"
 
     node:
+#      name: "{{ elasticsearch_config_node_name }}"
       master: "{{elasticsearch_config_node_master | default('yes')}}"
       data: "{{elasticsearch_config_node_data | default('yes')}}"
       max_local_storage_nodes: "{{elasticsearch_config_node_max_local_storage_nodes | default(1) }}"
@@ -57,6 +58,24 @@ elasticsearch:
     index:
       number_of_shards: "{{elasticsearch_config_index_number_of_shards | default(5)}}"
       number_of_replicas: "{{elasticsearch_config_index_number_of_replicas | default(1)}}"
+
+    discovery:
+      zen:
+        minimum_master_nodes: "{{ elasticsearch_config_discovery_zen_minimum_master_nodes | default(1) }}"
+        ping:
+          timeout: "{{ elasticsearch_config_discovery_zen_ping_timeout | default('3s') }}"
+          multicast:
+            enabled: "{{ elasticsearch_config_discovery_zen_ping_multicast_enabled | default('no') }}"
+          unicast:
+            hosts: "{{ elasticsearch_config_discovery_zen_ping_unicast_hosts | default([]) }}"
+#        fd:
+#          ping:
+#            interval:
+#            timeout:
+#            retries:
+
+    script:
+      disable_dynamic: "{{ elasticsearch_config_script_disable_dynamic | default('yes') }}"
 
   plugins:
     list: "{{ elasticsearch_plugins | default([]) }}"

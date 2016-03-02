@@ -379,18 +379,14 @@ indices.recovery.concurrent_streams: {{ elasticsearch_config_recovery_concurrent
 # for large clusters (>3 nodes):
 #
 # discovery.zen.minimum_master_nodes: 1
-{% if elasticsearch_config_discovery_zen_minimum_master_nodes is defined %}
-discovery.zen.minimum_master_nodes: {{ elasticsearch_config_discovery_zen_minimum_master_nodes }}
-{% endif %}
+discovery.zen.minimum_master_nodes: {{ elasticsearch.config.discovery.zen.minimum_master_nodes }}
 
 # Set the time to wait for ping responses from other nodes when discovering.
 # Set this option to a higher value on a slow or congested network
 # to minimize discovery failures:
 #
 # discovery.zen.ping.timeout: 3s
-{% if elasticsearch_config_discovery_zen_ping_timeout is defined %}
-discovery.zen.ping.timeout: {{ elasticsearch_config_discovery_zen_ping_timeout }}
-{% endif %}
+discovery.zen.ping.timeout: {{ elasticsearch.config.discovery.zen.ping.timeout }}
 
 # See <http://elasticsearch.org/guide/reference/modules/discovery/zen.html>
 # for more information.
@@ -402,17 +398,15 @@ discovery.zen.ping.timeout: {{ elasticsearch_config_discovery_zen_ping_timeout }
 # 1. Disable multicast discovery (enabled by default):
 #
 # discovery.zen.ping.multicast.enabled: false
-{% if elasticsearch_config_discovery_zen_ping_multicast_enabled is defined %}
-discovery.zen.ping.multicast.enabled: {{ elasticsearch_config_discovery_zen_ping_multicast_enabled }}
-{% endif %}
+discovery.zen.ping.multicast.enabled: {{ elasticsearch.config.discovery.zen.ping.multicast.enabled|bool|lower }}
 
 #
 # 2. Configure an initial list of master nodes in the cluster
 #    to perform discovery when new nodes (master or data) are started:
 #
 # discovery.zen.ping.unicast.hosts: ["host1", "host2:port", "host3[portX-portY]"]
-{% if elasticsearch_config_discovery_zen_ping_unicast_hosts is defined %}
-discovery.zen.ping.unicast.hosts: {{ elasticsearch_config_discovery_zen_ping_unicast_hosts }}
+{% if elasticsearch.config.discovery.zen.ping.unicast.hosts|list|length > 0 %}
+discovery.zen.ping.unicast.hosts: [{{ elasticsearch.config.discovery.zen.ping.unicast.hosts|list|join(",") }}]
 {% endif %}
 
 # EC2 discovery allows to use AWS EC2 API in order to perform discovery.
@@ -554,6 +548,11 @@ action.disable_delete_all_indices: {{ elasticsearch_config_misc_disable_delete_a
 {{ threadPoolSetting }}
 {% endfor %}
 {% endif %}
+{% if elasticsearch_config_circuit_breakers is defined %}
+{% for circuitBreakerSetting in elasticsearch_config_circuit_breakers %}
+{{ circuitBreakerSetting }}
+{% endfor %}
+{% endif %}
 
 
 {% if elasticsearch_config_indices_cache_filter_size is defined %}
@@ -562,9 +561,7 @@ indices.cache.filter.size: {{ elasticsearch_config_indices_cache_filter_size }}
 
 ################################### Dynamic Scripting #####################################
 
-{% if elasticsearch_config_script_disable_dynamic is defined %}
-script.disable_dynamic: {{ elasticsearch_config_script_disable_dynamic }}
-{% endif %}
+script.disable_dynamic: {{ elasticsearch.config.script.disable_dynamic|bool|lower }}
 
 ################################### CORS Settings #####################################
 
