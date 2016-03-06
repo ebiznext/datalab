@@ -89,3 +89,5 @@ elasticsearch:
       install: "{{ elasticsearch_plugins_head_install | default('yes') }}"
     icu:
       install: "{{ elasticsearch_plugins_icu_install | default('yes') }}"
+    kopf:
+      install: "{{ elasticsearch_plugins_kopf_install | default('no') }}"

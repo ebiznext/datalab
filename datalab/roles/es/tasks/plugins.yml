@@ -1,16 +1,24 @@
 ---
 # Install Elasticsearch Plugins
 
-# Loop though elasticsearch_plugins and install them
-- name: Removing Plugins if they exist
-  shell: "{{ elasticsearch.home_dir }}/bin/plugin --remove {{ item.name }}"
+- name: list installed plugins
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin --list"
   args:
     chdir: "{{ elasticsearch.home_dir }}"
-  with_items: elasticsearch.plugins.list
   sudo: yes
   sudo_user: "{{ elasticsearch.user }}"
-  ignore_errors: yes
-  when: elasticsearch.plugins.list is defined
+  register: elasticsearch_installed_plugins_register
+
+- set_fact: elasticsearch_installed_plugins="{{elasticsearch_installed_plugins_register.stdout.split('\n')[1:]}}"
+  when: ('No plugin detected' not in elasticsearch_installed_plugins_register.stdout) and elasticsearch_installed_plugins_register.stdout.split('\n')|length > 1
+
+# Loop though elasticsearch installed plugins and remove them
+- name: Removing installed plugins if they exist
+  shell: "./bin/plugin --remove {{ item |group('^\\s*-\\s*(.*)\\s*$', 1) }} chdir={{ elasticsearch.home_dir }}"
+  with_items: elasticsearch_installed_plugins
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch_installed_plugins is defined
 
 - name: Installing Plugins by Name
   shell: "{{ elasticsearch.home_dir }}/bin/plugin {{java_opts}} --install {{ item.name }}"
@@ -63,6 +71,10 @@
 - name: Install searchguard plugin
   include: searchguard.yml
   when: elasticsearch.plugins.searchguard.install|bool
+
+- name: Install kopf plugin
+  include: kopf.yml
+  when: elasticsearch.plugins.kopf.install|bool
 
 # Install Marvel Plugin (for Elasticsearch monitoring)
 - name: Install marvel plugin

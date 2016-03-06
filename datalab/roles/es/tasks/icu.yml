@@ -1,12 +1,5 @@
 ---
 
-# Remove analysis-icu plugin if exists already
-- name: remove analysis-icu plugin
-  shell: "{{ elasticsearch.home_dir }}/bin/plugin --remove analysis-icu"
-  ignore_errors: yes
-  sudo: yes
-  sudo_user: "{{ elasticsearch.user }}"
-
 - name: Elasticsearch versions not supported
   debug: msg="ICU plugin didn't support ES {{ elasticsearch.version }}"
   when: elasticsearch.version | version_compare('1.8', '>=')

@@ -1,0 +1,19 @@
+---
+
+- name: install kopf for ES versions >= 0.90 and < 1.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin --install lmenezes/elasticsearch-kopf/0.90"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('0.90', '>=') and elasticsearch.version | version_compare('1.0', '<')
+
+- name: install kopf for ES versions >= 1.x and < 2.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin --install lmenezes/elasticsearch-kopf/1.0"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('1.0', '>=') and elasticsearch.version | version_compare('2.0', '<')
+
+- name: install kopf for ES versions >= 2.x
+  shell: "{{ elasticsearch.home_dir }}/bin/plugin --install lmenezes/elasticsearch-kopf/2.0"
+  sudo: yes
+  sudo_user: "{{ elasticsearch.user }}"
+  when: elasticsearch.version | version_compare('2.0', '>=')
