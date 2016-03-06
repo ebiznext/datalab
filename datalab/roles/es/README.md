@@ -21,7 +21,7 @@ This is an [Ansible](http://www.ansibleworks.com/) playbook for [Elasticsearch](
 - `elasticsearch_config_cluster_name` - Cluster name to identify your cluster for auto-discovery (default: "elasticsearch")
 - `elasticsearch_config_network_bind_host` - Set the bind address specifically IPv4 or IPv6 (default: "0.0.0.0")
 - `elasticsearch_config_network_http_port` - Elasticsearch http port (default: "9200")
-- `elasticsearch_service_startonboot` - Make sure Elasticsearch service is not running after system boot (default: "no")
+- `elasticsearch_service_enabled` - Make sure Elasticsearch service is enabled after system boot (default: "no")
 - `elasticsearch_service_state` - Stop Elasticsearch service (default: "stopped")
 - `elasticsearch_config_memory_heap_size` - ES heap size (default: "512m")
 

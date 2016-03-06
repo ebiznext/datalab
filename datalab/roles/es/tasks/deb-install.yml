@@ -51,5 +51,5 @@
 
 # Register Elasticsearch service
 - name: Register Elasticsearch service
-  service: name=elasticsearch enabled={{ elasticsearch.service.startonboot }} state={{ elasticsearch.service.state }}
+  service: name=elasticsearch enabled={{ elasticsearch.service.enabled }} state={{ elasticsearch.service.state }}
   sudo: yes

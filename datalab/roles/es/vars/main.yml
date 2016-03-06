@@ -32,7 +32,7 @@ elasticsearch:
     url: "{{ elasticsearch_prebuit_package_url | default('https://download.elastic.co/elasticsearch/elasticsearch/'+elasticsearch_prebuilt_file | default(elasticsearch_package_name | default('elasticsearch-'+(elasticsearch_version | default('1.7.3'))|string)+'.tar.gz')) }}"
 
   service:
-    startonboot: "{{ elasticsearch_service_startonboot | default('no') }}"
+    enabled: "{{ elasticsearch_service_enabled | default('no') }}"
     state: "{{ elasticsearch_service_state | default('stopped') }}"
 
   config:
