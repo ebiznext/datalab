@@ -31,7 +31,7 @@ kafka:
   id: "{{kafka_id | default('kafka')}}"
   mem: "{{kafka_mem | default('2048')}}"
   nb_cpus: "{{kafka_nb_cpus | default('0.2')}}"
-  node_type: "{{kafka_node_type | default('batch_node')}}"
+  node_type: "{{kafka_node_type | default('middleware_node')}}"
   user: "{{kafka_user | default('kafka')}}"
   home_dir: "{{ kafka_home_dir | default('/usr/local/kafka') }}"
   config_port: "{{kafka_config_port | default('9092')}}"
