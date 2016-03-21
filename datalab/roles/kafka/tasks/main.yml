@@ -67,7 +67,10 @@
   sudo: yes
 
 # Configure kafka
-- file: path="{{ kafka.log.dirs }}" state=directory
+- file: path="{{ item }}" state=directory owner={{ kafka.user }} group={{ kafka.user }} recurse=yes
+  with_items:
+    - "{{ kafka.home_dir }}"
+    - "{{ kafka.log.dirs }}"
   sudo: yes
 
 - name: gather facts from zookeeper servers
