@@ -4,5 +4,4 @@
     hosts: batch
     remote_user: $user
     roles:
-      - {role: spark}
       - {role: zeppelin}
