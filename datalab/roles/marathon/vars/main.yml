@@ -14,7 +14,7 @@ elasticsearch:
   nb_instances: "{{elasticsearch_nb_instances | default(1)}}"
   mem: "{{elasticsearch_mem | default('2048')}}"
   nb_cpus: "{{elasticsearch_nb_cpus | default('0.2')}}"
-  node_type: "{{elasticsearch_node_type | default('batch_node')}}"
+  node_type: "{{elasticsearch_node_type | default('realtime_node')}}"
   home_directory: "{{elasticsearch_home_directory | default('/usr/share/elasticsearch')}}"
   config:
     directory: "{{elasticsearch_config_directory | default('/etc/elasticsearch')}}"
@@ -40,7 +40,7 @@ kibana:
   id: "{{kibana_id | default('kibana')}}"
   mem: "{{kibana_mem | default('2048')}}"
   nb_cpus: "{{kibana_nb_cpus | default('0.2')}}"
-  node_type: "{{kibana_node_type | default('batch_node')}}"
+  node_type: "{{kibana_node_type | default('realtime_node')}}"
   home_directory: "{{ kibana_home_directory | default('/usr/local/kibana') }}"
   user: "{{kibana_user | default('kibana')}}"
   config:
@@ -50,7 +50,7 @@ mesos_dns:
   id: "{{mesos_dns_id | default('mesos-dns')}}"
   mem: "{{mesos_dns_mem | default('512')}}"
   nb_cpus: "{{mesos_dns_nb_cpus | default('0.2')}}"
-  node_type: "{{mesos_dns_node_type | default('batch_node')}}"
+#  node_type: "{{mesos_dns_node_type | default('batch_node')}}"
   fqdn: "{{mesos_dns_fqdn | default('marathon.mesos')}}"
   home_directory: "{{mesos_dns_home_directory | default('/usr/local/mesos-dns') }}"
 
