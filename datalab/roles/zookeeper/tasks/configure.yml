@@ -7,10 +7,10 @@
   with_items: groups.zookeeper
   register: zookeeper_facts
   sudo: yes
-  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not zookeepers is defined)
+  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (zookeepers is undefined)
 
 - set_fact: zookeepers="{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper') | list }}"
-  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not zookeepers is defined)
+  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (zookeepers is undefined)
 
 # Configure
 - name: Create zookeeper configuration

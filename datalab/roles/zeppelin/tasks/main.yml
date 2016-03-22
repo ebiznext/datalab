@@ -9,8 +9,19 @@
 
 - include: pre-install.yml
 
+- name: install from pre-built packaged
+  include: install_from_prebuilt.yml
+  when: not zeppelin.build.do|bool and not zeppelin_local_file.stat.exists
+
+- name: install from source
+  include: install_from_source.yml
+  when: zeppelin.build.do|bool and not zeppelin_local_file.stat.exists
+
+- name: install from local
+  include: install_from_local.yml
+  when: zeppelin_local_file.stat.exists
+
 - include: compile.yml
   when: zeppelin.build.do|bool and not zeppelin_local_file.stat.exists
 
 - include: install.yml
-
