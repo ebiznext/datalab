@@ -46,6 +46,7 @@ elasticsearch_download_directory: "{{default_download_dir}}"
 elasticsearch_package_name: "elasticsearch-{{ elasticsearch_version }}"
 elasticsearch_prebuilt_file: "{{elasticsearch_package_name}}.tar.gz"
 elasticsearch_prebuit_package_url: "https://download.elastic.co/elasticsearch/elasticsearch/{{elasticsearch_prebuilt_file}}"
+elasticsearch_node_type: realtime_node
 
 #
 # Kibana
@@ -62,7 +63,7 @@ kibana_elasticsearch_index: ".kibana"
 kibana_home_directory: /usr/local/kibana
 kibana_log_dir: /var/log/kibana
 kibana_log_file: "{{ kibana_log_dir }}/kibana.log"
-kibana_node_type: batch_node
+kibana_node_type: realtime_node
 kibana_download_dir: "{{default_download_dir}}"
 
 #
