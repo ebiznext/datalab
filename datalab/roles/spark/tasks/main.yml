@@ -6,6 +6,14 @@
 - name: pre-install actions
   include: pre-install.yml
 
+- name: install from pre-built packaged
+  include: install_from_prebuilt.yml
+  when: not spark.build.do|bool
+
+- name: install from source
+  include: install_from_source.yml
+  when: spark.build.do|bool
+
 - name: compile spark
   include: compile.yml
   when: spark.build.do|bool

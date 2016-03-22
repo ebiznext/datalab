@@ -1,5 +1,13 @@
 ---
 
+- name: ensure spark dirs exist
+  file: state=directory path={{ item }} owner={{ spark.user }} group={{ spark.group }} recurse=yes
+  with_items:
+    - "{{ spark.base_dir }}"
+    - "{{ spark.log_dir }}"
+    - "{{ spark.run_dir }}"
+  sudo: yes
+
 - name: Create symlink for config dir
   file: src="{{ spark.conf_dir }}"
         dest="{{ spark.config.dirname }}"
