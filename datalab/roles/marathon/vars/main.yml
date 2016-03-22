@@ -12,7 +12,7 @@ chronos:
 elasticsearch:
   id: "{{elasticsearch_id | default('elasticsearch')}}"
   nb_instances: "{{elasticsearch_nb_instances | default(1)}}"
-  mem: "{{elasticsearch_mem | default('2048')}}"
+  mem: "{{elasticsearch_mem | default('1024')}}"
   nb_cpus: "{{elasticsearch_nb_cpus | default('0.2')}}"
   node_type: "{{elasticsearch_node_type | default('realtime_node')}}"
   home_directory: "{{elasticsearch_home_directory | default('/usr/share/elasticsearch')}}"
@@ -29,7 +29,7 @@ elasticsearch:
 
 kafka:
   id: "{{kafka_id | default('kafka')}}"
-  mem: "{{kafka_mem | default('2048')}}"
+  mem: "{{kafka_mem | default('1024')}}"
   nb_cpus: "{{kafka_nb_cpus | default('0.2')}}"
   node_type: "{{kafka_node_type | default('middleware_node')}}"
   user: "{{kafka_user | default('kafka')}}"
@@ -38,7 +38,7 @@ kafka:
 
 kibana:
   id: "{{kibana_id | default('kibana')}}"
-  mem: "{{kibana_mem | default('2048')}}"
+  mem: "{{kibana_mem | default('1024')}}"
   nb_cpus: "{{kibana_nb_cpus | default('0.2')}}"
   node_type: "{{kibana_node_type | default('realtime_node')}}"
   home_directory: "{{ kibana_home_directory | default('/usr/local/kibana') }}"
@@ -56,7 +56,7 @@ mesos_dns:
 
 zeppelin:
   id: "{{zeppelin_id | default('zeppelin')}}"
-  mem: "{{zeppelin_mem | default('2048')}}"
+  mem: "{{zeppelin_mem | default('1024')}}"
   nb_cpus: "{{zeppelin_nb_cpus | default('0.2')}}"
   node_type: "{{zeppelin_node_type | default('batch_node')}}"
   user: "{{zeppelin_user | default('zeppelin')}}"
