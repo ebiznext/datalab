@@ -8,7 +8,7 @@ This Ansible project allows you to deploy instantly a datalab with the following
 - A Realtime area : Deal with realtime insight rendering with Elasticsearch and Kibana
 
 ## Cluster Design
-The Datalab is managed by Mesos. All services are configured in a way that make them highly available with no sngle point of failure.
+The Datalab is managed by Mesos. All services are configured in a way that make them highly available with no single point of failure.
 
 The following services are installed as native services :
 - Zookeeper : Three or more zookeeper nodes
@@ -20,7 +20,7 @@ The following services are installed as native services :
   - 2 Zookeeper failover controller
   - 3 journal nodes
   - One Data node per physical batch node
-- Apache Spark is installed and run on top of Mesos in one of the two modes : Coarsed grained of fined grained. Coarse grained when using Zeppelin (Adhoc queries) and fine grained when running periodic batch jobs through Chronos
+- Apache Spark is installed and run on top of Mesos in one of the two modes : Coarsed grained or fined grained. Coarse grained when using Zeppelin (Adhoc queries) and fine grained when running periodic batch jobs through Chronos
 
 The following roles are run on top of mesos and launched through Marathon :
 - Apache Kafka : One instance per physical node in the middleware area
