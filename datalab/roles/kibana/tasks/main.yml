@@ -50,7 +50,7 @@
   when: install_kibana|bool and kibana_file.stat.exists
 
 - name: Download Kibana
-  shell: wget -q -O {{ kibana.file }} {{ kibana.url }}
+  shell: curl {{curl_proxy_args}} --stderr /dev/null {{ kibana.url }} >  {{ kibana.file }}
   when: install_kibana|bool and (not kibana_file.stat.exists or (kibana_file.stat.checksum != (kibana_sha1.stdout|split(' '))[0]))
 
 - name: Extract and install Kibana
