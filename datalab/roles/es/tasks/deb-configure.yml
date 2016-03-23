@@ -1,0 +1,36 @@
+---
+
+# Add service
+- template: src=elasticsearch dest=/etc/init.d/ mode=0755 owner=root group=root
+  sudo: yes
+  notify: Restart Elasticsearch
+
+# Configure open file limits
+- name: Configuring open file limits
+  lineinfile: dest="{{ item.dest }}"
+              regexp="{{ item.regexp }}"
+              insertafter="{{ item.insertafter }}"
+              line="{{ item.line }}"
+  notify: Restart Elasticsearch
+  with_items:
+    - { dest: '/etc/security/limits.conf', regexp: '^{{ elasticsearch.user }}     -    nofile    {{ elasticsearch.config.max_open_files }}', insertafter: 'EOF', line: '{{ elasticsearch.user }}     -    nofile    {{ elasticsearch.config.max_open_files }}'}
+    - { dest: '/etc/security/limits.conf', regexp: '^{{ elasticsearch.user }}     -    memlock   {{ elasticsearch.config.max_locked_memory }}', insertafter: 'EOF', line: '{{ elasticsearch.user }}     -    memlock   {{ elasticsearch.config.max_locked_memory }}' }
+    - { dest: '/etc/pam.d/su', regexp: '^session    required   pam_limits.so', insertafter: 'EOF', line: 'session    required   pam_limits.so' }
+    - { dest: '/etc/pam.d/common-session', regexp: '^session    required   pam_limits.so', insertafter: 'EOF', line: 'session    required   pam_limits.so' }
+    - { dest: '/etc/pam.d/common-session-noninteractive', regexp: '^session    required   pam_limits.so', insertafter: 'EOF', line: 'session    required   pam_limits.so' }
+    - { dest: '/etc/pam.d/sudo', regexp: '^session    required   pam_limits.so', insertafter: 'EOF', line: 'session    required   pam_limits.so' }
+  sudo: yes
+
+- name: Update max-open-files in initscript
+  lineinfile: dest=/etc/init.d/elasticsearch regexp='^(DAEMON_OPTS=".*-Des.max-open-files=true")$' insertafter='^(DAEMON_OPTS=".*CONF_DIR")$' line='DAEMON_OPTS="$DAEMON_OPTS -Des.max-open-files=true"'
+  notify: Restart Elasticsearch
+  sudo: yes
+
+- template: src=elasticsearch.default.j2 dest=/etc/default/elasticsearch owner={{ elasticsearch.user }} group={{ elasticsearch.group }} mode=0644
+  sudo: yes
+  notify: Restart Elasticsearch
+
+# Register Elasticsearch service
+- name: Register Elasticsearch service
+  service: name=elasticsearch enabled={{ elasticsearch.service.enabled }} state={{ elasticsearch.service.state }}
+  sudo: yes
