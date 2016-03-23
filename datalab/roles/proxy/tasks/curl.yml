@@ -3,5 +3,5 @@
 - set_fact: curl_proxy_args=""
   when: not proxy_enabled|bool
 
-- set_fact: curl_proxy_args="-x {{proxy_server}} {% if (proxy_login is defined) and (proxy_password is defined) %}'--proxy-user '+(proxy_login|string)+':'+(proxy_password|string){% endif %}"
+- set_fact: curl_proxy_args="-x {{proxy_server}} {% if (proxy_login is defined) and (proxy_password is defined) %}{{'--proxy-user '+(proxy_login|string)+':'+(proxy_password|string)}}{% endif %}"
   when: proxy_enabled|bool
