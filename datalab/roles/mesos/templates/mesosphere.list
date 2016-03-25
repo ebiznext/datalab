@@ -1,1 +1,1 @@
-deb http://repos.mesosphere.com/{{DISTRO.output}} {{CODENAME.output}} main
+deb http://repos.mesosphere.com/{{DISTRO.stdout}} {{CODENAME.stdout}} main
