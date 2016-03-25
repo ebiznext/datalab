@@ -52,6 +52,12 @@
 - name: restart sshd service
   service: name=sshd state=restarted
   sudo: yes
+  when: ansible_distribution|lower != 'ubuntu'
+
+- name: restart ssh service
+  service: name=ssh state=restarted
+  sudo: yes
+  when: ansible_distribution|lower == 'ubuntu'
 
 # Get hdfs
 - name: get hdfs
