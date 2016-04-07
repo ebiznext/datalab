@@ -23,7 +23,7 @@
 # Install
 - name: Install mesos and marathon for Debian
   apt:
-    pkg: "mesos-{{mesos.version}}"
+    pkg: "mesos={{mesos.version}}*"
     state: present
     update_cache: yes
     cache_valid_time: 3600
