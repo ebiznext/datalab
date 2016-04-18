@@ -125,7 +125,7 @@
   when: hdfs.name_node|bool and name_nodes|length > 1
 
 - name: start zkfs
-  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start zkfc -formatZK"
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start zkfc -formatZK -force"
   ignore_errors: yes
   become: yes
   become_user: "{{hdfs.user}}"
