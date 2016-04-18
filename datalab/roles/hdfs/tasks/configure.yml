@@ -82,12 +82,19 @@
   register: nn_dir
 #  when: hdfs.name_node|bool
 
-- name: format name node
+- name: format primary name node
   shell: "{{hdfs_env}} && {{hdfs.home_dir}}/bin/hdfs namenode -format -force"
   ignore_errors: yes
   become: yes
   become_user: "{{hdfs.user}}"
-  when: hdfs.name_node|bool and (nn_dir.stat.isdir is not defined or not nn_dir.stat.isdir)
+  when: hdfs.name_node|bool and (nn_dir.stat.isdir is not defined or not nn_dir.stat.isdir) and hdfs.name_node_id == "nn1"
+
+- name: format secondary name node
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/bin/hdfs namenode -format -bootstrapStandby -force"
+  ignore_errors: yes
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.name_node|bool and (nn_dir.stat.isdir is not defined or not nn_dir.stat.isdir) and hdfs.name_node_id == "nn2"
 
 - name: format ZK
   shell: "{{hdfs_env}} && {{hdfs.home_dir}}/bin/hdfs zkfc -formatZK -force"
