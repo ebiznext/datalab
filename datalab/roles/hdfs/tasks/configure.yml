@@ -66,12 +66,6 @@
   sudo: yes
   when: hdfs.journal_node|bool
 
-- name: stop journal node
-  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop journalnode"
-  become: yes
-  become_user: "{{hdfs.user}}"
-  when: hdfs.journal_node|bool
-
 - name: start journal node
   shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start journalnode"
   become: yes
@@ -103,26 +97,14 @@
   become_user: "{{hdfs.user}}"
   when: hdfs.name_node|bool and (nn_dir.stat.isdir is not defined or not nn_dir.stat.isdir) and hdfs_isnn1 is defined and hdfs_isnn1
 
+#- pause: prompt="Waiting"
+
 - name: start primary name node
   shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start namenode"
   ignore_errors: yes
   become: yes
   become_user: "{{hdfs.user}}"
   when: hdfs.name_node|bool  and hdfs_isnn1 is defined and hdfs_isnn1
-
-- name: stop primary zkfc
-  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop zkfc"
-  ignore_errors: yes
-  become: yes
-  become_user: "{{hdfs.user}}"
-  when: hdfs.name_node|bool and name_nodes|length > 1 and hdfs_isnn1 is defined and hdfs_isnn1
-
-- name: start primary zkfc
-  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start zkfc"
-  ignore_errors: yes
-  become: yes
-  become_user: "{{hdfs.user}}"
-  when: hdfs.name_node|bool and name_nodes|length > 1 and hdfs_isnn1 is defined and hdfs_isnn1
 
 - name: format secondary name node
   shell: "{{hdfs_env}} && {{hdfs.home_dir}}/bin/hdfs namenode -bootstrapStandby -force"
@@ -131,6 +113,8 @@
   become_user: "{{hdfs.user}}"
   when: hdfs.name_node|bool and (nn_dir.stat.isdir is not defined or not nn_dir.stat.isdir) and hdfs_isnn2 is defined and hdfs_isnn2
 
+#- pause: prompt="Waiting format secondary name node"
+
 - name: start secondary name node
   shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start namenode"
   ignore_errors: yes
@@ -138,12 +122,21 @@
   become_user: "{{hdfs.user}}"
   when: hdfs.name_node|bool  and hdfs_isnn2 is defined and hdfs_isnn2
 
-- name: stop secondary zkfc
-  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop zkfc"
+#- pause: prompt="Waiting start secondary"
+
+- name: start data node
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start datanode"
+  become: yes
+  become_user: "{{hdfs.user}}"
+  when: hdfs.data_node|bool
+
+- name: start primary zkfc
+  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start zkfc"
   ignore_errors: yes
   become: yes
   become_user: "{{hdfs.user}}"
-  when: hdfs.name_node|bool and name_nodes|length > 1 and hdfs_isnn2 is defined and hdfs_isnn2
+  when: hdfs.name_node|bool and name_nodes|length > 1 and hdfs_isnn1 is defined and hdfs_isnn1
+
 
 - name: start secondary zkfc
   shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start zkfc"
@@ -151,15 +144,3 @@
   become: yes
   become_user: "{{hdfs.user}}"
   when: hdfs.name_node|bool and name_nodes|length > 1 and hdfs_isnn2 is defined and hdfs_isnn2
-
-- name: stop data node
-  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh stop datanode"
-  become: yes
-  become_user: "{{hdfs.user}}"
-  when: hdfs.data_node|bool
-
-- name: start data node
-  shell: "{{hdfs_env}} && {{hdfs.home_dir}}/sbin/hadoop-daemon.sh start datanode"
-  become: yes
-  become_user: "{{hdfs.user}}"
-  when: hdfs.data_node|bool

@@ -23,3 +23,4 @@ hdfs:
   journal_node_ip: "{{hdfs_journal_node_ip | default(interface|default(ansible_default_ipv4['address']))}}"
   journal_node_port: "{{hdfs_journal_node_port | default('8485')}}"
   data_node: "{{hdfs_data_node | default('data_node' in group_names)}}"
+  delete_existing_hdfs_files: "{{hdfs_delete_existing_hdfs_files | default('no')}}" 
