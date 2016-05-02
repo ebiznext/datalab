@@ -1,0 +1,70 @@
+---
+
+# Install Debian dependencies
+- name: Install Debian dependencies
+  apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - tar
+    - curl
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+# Install Redhat dependencies
+- name: Install Redhat dependencies
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+    - tar
+    - curl
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
+
+# Prepare
+- name: stop kafka service
+  service: name=kafka state=stopped
+  ignore_errors: yes
+  sudo: yes
+
+- name: Create kafka user
+  user: name={{ kafka.user }} state=present
+  sudo: yes
+
+- file: path="{{ kafka.home_dir }}" state=absent
+  sudo: yes
+
+- file: path="{{ kafka.download_dir }}" state=directory
+
+- stat: path={{kafka.file}}
+  register: kafka_file
+
+- name: get kafka asc
+  shell: curl {{curl_proxy_args}} --stderr /dev/null {{kafka.url}}.asc > {{kafka.file}}.asc
+  when: kafka_file.stat.exists
+
+- name: get kafka keys
+  shell: curl {{curl_proxy_args}} --stderr /dev/null {{apache_mirror}}kafka/KEYS > {{ kafka.download_dir }}/KEYS
+  register: kafka_keys
+  when: kafka_file.stat.exists
+
+- name: import kafka keys
+  shell: gpg --import {{ kafka.download_dir }}/KEYS
+  when: kafka_file.stat.exists and kafka_keys|success
+
+- name: verify kafka file
+  shell: gpg --verify {{kafka.file}}.asc {{kafka.file}}
+  register: kafka_file_check
+  when: kafka_file.stat.exists
+
+# Get kafka
+- name: get kafka
+  shell: "curl {{curl_proxy_args}} --stderr /dev/null {{kafka.url}} > {{kafka.file}}"
+  when: not kafka_file.stat.exists or (not kafka_file_check|success)
+
+# Install kafka
+- name: Extract and install kafka
+  unarchive: src="{{ kafka.file }}"
+             dest={{ kafka.download_dir }}
+             copy=no
+
+- name: rename install dir
+  shell: "mv {{ kafka.download_dir}}/{{kafka.package_name}} {{kafka.home_dir}}"
+  sudo: yes

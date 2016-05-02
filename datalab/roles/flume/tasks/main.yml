@@ -1,74 +1,22 @@
 ---
 
-# Install Debian dependencies
-- name: Install Debian dependencies
-  apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
-  with_items:
-    - tar
-    - curl
-    - wget
-  sudo: yes
-  when: ansible_os_family == 'Debian'
+# Check whether we have aleady installed the same version
+- set_fact: previous_flume_version="{% if ansible_local is defined and ansible_local['flume'] is defined %}{{ansible_local['flume']['flume']['version']}}{% else %}''{% endif %}"
 
-# Install Redhat dependencies
-- name: Install Redhat dependencies
-  yum: name={{item}} state=present update_cache=yes
-  with_items:
-    - tar
-    - curl
-    - wget
-  sudo: yes
-  when: ansible_os_family == 'RedHat'
+- debug: msg="the previous version of flume was '{{ previous_flume_version }}'"
 
-# Prepare
-- file: path="{{ flume.home_dir }}" state=absent
-  sudo: yes
+- debug: msg="the expected version of flume is '{{ flume.version }}'"
 
-- file: path="{{ flume.download_dir }}" state=directory
-
-- stat: path={{flume.file}} get_checksum=yes
-  register: flume_file
-
-- shell: curl {{curl_proxy_args}} --stderr /dev/null {{flume.url}}.sha1
-  register: flume_sha1
-  when: flume_file.stat.exists
-
-# Get flume
-- name: get flume
-  shell: "wget -q -O {{flume.file}} {{flume.url}}"
-  when: not flume_file.stat.exists or (flume_file.stat.checksum != (flume_sha1.stdout|split(' '))[0])
+- set_fact: install_flume="{{previous_flume_version != flume.version}}"
 
 # Install flume
-- name: Extract and install flume
-  unarchive: src="{{ flume.file }}"
-             dest={{ flume.download_dir }}
-             copy=no
-
-- name: rename install dir
-  shell: "mv {{ flume.download_dir}}/{{flume.package_name}} {{flume.home_dir}}"
-  sudo: yes
+- include: install.yml
 
 # Configure flume
-- file: path="{{ flume.log.dir }}" state=directory
+- include: configure.yml
+
+- file: path=/etc/ansible/facts.d state=directory
   sudo: yes
 
-- file: path="{{ flume.config.dir }}" state=directory
+- template: src=flume.fact dest="/etc/ansible/facts.d/flume.fact"
   sudo: yes
-
-- file: path={{flume.ext.dir}} mode=0755 state=directory
-  sudo: yes
-
-- include: dependencies.yml
-
-- name: copy log4j file
-  template: src=log4j.properties dest={{flume.config.dir}}/
-  sudo: yes
-
-- name: copy flume configuration file
-  template: src=flume-conf.properties dest={{flume.config.dir}}/
-  sudo: yes
-
-- name: copy flume env file
-  template: src=flume-env.sh dest={{flume.config.dir}}/
-  sudo: yes
-

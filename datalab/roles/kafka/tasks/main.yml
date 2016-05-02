@@ -1,92 +1,23 @@
 ---
 
-# Install Debian dependencies
-- name: Install Debian dependencies
-  apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
-  with_items:
-    - tar
-    - curl
-    - wget
-  sudo: yes
-  when: ansible_os_family == 'Debian'
+# Check whether we have aleady installed the same version
+- set_fact: previous_kafka_version="{% if ansible_local is defined and ansible_local['kafka'] is defined %}{{ansible_local['kafka']['kafka']['version']}}{% else %}''{% endif %}"
 
-# Install Redhat dependencies
-- name: Install Redhat dependencies
-  yum: name={{item}} state=present update_cache=yes
-  with_items:
-    - tar
-    - curl
-    - wget
-  sudo: yes
-  when: ansible_os_family == 'RedHat'
+- debug: msg="the previous version of kafka was '{{ previous_kafka_version }}'"
 
-# Prepare
-- name: Create kafka user
-  user: name={{ kafka.user }} state=present
-  sudo: yes
+- debug: msg="the expected version of kafka is '{{ kafka.version }}'"
 
-- file: path="{{ kafka.home_dir }}" state=absent
-  sudo: yes
+- set_fact: install_kafka="{{previous_kafka_version != kafka.version}}"
 
-- file: path="{{ kafka.download_dir }}" state=directory
-
-- stat: path={{kafka.file}}
-  register: kafka_file
-
-- name: get kafka asc
-  shell: wget -q -O {{kafka.file}}.asc {{kafka.url}}.asc
-  when: kafka_file.stat.exists
-
-- name: get kafka keys
-  shell: wget -q -O {{ kafka.download_dir }}/KEYS {{apache_mirror}}kafka/KEYS
-  register: kafka_keys
-  when: kafka_file.stat.exists
-
-- name: import kafka keys
-  shell: gpg --import {{ kafka.download_dir }}/KEYS
-  when: kafka_file.stat.exists and kafka_keys|success
-
-- name: verify kafka file
-  shell: gpg --verify {{kafka.file}}.asc {{kafka.file}}
-  register: kafka_file_check
-  when: kafka_file.stat.exists
-
-# Get kafka
-- name: get kafka
-  shell: "wget -q -O {{kafka.file}} {{kafka.url}}"
-  when: not kafka_file.stat.exists or (not kafka_file_check|success)
-
-# Install kafka
-- name: Extract and install kafka
-  unarchive: src="{{ kafka.file }}"
-             dest={{ kafka.download_dir }}
-             copy=no
-
-- name: rename install dir
-  shell: "mv {{ kafka.download_dir}}/{{kafka.package_name}} {{kafka.home_dir}}"
-  sudo: yes
+# Install Kafka
+- include: install.yml
+  when: install_kafka
 
 # Configure kafka
-- file: path="{{ item }}" state=directory owner={{ kafka.user }} group={{ kafka.user }} recurse=yes
-  with_items:
-    - "{{ kafka.home_dir }}"
-    - "{{ kafka.log.dirs }}"
+- include: configure.yml
+
+- file: path=/etc/ansible/facts.d state=directory
   sudo: yes
 
-- name: gather facts from zookeeper servers
-  setup:
-    filter: ansible_local
-  delegate_to: "{{item}}"
-  with_items: "{{groups['zookeeper']|list}}"
-  register: zookeeper_facts
+- template: src=kafka.fact dest="/etc/ansible/facts.d/kafka.fact"
   sudo: yes
-  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not mesos_zookeepers is defined)
-
-- set_fact: mesos_zookeepers="{{ zookeeper_facts.results | map(attribute='ansible_facts.ansible_local.datalab.zookeeper.addr') | list | join(',') }}"
-  when: groups.zookeeper is defined and groups.zookeeper|list|length > 1 and (not mesos_zookeepers is defined)
-
-- name: Configure kafka
-  template: src=server.properties
-            dest={{ kafka.home_dir }}/config/
-  sudo: yes
-

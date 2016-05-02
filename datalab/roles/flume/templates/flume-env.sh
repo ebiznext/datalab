@@ -22,7 +22,7 @@
 export JAVA_HOME=/usr/lib/jvm/java-{{java_major_version}}-oracle
 
 # Give Flume more memory and pre-allocate, enable remote monitoring via JMX
-# export JAVA_OPTS="-Xms100m -Xmx2000m -Dcom.sun.management.jmxremote"
+export JAVA_OPTS="-Xms100m -Xmx2000m -Dcom.sun.management.jmxremote"
 
 # Note that the Flume conf directory is always included in the classpath.
 FLUME_CLASSPATH="{{flume.ext.dir}}/*"

@@ -11,6 +11,8 @@
 # Required-Stop: $local_fs $network $remote_fs
 # Should-Start: $named $time
 # Should-Stop: $named $time
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
 # Short-Description: Startup script for the Apache Zookeeper service
 # Description: A high-performance coordination service for distributed applications.
 ### END INIT INFO

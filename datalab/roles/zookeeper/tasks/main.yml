@@ -1,8 +1,17 @@
 ---
 
+# Check whether we have aleady installed the same version
+- set_fact: previous_zookeeper_version="{% if ansible_local is defined and ansible_local['datalab'] is defined %}{{ansible_local['datalab']['zookeeper']['version']}}{% else %}''{% endif %}"
+
+- debug: msg="the previous version of zookeeper was '{{ previous_zookeeper_version }}'"
+
+- debug: msg="the expected version of zookeeper is '{{ zookeeper.version }}'"
+
+- set_fact: install_zookeeper="{{previous_zookeeper_version != zookeeper.version}}"
+
 - name: install zookeeper
   include: install.yml
-  when: not (zk_configure|default('no'))|bool
+  when: install_zookeeper|bool and not (zk_configure|default('no'))|bool
 
 - name: configure and launch zookeeper
   include: configure.yml

@@ -3,3 +3,4 @@ id={{zookeeper.id}}
 ip={{zookeeper.ip}}
 port={{zookeeper.config.clientPort}}
 addr={{zookeeper.ip}}:{{zookeeper.config.clientPort}}
+version={{zookeeper.version}}

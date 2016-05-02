@@ -1,0 +1,36 @@
+---
+
+# Configure flume
+- file: path="{{ flume.home_dir }}" state=directory owner={{ flume.user }} group={{ flume.user }} recurse=yes
+  sudo: yes
+
+- file: path="{{ flume.log.dir }}" state=directory owner={{ flume.user }} group={{ flume.user }}
+  sudo: yes
+
+- file: path="{{ flume.config.dir }}" state=directory owner={{ flume.user }} group={{ flume.user }}
+  sudo: yes
+
+- file: path={{flume.ext.dir}} mode=0755 state=directory owner={{ flume.user }} group={{ flume.user }}
+  sudo: yes
+
+- include: dependencies.yml
+
+- name: copy log4j file
+  template: src=log4j.properties dest={{flume.config.dir}}/
+  sudo: yes
+
+- name: copy flume configuration file
+  template: src=flume-conf.properties dest={{flume.config.dir}}/
+  sudo: yes
+
+- name: copy flume env file
+  template: src=flume-env.sh dest={{flume.config.dir}}/
+  sudo: yes
+
+- template: src=flume-debian.sh dest=/etc/init.d/flume mode=0750
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+- name: enable and restart flume
+  service: name=flume state=restarted enabled=yes
+  sudo: yes

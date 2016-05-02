@@ -1,0 +1,56 @@
+---
+
+# Install Debian dependencies
+- name: Install Debian dependencies
+  apt: pkg={{item}} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - tar
+    - curl
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+# Install Redhat dependencies
+- name: Install Redhat dependencies
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+    - tar
+    - curl
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
+
+# Prepare
+- name: stop flume service
+  service: name=flume state=stopped
+  ignore_errors: yes
+  sudo: yes
+
+- name: Create flume user
+  user: name={{ flume.user }} state=present
+  sudo: yes
+
+- file: path="{{ flume.home_dir }}" state=absent
+  sudo: yes
+
+- file: path="{{ flume.download_dir }}" state=directory
+
+- stat: path={{flume.file}} get_checksum=yes
+  register: flume_file
+
+- shell: curl {{curl_proxy_args}} --stderr /dev/null {{flume.url}}.sha1
+  register: flume_sha1
+  when: flume_file.stat.exists
+
+# Get flume
+- name: get flume
+  shell: "curl {{curl_proxy_args}} --stderr /dev/null {{flume.url}} > {{flume.file}}"
+  when: not flume_file.stat.exists or (flume_file.stat.checksum != (flume_sha1.stdout|split(' '))[0])
+
+# Install flume
+- name: Extract and install flume
+  unarchive: src="{{ flume.file }}"
+             dest={{ flume.download_dir }}
+             copy=no
+
+- name: rename install dir
+  shell: "mv {{ flume.download_dir}}/{{flume.package_name}} {{flume.home_dir}}"
+  sudo: yes

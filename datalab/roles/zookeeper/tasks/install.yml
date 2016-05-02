@@ -6,7 +6,6 @@
   with_items:
     - tar
     - curl
-    - wget
   sudo: yes
   when: ansible_os_family == 'Debian'
 
@@ -16,7 +15,6 @@
   with_items:
     - tar
     - curl
-    - wget
   sudo: yes
   when: ansible_os_family == 'RedHat'
 
@@ -44,7 +42,7 @@
   when: zookeeper_file.stat.exists
 
 - name: get zookeeper
-  shell: "wget -q -O {{zookeeper.file}} {{zookeeper.url}}"
+  shell: "curl {{curl_proxy_args}} --stderr /dev/null {{zookeeper.url}} > {{zookeeper.file}}"
   when: not zookeeper_file.stat.exists or (zookeeper_file.stat.checksum != (zookeeper_sha1.stdout|split(' '))[0])
 
 - name: Extract and install Zk
@@ -85,11 +83,11 @@
 # Update local ansible facts
 - file: path=/etc/ansible/facts.d state=directory
   sudo: yes
-  when: zookeeper.id|int > 0
+#  when: zookeeper.id|int > 0
 
 - file: path=/etc/ansible/facts.d/datalab.fact state=absent
   sudo: yes
 
 - template: src=datalab.fact dest="/etc/ansible/facts.d/datalab.fact"
   sudo: yes
-  when: zookeeper.id|int > 0
+#  when: zookeeper.id|int > 0

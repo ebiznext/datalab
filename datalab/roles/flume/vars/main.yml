@@ -1,6 +1,7 @@
 ---
 
 flume:
+  user: "{{flume_user | default('flume')}}"
   version: "{{ flume_version | default('1.6.0') }}"
   package_name: "{{ flume_package_name | default('apache-flume-'+(flume_version | default('1.6.0'))|string+'-bin') }}"
   download_dir: "{{ flume_download_dir | default('/tmp') }}"
@@ -25,3 +26,6 @@ elasticsearch:
   download_dir: "{{elasticsearch_download_directory | default('/tmp')}}"
   file: "{{elasticsearch_download_directory | default('/tmp')}}/{{elasticsearch_prebuilt_file | default(elasticsearch_package_name | default('elasticsearch-'+(elasticsearch_version | default('1.7.3'))|string)+'.tar.gz')}}"
   url: "{{ elasticsearch_prebuit_package_url | default('https://download.elastic.co/elasticsearch/elasticsearch/'+elasticsearch_prebuilt_file | default(elasticsearch_package_name | default('elasticsearch-'+(elasticsearch_version | default('1.7.3'))|string)+'.tar.gz')) }}"
+
+zookeeper:
+  version: "{{ zookeeper_version | default('3.4.6') }}"
