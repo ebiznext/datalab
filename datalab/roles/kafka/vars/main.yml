@@ -11,6 +11,10 @@ kafka:
   home_dir: "{{ kafka_home_dir | default('/usr/local/kafka') }}"
   log_dir: "{{ kafka_log_dir | default('/var/log/kafka') }}"
 
+  service:
+    enabled: "{{ kafka_service_enabled | default('no') }}"
+    state: "{{ kafka_service_state | default('stopped') }}"
+
   config:
     port: "{{kafka_config_port | default('9092')}}"
     hostname: "{{kafka_config_hostname | default('localhost')}}"

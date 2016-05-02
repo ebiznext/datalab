@@ -28,6 +28,7 @@
   sudo: yes
   when: ansible_os_family == 'Debian'
 
-- name: enable and restart kafka broker
-  service: name=kafka state=restarted enabled=yes
+- name: enable/disable and restart/stop kafka broker
+  service: name=kafka state="{{kafka.service.state}}" enabled="{{kafka.service.enabled}}"
   sudo: yes
+  when: ansible_os_family == 'Debian'

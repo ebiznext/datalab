@@ -31,6 +31,7 @@
   sudo: yes
   when: ansible_os_family == 'Debian'
 
-- name: enable and restart flume
-  service: name=flume state=restarted enabled=yes
+- name: enable/disable and restart/stop flume
+  service: name=flume state="{{flume.service.state}}" enabled="{{flume.service.enabled}}"
   sudo: yes
+  when: ansible_os_family == 'Debian'

@@ -9,6 +9,10 @@ flume:
   url: "{{ flume_download_package_url | default(apache_mirror+'flume/'+(flume_version | default('1.6.0'))|string+'/'+(flume_download_file | default(flume_package_name | default('apache-flume-'+(flume_version | default('1.6.0'))|string+'-bin')+'.tar.gz'))) }}"
   home_dir: "{{ flume_home_dir | default('/usr/local/flume') }}"
 
+  service:
+    enabled: "{{ flume_service_enabled | default('no') }}"
+    state: "{{ flume_service_state | default('stopped') }}"
+
   config:
     dir: "{{flume_config_dir | default((flume_home_dir | default('/usr/local/flume'))+'/conf')}}"
 
