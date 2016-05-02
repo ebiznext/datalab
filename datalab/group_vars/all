@@ -189,3 +189,4 @@ chronos_nb_cpus: 0.2
 #
 # Hdfs
 #
+hdfs_delete_existing_hdfs_files: no
