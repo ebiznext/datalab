@@ -1,0 +1,7 @@
+---
+
+docker:
+  registry:
+    hostname: "{{ docker_registry_hostname | default(groups.registry | first) }}"
+    port: "{{ docker_registry_port | default(443) }}"
+    users: "{{ docker_registry_users | default([]) }}"

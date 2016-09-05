@@ -1,35 +1,57 @@
 ---
 
-  - name: Check if docker-engine-1.7.1 is installed
-    command: rpm -q docker-engine-1.7.1
-    ignore_errors: yes
+  - file: path=/etc/modules-load.d state=directory
     sudo: yes
-    register: rpm_check
 
-  - name: Install dependencies
-    yum:
-      name: "{{item}}"
-      state: latest
-      update_cache: yes
+  - name: enable OverlayFS
+    copy: src=overlay.conf dest=/etc/modules-load.d/overlay.conf
+    sudo: yes
+    register: overlay
+    when: ansible_kernel|version_compare(3.10, '>=')
+
+  - name: Rebooting ...
+    shell: shutdown -r now "kernel overlay enabled"
+    async: 0
+    poll: 0
+    ignore_errors: true
+    sudo: yes
+    when: overlay|changed
+
+  - name: waiting for server to come back
+    local_action: wait_for host={{ inventory_hostname }} port=22 delay=15 timeout=300
+    sudo: false
+
+  - set_fact: docker_version=1.7.1
+    when: ansible_distribution_version|version_compare(7, '<')
+
+  - set_fact: docker_version=1.11.2
+    when: ansible_distribution_version|version_compare(7, '>=')
+
+  - name: Configure yum to use the Docker yum repo
+    copy: src=docker.repo dest=/etc/yum.repos.d/docker.repo
+    sudo: yes
+
+  - file: path=/etc/systemd/system/docker.service.d state=directory
+    sudo: yes
+    when: overlay|changed
+
+  - name: Configure systemd to run the Docker Daemon with OverlayFS
+    copy: src=override.conf dest=/etc/systemd/system/docker.service.d/override.conf
+    sudo: yes
+    when: overlay|changed
+
+  - name: Install Docker selinux package
+    yum: name={{item}} state=present update_cache=yes
     with_items:
-      - wget
+      - "docker-engine-selinux-{{docker_version}}"
     sudo: yes
-    when: (rpm_check.stdout.find('is not installed') != -1)
-
-  - name: Download the Docker rpm for centos 6.5 or above
-    command: wget -O /tmp/docker-engine-1.7.1.rpm --no-check-certificate https://get.docker.com/rpm/1.7.1/centos-6/RPMS/x86_64/docker-engine-1.7.1-1.el6.x86_64.rpm
-    register: docker_centos6
-    when: (rpm_check.stdout.find('is not installed') != -1) and (ansible_distribution_version|version_compare(7, '<'))
-
-  - name: Download the Docker rpm for centos 7 or above
-    command: wget -O /tmp/docker-engine-1.7.1.rpm --no-check-certificate https://get.docker.com/rpm/1.7.1/centos-7/RPMS/x86_64/docker-engine-1.7.1-1.el7.centos.x86_64.rpm
-    register: docker_centos7
-    when: (rpm_check.stdout.find('is not installed') != -1) and (ansible_distribution_version|version_compare(7, '>'))
+    when: ansible_distribution_version|version_compare(7, '>=')
 
   - name: Install Docker package
-    yum: name=/tmp/docker-engine-1.7.1.rpm disable_gpg_check=yes update_cache=yes state=present
+    yum: name={{item}} state=present update_cache=yes
+    with_items:
+      - "docker-engine-{{docker_version}}"
     sudo: yes
-    when: (rpm_check.stdout.find('is not installed') != -1) and (docker_centos6|changed or docker_centos7|changed)
 
   - name: make sure docker-python RPM is not installed
     yum:

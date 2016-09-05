@@ -1,0 +1,9 @@
+---
+
+# Versions for the python packages that are installed
+pip:
+  version:
+    pip: "{{ pip_version_pip | default('latest') }}"
+    setuptools: "{{ pip_version_setuptools | default('latest') }}"
+    six: "{{ pip_version_six | default('1.4') }}"
+    docker_py: "{{ pip_version_docker_py | default('1.1.0') }}"
