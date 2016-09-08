@@ -5,7 +5,7 @@
   # We must install pip before we can use the pip module below
   - easy_install: name=pip state=latest #required ansible 2.x
     environment: "{{proxy_env}}"
-    sudo: yes
+    become: yes
 
   # Upgrade pip to fix docker-py/issues/525
   # Install latest version when no specific release is set.
@@ -19,7 +19,7 @@
 #FIXME      - { name: setuptools, version: "{{ pip.version.setuptools }}" }
       - { name: six, version: "{{ pip.version.six }}" }
       - { name: docker-py, version: "{{ pip.version.docker_py }}" }
-    sudo: yes
+    become: yes
     when: item.version=="latest"
 
   # Install specific version when set in the variables
@@ -34,5 +34,5 @@
       - { name: setuptools, version: "{{ pip.version.setuptools }}" }
       - { name: six, version: "{{ pip.version.six }}" }
       - { name: docker-py, version: "{{ pip.version.docker_py }}" }
-    sudo: yes
+    become: yes
     when: item.version!="latest"

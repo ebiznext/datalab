@@ -1,0 +1,13 @@
+---
+
+- name: Rebooting ...
+  shell: sleep2 && shutdown -r now
+  async: 0
+  poll: 0
+  ignore_errors: true
+  become: yes
+
+- name: waiting for server to come back
+  local_action: wait_for host={{ inventory_hostname }} port=22 delay=15 timeout=300
+  become: false
+

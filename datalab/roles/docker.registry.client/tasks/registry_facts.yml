@@ -2,11 +2,11 @@
 
 - name: gather facts from docker registry server
   setup:
-  delegate_to: "{{docker_registry_hostname}}"
+  delegate_to: "{{docker.registry.hostname}}"
   register: registry_facts
 
 - set_fact: docker_registry_host={{registry_facts.ansible_facts.ansible_fqdn}}
   when: not docker_registry_host is defined
 
-- set_fact: docker_registry_ip={{registry_facts.ansible_facts.ansible_eth1.ipv4.address}}
+- set_fact: docker_registry_ip={{registry_facts.ansible_facts.ansible_default_ipv4['address']}}
   when: not docker_registry_ip is defined

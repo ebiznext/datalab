@@ -1,0 +1,4 @@
+ansible_user: vagrant
+ansible_ssh_host: 192.168.56.110
+ansible_ssh_private_key_file: "{{inventory_dir}}/.vagrant/machines/datalab-dcos-master/virtualbox/private_key"
+zookeeper_ip: "{{ansible_ssh_host}}"

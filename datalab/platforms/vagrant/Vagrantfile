@@ -1,0 +1,75 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure(2) do |config|
+
+  config.vm.box_check_update = false
+
+  config.vm.define "datalab-dcos-master" do |datalab|
+    datalab.vm.box = "puppetlabs/centos-7.2-64-nocm"
+    datalab.vm.hostname = "datalab-dcos-master.vm"
+    datalab.vm.network "private_network", ip:"192.168.56.110"
+    datalab.vm.synced_folder "./", "/vagrant", disabled:true
+    datalab.vm.synced_folder "./", "/home/vagrant/sync", disabled:true
+    datalab.vm.provider "virtualbox" do |vb|
+      vb.name = "datalab-dcos-master"
+      vb.cpus = 4
+      vb.memory = 4*1024
+    end
+  end
+
+  config.vm.define "datalab-dcos-slave1" do |datalab|
+    datalab.vm.box = "puppetlabs/centos-7.2-64-nocm"
+    datalab.vm.hostname = "datalab-dcos-slave1.vm"
+    datalab.vm.network "private_network", ip:"192.168.56.111"
+    datalab.vm.synced_folder "./", "/vagrant", disabled:true
+    datalab.vm.synced_folder "./", "/home/vagrant/sync", disabled:true
+    datalab.vm.provider "virtualbox" do |vb|
+      vb.name = "datalab-dcos-slave1"
+      vb.cpus = 2
+      vb.memory = 2*1024
+    end
+  end
+
+  config.vm.define "datalab-dcos-slave2" do |datalab|
+    datalab.vm.box = "puppetlabs/centos-7.2-64-nocm"
+    datalab.vm.hostname = "datalab-dcos-slave2.vm"
+    datalab.vm.network "private_network", ip:"192.168.56.112"
+    datalab.vm.synced_folder "./", "/vagrant", disabled:true
+    datalab.vm.synced_folder "./", "/home/vagrant/sync", disabled:true
+    datalab.vm.provider "virtualbox" do |vb|
+      vb.name = "datalab-dcos-slave2"
+      vb.cpus = 2
+      vb.memory = 2*1024
+    end
+  end
+
+  config.vm.define "datalab-dcos-bootstrap" do |datalab|
+    datalab.vm.box = "puppetlabs/centos-7.2-64-nocm"
+    datalab.vm.hostname = "datalab-dcos-bootstrap.vm"
+    datalab.vm.network "private_network", ip:"192.168.56.113"
+    datalab.vm.synced_folder "../../", "/datalab"
+    datalab.vm.synced_folder "./", "/vagrant", disabled:true
+    datalab.vm.synced_folder "./", "/home/vagrant/sync", disabled:true
+    datalab.vm.provider "virtualbox" do |vb|
+      vb.name = "datalab-dcos-bootstrap"
+      vb.cpus = 1
+      vb.memory = 1*1024
+    end
+#    datalab.vm.provision "shell", inline: "sudo yum -y install python-setuptools gcc libffi-devel python-devel openssl-devel && sudo easy_install pip && sudo pip install --upgrade setuptools --user python && sudo pip install ansible==2.0.1.0 && sudo ansible --version", privileged: false
+    # run $(sudo ansible-playbook /datalab/dcos.yml -i /datalab/platforms/vagrant/vagrant-inventory.ini -vv) within vm
+    # datalab.vm.provision :ansible do |ansible|
+    #   ansible.inventory_path = "vagrant-inventory.ini"
+    #   ansible.playbook = "dcos.yml"
+    #   ansible.extra_vars = { user:"vagrant"}
+    #   ansible.sudo = true
+    #   ansible.limit = 'all'
+    #   ansible.verbose = 'vv'
+    # end
+  end
+
+end

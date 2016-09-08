@@ -1,0 +1,7 @@
+---
+
+  - name: Install DC/OS
+    hosts: bootstrap
+    remote_user: $user
+    roles:
+      - {role: dcos.bootstrap}

@@ -1,0 +1,37 @@
+---
+
+dcos:
+  genconf: "{{ dcos_genconf | default('/genconf') }}"
+  user: "{{ dcos_user | default('root') }}"
+  interface: "{{ dcos_interface | default('enp5s0') }}"
+  installer:
+    url: "{{ dcos_installer_url | default('https://downloads.dcos.io/dcos/EarlyAccess/commit/14509fe1e7899f439527fb39867194c7a425c771/dcos_generate_config.sh') }}"
+  cluster: "{{ mesos_cluster | default('datalab') }}"
+  exhibitor:
+    storage:
+      backend: "{{ exhibitor_storage_backend | default('static') }}" #if zookeeper is specified, exhibitor_zk_hosts and exhibitor_zk_path must be defined
+    zk:
+      path: "{{ exhibitor_zk_path | default(zookeeper_config_dataDir | default('/var/lib/zookeeper')) }}"
+    address: "{{ exhibitor_address | default('127.0.0.1') }}"
+  master:
+    discovery: "{{ master_discovery | default('static') }}" #if master_http_loadbalancer is specified, exhibitor_address and num_masters must be defined
+    num: "{{ num_masters | default(3) }}"
+  ### Networking
+  dns:
+    search: "{{ dns_search | default('') }}"
+  resolvers: "{{ resolvers | default(['8.8.4.4', '8.8.8.8']) }}"
+  ### Performance and Tuning
+  docker:
+    remove:
+      delay: "{{ docker_remove_delay | default(1) }}"
+  gc:
+    delay: "{{ gc_delay | default(2) }}"
+  process:
+    timeout: "{{ process_timeout | default(120) }}"
+  log:
+    directory: "{{ log_directory | default('/genconf/logs') }}"
+  ### Security And Authentication
+  oauth:
+    enabled: "{{ oauth_enabled | default('yes') }}"
+  telemetry:
+    enabled: "{{ telemetry_enabled | default('yes') }}"

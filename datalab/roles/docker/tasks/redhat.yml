@@ -4,22 +4,23 @@
     yum: name={{item}} state=latest
     with_items:
       - docker
+    become: yes
 
   - name: make sure docker-python RPM is not installed
     yum:
       name: docker-python
       state: absent
+    become: yes
 
   - name: Install easy_install package
     yum: name={{item}} state=latest
     sudo: yes
     with_items:
       - python-setuptools
+    become: yes
 
   - include: pip.yml
 
-  - name: Enable Docker service on boot
-    service: name=docker enabled=yes
-
-  - name: Start the Docker daemon
-    service: name=docker state=started
+  - name: Enable Docker service on boot and Start it
+    service: name=docker enabled=yes state=started
+    become: yes

@@ -1,25 +1,17 @@
 ---
 
   - file: path=/etc/modules-load.d state=directory
-    sudo: yes
+    become: yes
 
   - name: enable OverlayFS
     copy: src=overlay.conf dest=/etc/modules-load.d/overlay.conf
-    sudo: yes
+    become: yes
     register: overlay
     when: ansible_kernel|version_compare(3.10, '>=')
 
   - name: Rebooting ...
-    shell: shutdown -r now "kernel overlay enabled"
-    async: 0
-    poll: 0
-    ignore_errors: true
-    sudo: yes
+    include: reboot.yml
     when: overlay|changed
-
-  - name: waiting for server to come back
-    local_action: wait_for host={{ inventory_hostname }} port=22 delay=15 timeout=300
-    sudo: false
 
   - set_fact: docker_version=1.7.1
     when: ansible_distribution_version|version_compare(7, '<')
@@ -29,29 +21,29 @@
 
   - name: Configure yum to use the Docker yum repo
     copy: src=docker.repo dest=/etc/yum.repos.d/docker.repo
-    sudo: yes
+    become: yes
 
   - file: path=/etc/systemd/system/docker.service.d state=directory
-    sudo: yes
+    become: yes
     when: overlay|changed
 
   - name: Configure systemd to run the Docker Daemon with OverlayFS
     copy: src=override.conf dest=/etc/systemd/system/docker.service.d/override.conf
-    sudo: yes
+    become: yes
     when: overlay|changed
 
   - name: Install Docker selinux package
     yum: name={{item}} state=present update_cache=yes
     with_items:
       - "docker-engine-selinux-{{docker_version}}"
-    sudo: yes
+    become: yes
     when: ansible_distribution_version|version_compare(7, '>=')
 
   - name: Install Docker package
     yum: name={{item}} state=present update_cache=yes
     with_items:
       - "docker-engine-{{docker_version}}"
-    sudo: yes
+    become: yes
 
   - name: make sure docker-python RPM is not installed
     yum:
@@ -60,14 +52,17 @@
 
   - name: Install easy_install package
     yum: name={{item}} state=latest
-    sudo: yes
+    become: yes
     with_items:
       - python-setuptools
 
   - include: pip.yml
 
-  - name: Enable Docker service on boot
-    service: name=docker enabled=yes
+  - name: Stop and Disbale firewalld #https://docs.docker.com/v1.6/installation/centos/#firewalld
+    service: name=firewalld enabled=no state=stopped
+    become: yes
+    when: ansible_distribution_version|version_compare(7, '>=')
 
-  - name: Start the Docker daemon
-    service: name=docker state=started
+  - name: Enable Docker service on boot and Start it
+    service: name=docker enabled=yes state=restarted
+    become: yes

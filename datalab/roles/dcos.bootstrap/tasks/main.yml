@@ -1,0 +1,105 @@
+---
+
+  - name: Check bootstrap docker version
+    command: docker --version
+    register: docker_version
+
+  - set_fact: vdocker={{docker_version.stdout|group('Docker\sversion\s(\d+\.\d+\.\d+),\sbuild\s(\w*)', 1)}}
+
+  - fail: msg="Docker version {{vdocker}} not supported"
+    when: vdocker|version_compare(1.7, '<') #or vdocker|version_compare(1.12, '>=')
+
+  - name: Create directory genconf
+    file: path={{dcos.genconf}} state=directory
+
+  - name: Create a ip-detect script
+    template: src=ip-detect dest={{dcos.genconf}}/
+
+  - name: Check ssh_key
+    stat: path={{dcos.genconf}}/ssh_key
+    register: ssh_key
+    sudo: no
+
+  - name: Generate RSA Key
+    command: ssh-keygen -N '' -f {{dcos.genconf}}/ssh_key
+#    user: name={{dcos.user}} generate_ssh_key=yes ssh_key_file={{dcos.genconf}}/ssh_key ssh_key_type=rsa state=present
+#    become: yes
+    when: not ssh_key.stat.exists
+
+  - name: Fetch RSA public key
+    fetch: src={{dcos.genconf}}/ssh_key.pub dest={{playbook_dir}}/ flat=yes
+
+  - name: Add RSA public key to all DC/OS nodes
+    authorized_key: user={{dcos.user}} key="{{ lookup('file', playbook_dir+'/ssh_key.pub') }}"
+    become: yes
+    delegate_to: "{{item}}"
+    with_items:
+      - "{{groups['dcos']|list}}"
+
+#  - name: Update ssh_key permissions
+#    file: path={{dcos.genconf}}/ssh_key state=file owner=root
+#    become: yes
+
+# Download the DC/OS installer
+  - name: Check DC/OS installer
+    stat: path={{dcos.genconf}}/../dcos_generate_config.sh
+    register: dcos_installer
+
+  - name: Download the DC/OS installer if required
+    command: curl --stderr /dev/null -o {{dcos.genconf}}/../dcos_generate_config.sh  {{ dcos.installer.url }}
+    when: not dcos_installer.stat.exists
+
+# Generate DC/OS configuration file
+  - name: gather facts from master nodes
+    setup: filter=ansible_{{dcos.interface}}
+    delegate_to: "{{item}}"
+    delegate_facts: True
+    with_items: "{{groups['master']}}"
+    register: master_facts
+    become: yes
+    ignore_errors: yes
+    when: groups.master is defined and groups.master|list|length >= 1
+
+  - set_fact: masters="{{ master_facts.results | map(attribute='ansible_facts.ansible_'+dcos.interface+'.ipv4.address') | list }}"
+    when: master_facts|success
+
+  - name: gather facts from agent nodes
+    setup: filter=ansible_{{dcos.interface}}
+    delegate_to: "{{item}}"
+    delegate_facts: True
+    with_items: "{{groups['slave']}}"
+    register: slave_facts
+    become: yes
+    ignore_errors: yes
+    when: groups.slave is defined and groups.slave|list|length >= 1
+
+  - set_fact: agents="{{ slave_facts.results | map(attribute='ansible_facts.ansible_'+dcos.interface+'.ipv4.address') | list }}"
+    when: slave_facts|success
+
+  - name: Generate DC/OS configuration file
+    template: src=config.yaml dest={{dcos.genconf}}/
+
+# Generate a customized DC/OS build
+  - name: Generate a customized DC/OS build
+    command: bash {{dcos.genconf}}/../dcos_generate_config.sh --genconf -v
+    become: yes
+
+## prerequisites
+#  - name: Install the cluster prerequisites, including system updates, compression utilities (UnZip, GNU tar, and XZ Utils), and cluster permissions
+#    command: bash {{dcos.genconf}}/../dcos_generate_config.sh --install-prereqs -v
+#    become: yes
+
+# preflight
+  - name: Run a preflight script to validate that the cluster is installable
+    command: bash {{dcos.genconf}}/../dcos_generate_config.sh --preflight -v
+    become: yes
+
+# install
+  - name: Install DC/OS on the cluster
+    command: bash {{dcos.genconf}}/../dcos_generate_config.sh --deploy -v
+    become: yes
+
+# postflight
+  - name: Run the DC/OS diagnostic script to verify that services are up and running
+    command: bash {{dcos.genconf}}/../dcos_generate_config.sh --postflight -v
+    become: yes

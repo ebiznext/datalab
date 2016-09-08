@@ -16,17 +16,17 @@
     with_items:
       - deb https://apt.dockerproject.org/repo ubuntu-trusty main
       - deb https://get.docker.io/ubuntu docker main
-    sudo: yes
+    become: yes
     when: not docker_installed or (docker_installed|failed)
 
   - name: add docker repository
     apt_repository: repo='deb https://get.docker.com/ubuntu docker main' state=present
-    sudo: yes
+    become: yes
     when: not docker_installed or (docker_installed|failed)
 
   - name: install docker
     shell: wget -qO- https://get.docker.com/ | sh #https://github.com/docker/docker/issues/4036
-    sudo: yes
+    become: yes
     when: not docker_installed or (docker_installed|failed) or upgrade_docker|bool
 
   - name: Install easy_install, python-dev package with apt
@@ -35,7 +35,7 @@
       state: latest
       update_cache: yes
       cache_valid_time: 3600
-    sudo: yes
+    become: yes
     with_items:
       - python-dev
       - python-setuptools #easy_install
@@ -54,7 +54,7 @@
       backrefs: yes
       regexp: '^PRUNEPATHS="(/var/lib/docker )?(.*)"$'
       line: 'PRUNEPATHS="/var/lib/docker \2"'
-    sudo: yes
+    become: yes
     when: updatedb_conf_exists.stat.exists
 
   - name: Check if /etc/default/ufw exists
@@ -67,9 +67,9 @@
       dest: /etc/default/ufw
       regexp: "^DEFAULT_FORWARD_POLICY="
       line: "DEFAULT_FORWARD_POLICY=\"ACCEPT\""
-    sudo: yes
+    become: yes
     when: ufw_default_exists.stat.exists
 
-  - name: Start Docker
-    sudo: yes
-    service: name=docker state=started
+  - name: Enable Docker service on boot and Start it
+    service: name=docker enabled=yes state=started
+    become: yes

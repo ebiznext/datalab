@@ -4,3 +4,7 @@ docker_registry_users:
   - name: docker
     password: changeit
     email: stephane.manciot@ebiznext.com
+
+docker_registry_home: /home/docker-registry
+
+docker_registry_ip: 192.168.56.110

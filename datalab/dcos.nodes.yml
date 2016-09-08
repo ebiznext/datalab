@@ -1,0 +1,9 @@
+---
+
+  - name: Prepare DC/OS nodes
+    hosts: dcos
+    remote_user: $user
+    any_errors_fatal: true
+    roles:
+      - {role: dcos.nodes, when: "{{ansible_os_family == 'RedHat' and ansible_distribution_version|version_compare(7, '>=')}}"}
+

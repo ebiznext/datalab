@@ -1,0 +1,6 @@
+# docker-registry Ansible Meta
+galaxy_info:
+  author: "Stéphane Manciot"
+  company: EBIZNEXT
+  license: MIT
+  min_ansible_version: 2.0

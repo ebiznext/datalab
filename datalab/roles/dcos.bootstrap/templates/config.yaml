@@ -1,0 +1,45 @@
+---
+
+{% if agents is defined and agents|length > 0 %}
+agent_list:
+{% for agent in agents %}
+- {{agent}}
+{% endfor %}
+{% else %}
+agent_list: []
+{% endif %}
+# Use this bootstrap_url value unless you have moved the DC/OS installer assets.
+bootstrap_url: file:///opt/dcos_install_tmp
+cluster_name: {{dcos.cluster}}
+exhibitor_storage_backend: {{dcos.exhibitor.storage.backend}}
+{% if dcos.exhibitor.storage.backend == 'zookeeper' %}
+exhibitor_zk_hosts:
+exhibitor_zk_path: {{dcos.exhibitor.zk.path}}
+{% endif %}
+master_discovery: {{dcos.master.discovery}}
+{% if dcos.master.discovery == 'master_http_loadbalancer' %}
+exhibitor_address: {{dcos.exhibitor.address}}
+{% else %}
+{% if masters is defined and masters|length > 0 %}
+master_list:
+{% for master in masters %}
+- {{master}}
+{% endfor %}
+{% else %}
+master_list: []
+{% endif %}
+{% endif %}
+#dns_search: {{dcos.dns.search}}
+resolvers:
+{% for resolver in dcos.resolvers %}
+- {{resolver}}
+{% endfor %}
+docker_remove_delay: {{dcos.docker.remove.delay}}
+gc_delay: {{dcos.gc.delay}}
+process_timeout: {{dcos.process.timeout}}
+log_directory: {{dcos.log.directory}}
+oauth_enabled: '{{dcos.oauth.enabled|bool|lower}}'
+telemetry_enabled: '{{dcos.telemetry.enabled|bool|lower}}'
+ssh_key_path: /genconf/ssh_key
+ssh_port: 22
+ssh_user: {{dcos.user}}

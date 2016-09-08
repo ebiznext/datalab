@@ -1,0 +1,124 @@
+---
+
+  - name: Stop and Disbale firewalld
+    service: name=firewalld enabled=no state=stopped
+    become: yes
+    when: ansible_distribution == 'CentOS' and ansible_distribution_version|version_compare(7, '>=')
+
+  - name: Install ntp packages
+    yum: name={{item}} state=present update_cache=yes
+    with_items:
+      - ntp
+    become: yes
+    when: ansible_os_family == "RedHat"
+
+  - name: Enable ntpd service on boot and ensure ntpd is started
+    service: name=ntpd enabled=yes state=started
+    become: yes
+
+  - name: Check docker version
+    shell: docker --version
+    register: docker_version
+    become: yes
+
+  - set_fact: vdocker={{docker_version.stdout|group('Docker\sversion\s(\d+\.\d+\.\d+),\sbuild\s(\w*)', 1)}}
+
+  - fail: msg="Docker version {{vdocker}} not supported"
+    when: vdocker|version_compare(1.7, '<') or vdocker|version_compare(1.12, '>=')
+
+  - name: Disable sudo password prompts
+    lineinfile: "dest=/etc/sudoers state=present regexp='^%wheel' line='%wheel ALL=(ALL) NOPASSWD: ALL'"
+    become: yes
+
+  - name: Data compression
+    yum: name={{item}} state=present
+    with_items:
+      - tar
+      - xz
+      - unzip
+      - curl
+      - ipset
+    become: yes
+    when: ansible_os_family == "RedHat"
+
+  - name: check previous mesos configuration
+    stat: path=/etc/mesos
+    become: yes
+    register: previous_mesos_configuration
+
+# Backup previous installation of mesos
+  - name: backup previous mesos configuration
+    command: tar -czvf ~/mesos_conf.tar.gz /etc/mesos
+    become: yes
+    when: previous_mesos_configuration.stat.exists
+
+  - name: check previous mesos lib
+    stat: path=/var/lib/mesos
+    become: yes
+    register: previous_mesos_lib
+
+  - name: backup previous mesos lib
+    command: tar -czvf ~/mesos_lib.tar.gz /var/lib/mesos
+    become: yes
+    when: previous_mesos_lib.stat.exists
+
+  - name: stop and disable mesos-slave service on RedHat / CentOS 7
+    service: name=mesos-slave state=stopped enabled=no
+    become: yes
+    ignore_errors: yes
+    when: ansible_os_family == 'RedHat' and ansible_distribution_version|version_compare(7, '>=')
+
+  - name: stop and disable mesos-master service on RedHat / CentOS 7
+    service: name=mesos-master state=stopped enabled=no
+    become: yes
+    ignore_errors: yes
+    when: ansible_os_family == 'RedHat' and ansible_distribution_version|version_compare(7, '>=')
+
+  - name: stop and disable marathon service on RedHat / CentOS 7
+    service: name=marathon state=stopped enabled=no
+    become: yes
+    ignore_errors: yes
+    when: ansible_os_family == 'RedHat' and ansible_distribution_version|version_compare(7, '>=')
+
+  - name: remove previous installation of mesos and marathon
+    yum: name={{item}} state=absent
+    with_items:
+      - mesos
+      - marathon
+    become: yes
+    when: ansible_os_family == "RedHat"
+
+# Backup previous installation of zookeeper
+  - name: check previous zookeeper configuration
+    stat: path={{ zookeeper_home_dir | default('/usr/local/zookeeper') }}/conf
+    become: yes
+    register: previous_zk_conf
+
+  - name: backup previous zookeeper configuration
+    command: tar -czvf ~/zk_conf.tar.gz {{ zookeeper_home_dir | default('/usr/local/zookeeper') }}/conf
+    become: yes
+    when: previous_zk_conf.stat.exists
+
+  - name: disable and stop zookeeper service
+    service: name=zookeeper state=stopped enabled=no
+    ignore_errors: yes
+    become: yes
+
+  - name: remove previous installation of zookeeper
+    yum: name=zookeeper state=absent
+    become: yes
+    when: ansible_os_family == "RedHat"
+
+# Cluster permissions
+  - name: set selinux to permissive mode
+    selinux: policy=targeted state=permissive
+    register: selinux
+    become: yes
+
+  - name: Add nogroup
+    group: name=nogroup state=present
+    register: nogroup
+    become: yes
+
+  - include: reboot.yml
+    when: selinux|changed or nogroup|changed
