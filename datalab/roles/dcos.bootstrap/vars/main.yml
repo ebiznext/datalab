@@ -23,9 +23,9 @@ dcos:
   ### Performance and Tuning
   docker:
     remove:
-      delay: "{{ docker_remove_delay | default(1) }}"
+      delay: "{{ docker_remove_delay | default('1hrs') }}"
   gc:
-    delay: "{{ gc_delay | default(2) }}"
+    delay: "{{ gc_delay | default('2days') }}"
   process:
     timeout: "{{ process_timeout | default(120) }}"
   log:

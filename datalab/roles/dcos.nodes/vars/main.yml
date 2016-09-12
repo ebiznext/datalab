@@ -1,0 +1,4 @@
+---
+
+dcos:
+  interface: "{{ dcos_interface | default('enp5s0') }}"

@@ -120,5 +120,23 @@
     register: nogroup
     become: yes
 
+# /etc/hosts
+  - replace: dest=/etc/hosts regexp='^(127\\.0\\.0\\.1\\s+)({{ansible_fqdn|split('.')|join('\\.')}}\\s+)?({{ansible_hostname|split('.')|join('\\.')}}\\s+)?(.*)' replace='\1\4' owner=root group=root mode=0644
+    sudo: yes
+
+  - name: gather facts from DC/OS node
+    setup: filter=ansible_{{dcos.interface}}
+    register: node_facts
+    ignore_errors: yes
+    become: yes
+
+  - set_fact: node_ip="{{ node_facts.ansible_facts['ansible_'+dcos.interface]['ipv4']['address'] }}"
+    when: node_facts|success
+
+  - lineinfile: dest=/etc/hosts line="{{node_ip}} {{ansible_fqdn}} {{ansible_hostname}}" state=present owner=root group=root mode=0644
+    become: yes
+    when: node_facts|success
+
+# reboot
   - include: reboot.yml
     when: selinux|changed or nogroup|changed
